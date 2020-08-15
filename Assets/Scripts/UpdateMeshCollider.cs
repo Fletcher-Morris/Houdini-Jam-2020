@@ -7,11 +7,12 @@ public class UpdateMeshCollider : MonoBehaviour
 {
 	public void UpdateCollider()
 	{
-		Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-		if(mesh == null) return;
-		MeshCollider collider = GetComponent<MeshCollider>();
-		if(collider == null) collider = gameObject.AddComponent<MeshCollider>();
-		collider.sharedMesh = mesh;
-		Debug.Log($"Updated mesh collider on '{gameObject.name}'!");
+        GameObject holder = gameObject.GetComponentInChildren<MeshFilter>().gameObject;
+        Mesh mesh = holder.GetComponent<MeshFilter>().sharedMesh;
+        if (mesh == null) return;
+        MeshCollider collider = holder.GetComponent<MeshCollider>();
+        if (collider == null) collider = holder.AddComponent<MeshCollider>();
+        collider.sharedMesh = mesh;
+        Debug.Log($"Updated mesh collider on '{holder.gameObject.name}'!");
 	}
 }
