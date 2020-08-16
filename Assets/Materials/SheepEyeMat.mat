@@ -21,9 +21,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - _InnerSize: 0.26
+    - _Blink: 0
+    - _InnerSize: 0.3
     - _LayerDepth: 1.1
-    - _OuterSize: 0.32
+    - _Open: 0.1
+    - _OuterSize: 0.5
     - _PupilSize: 0.18
     m_Colors:
     - _Background: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 0}
