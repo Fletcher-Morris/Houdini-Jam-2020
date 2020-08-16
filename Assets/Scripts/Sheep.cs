@@ -17,6 +17,7 @@ public class Sheep : MonoBehaviour
 
     public Vector3 gravityDirection;
 
+    public Transform followTarget;
     public Vector3 targetPosition;
     public Vector3 movementVector;
 
@@ -53,11 +54,14 @@ public class Sheep : MonoBehaviour
     {
         gravityDirection = -transform.position.normalized;
 
+        Movement();
     }
 
     void Movement()
     {
-        if(movementVector.magnitude > 0)
+        if (followTarget != null) targetPosition = followTarget.position;
+
+        if (movementVector.magnitude > 0)
         {
 
         }

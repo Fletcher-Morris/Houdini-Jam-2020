@@ -24,7 +24,7 @@ Material:
     - _Blink: 0
     - _InnerSize: 0.3
     - _LayerDepth: 1.1
-    - _Open: 0.02
+    - _Open: 0.05
     - _OuterSize: 0.5
     - _PupilSize: 0.18
     m_Colors:

@@ -13,6 +13,7 @@ public static class Extensions
     public static Vector2 ToTopDownVec2(this Vector3 _value) => new Vector2(_value.x, _value.z);
     public static Vector2 Round(this Vector2 _value) => new Vector2(_value.x.RoundToInt(), _value.y.RoundToInt());
     public static Vector2 Scale(this Vector2 _a, Vector2 _b) => Vector2.Scale(_a, _b);
+    public static Vector3 Scale(this Vector3 _value, float _a, float _b, float _c) => Vector3.Scale(_value, new Vector3(_a,_b,_c));
     public static Vector3 Scale(this Vector3 _a, Vector3 _b) => Vector3.Scale(_a, _b);
     public static Vector4 Scale(this Vector4 _a, Vector4 _b) => Vector4.Scale(_a, _b);
     public static Vector3 RotateTowards(this Vector3 _value, Vector3 _target, float _degrees, float _mag) => Vector3.RotateTowards(_value, _target, _degrees * Mathf.Rad2Deg, _mag);
