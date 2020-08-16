@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public GameManager Instance;
+    public static GameManager Instance;
     void Awake()
     {
         Instance = this;
@@ -38,15 +38,23 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void CollectSheep()
+    public static void CollectSheep(Sheep sheep)
     {
-        remainingSheep--;
-        if (remainingSheep < 0) remainingSheep = 0;
+        Instance.SheepList.Remove(sheep);
+        Instance.remainingSheep = Instance.SheepList.Count;
     }
 
 
     void TimeUp()
     {
         runClock = false;
+    }
+
+
+    public List<Sheep> SheepList = new List<Sheep>();
+    public static void AddSheep(Sheep sheep)
+    {
+        Instance.SheepList.Add(sheep);
+        Instance.remainingSheep = Instance.SheepList.Count;
     }
 }
