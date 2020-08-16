@@ -45,7 +45,6 @@ public class EyePosition : MonoBehaviour
             m_blinkTimer = 0.0f;
             if(blinkChance >= Random.Range(0.0f, 1.0f) && !m_blinking)
             {
-                Debug.Log("BLINK!");
                 StartCoroutine(Blink());
             }
         }
