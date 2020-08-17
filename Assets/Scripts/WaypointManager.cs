@@ -27,7 +27,7 @@ public class WaypointManager : MonoBehaviour
     public void UpdateWaypoints()
     {
         Instance = this;
-        update = false;
+        updateAll = false;
 
         if (parent != null) DestroyImmediate(parent.gameObject);
         Waypoints = new List<AiWaypoint>();
@@ -55,11 +55,19 @@ public class WaypointManager : MonoBehaviour
             }
         }
 
+        UpdateConnections();
+        
+    }
+
+    public void UpdateConnections()
+    {
+        updateConnections = false;
+
         Waypoints.ForEach(w1 =>
         {
             Waypoints.ForEach(w2 =>
             {
-                if(w1 != w2)
+                if (w1 != w2)
                 {
                     if (w1.connectedWaypoints.Contains(w2))
                     {
@@ -88,21 +96,25 @@ public class WaypointManager : MonoBehaviour
         });
 
         AiWaypoint[] remove = Waypoints.FindAll(w => w.connectedWaypoints.Count > maxConnections).ToArray();
-        while(remove.Length > 0)
+        while (remove.Length > 0)
         {
             remove[0].Remove();
             remove = Waypoints.FindAll(w => w.connectedWaypoints.Count > maxConnections).ToArray();
         }
-        
     }
 
-    public bool update = false;
+    public bool updateAll = false;
+    public bool updateConnections = false;
 
     void Update()
     {
-        if (update) UpdateWaypoints();
+        if (updateAll) UpdateWaypoints();
+        if (updateConnections) UpdateConnections();
 
-        Waypoints.ForEach(w => w.gameObject.SetActive(showWaypoints && (showClusters < 0 || (w.connectedWaypoints.Count <= showClusters))));
+        Waypoints.ForEach(w =>
+        {
+            w.gameObject.SetActive(showWaypoints && (showClusters < 0 || (w.connectedWaypoints.Count <= showClusters)));
+        });
 
         if (drawLines)
         {
@@ -119,11 +131,7 @@ public class WaypointManager : MonoBehaviour
 
     public bool showWaypoints = true;
     public int showClusters = 2;
-
     public bool drawLines = false;
-
-
-
 
     Queue<AiWaypoint> q;
     Dictionary<AiWaypoint, AiWaypoint> cameFrom = new Dictionary<AiWaypoint, AiWaypoint>();
@@ -149,15 +157,23 @@ public class WaypointManager : MonoBehaviour
             }
         });
 
-        if (startNode == null) return null;
-        if (endNode == null) return null;
+        if (startNode == null)
+        {
+            Debug.LogWarning($"Could not find stating node close to '{start}'!");
+            return null;
+        }
+        if (endNode == null)
+        {
+            Debug.LogWarning($"Could not find ending node close to '{end}'!");
+            return null;
+        }
 
         bool foundPath = false;
         Instance.q = new Queue<AiWaypoint>();
         Instance.q.Enqueue(startNode);
         Instance.cameFrom = new Dictionary<AiWaypoint, AiWaypoint>();
         int tries = 0;
-        while (foundPath == false && Instance.q.Count > 0 && tries <= Instance.Waypoints.Count)
+        while (foundPath == false && tries <= Instance.Waypoints.Count && tries <= 1000)
         {
             AiWaypoint current = Instance.q.Peek();
 
@@ -177,17 +193,28 @@ public class WaypointManager : MonoBehaviour
             });
         }
 
-        List<AiWaypoint> path = new List<AiWaypoint>();
-        AiWaypoint c = endNode;
-        while(c != startNode)
+        if(foundPath)
         {
-            path.Add(c);
-            c = Instance.cameFrom[c];
+            List<AiWaypoint> path = new List<AiWaypoint>();
+            AiWaypoint c = endNode;
+            while (c != startNode)
+            {
+                path.Add(c);
+                c = Instance.cameFrom[c];
+            }
+            path.Add(startNode);
+            path.Reverse();
+
+            string str = "";
+            path.ForEach(w => str += w.transform.position + ",");
+            Debug.Log($"Found path : {str}");
+
+            return path;
         }
-        path.Add(startNode);
-        path.Reverse();
-
-
-        return path;
+        else
+        {
+            Debug.LogWarning($"Could not find path between '{start}' and '{end}' after {tries} tries!");
+            return null;
+        }
     }
 }

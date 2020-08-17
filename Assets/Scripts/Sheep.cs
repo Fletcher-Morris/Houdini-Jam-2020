@@ -59,6 +59,8 @@ public class Sheep : MonoBehaviour
         }
         if(pathfound.Count > 0)
         {
+            AiWaypoint n = GetWaypoint(nextWaypoint);
+            if(n != null) Debug.DrawLine(transform.position, GetWaypoint(nextWaypoint).transform.position, Color.green);
             for (int i = 0; i < pathfound.Count - 1; i++)
             {
                 Debug.DrawLine(pathfound[i].transform.position, pathfound[i + 1].transform.position, Color.green);
@@ -112,7 +114,7 @@ public class Sheep : MonoBehaviour
         GameManager.CollectSheep(this);
     }
 
-    List<AiWaypoint> pathfound = new List<AiWaypoint>();
+    public List<AiWaypoint> pathfound = new List<AiWaypoint>();
     int lastWaypoint;
     int nextWaypoint;
     public bool updateWaypoint = false;
