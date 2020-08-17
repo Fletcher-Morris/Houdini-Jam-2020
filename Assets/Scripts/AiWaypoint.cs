@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class AiWaypoint : MonoBehaviour
 {
-    public List<AiWaypoint> connectedWaypoints;
+    public List<AiWaypoint> connections;
+
+    public List<AiWaypoint> history;
+
+    public int id;
 
     public void Remove()
     {
-        connectedWaypoints.ForEach(w => w.connectedWaypoints.Remove(this));
+        connections.ForEach(w => w.connections.Remove(this));
         WaypointManager.Instance.Waypoints.Remove(this);
         DestroyImmediate(gameObject);
     }

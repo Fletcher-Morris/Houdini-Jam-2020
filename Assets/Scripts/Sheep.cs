@@ -18,6 +18,7 @@ public class Sheep : MonoBehaviour
     public Vector3 gravityDirection;
 
     public Transform followTarget;
+    public float updateWaypointInterval = 2.0f;
     public Vector3 targetPosition;
     public Vector3 movementVector;
 
@@ -30,10 +31,31 @@ public class Sheep : MonoBehaviour
     void Start()
     {
         GameManager.AddSheep(this);
+
+        closestWaypointToTarget = WaypointManager.Closest(followTarget.position);
+        m_updateWaypointTimer = Random.Range(0.0f, updateWaypointInterval);
     }
 
     void Update()
     {
+        m_updateWaypointTimer -= Time.deltaTime;
+        if(m_updateWaypointTimer <= 0)
+        {
+            AiWaypoint newWaypoint = WaypointManager.Closest(followTarget.position);
+            if (newWaypoint != null)
+            {
+                if (newWaypoint.id != closestWaypointToTarget.id)
+                {
+                    if (followTarget != null)
+                    {
+                        SetPathfindTarget(followTarget.position);
+                    }
+                }
+                closestWaypointToTarget = newWaypoint;
+                m_updateWaypointTimer = updateWaypointInterval;
+            }
+        }
+
         if (movementVector.magnitude > 0)
         {
             m_bounceTimer += Time.deltaTime * bounceSpeed;
@@ -49,14 +71,6 @@ public class Sheep : MonoBehaviour
         legs.localEulerAngles = new Vector3(Mathf.LerpAngle(0, legBounceAngle, m_legValue), 0, 0);
         visual.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(0.0f, bounceTilt * m_bounceDirection, m_bounceValue));
 
-        if(updateWaypoint)
-        {
-            updateWaypoint = false;
-            if(followTarget != null)
-            {
-                SetPathfindTarget(followTarget.position);
-            }
-        }
         if(pathfound.Count > 0)
         {
             AiWaypoint n = GetWaypoint(nextWaypoint);
@@ -132,4 +146,6 @@ public class Sheep : MonoBehaviour
         if (index == -1 || index >= pathfound.Count || pathfound.Count == 0) return null;
         return pathfound[index];
     }
+    private AiWaypoint closestWaypointToTarget;
+    private float m_updateWaypointTimer;
 }

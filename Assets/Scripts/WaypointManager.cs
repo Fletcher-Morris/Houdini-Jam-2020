@@ -34,26 +34,41 @@ public class WaypointManager : MonoBehaviour
         parent = new GameObject("WAYPOINT_PARENT").transform;
         parent.position = Vector3.zero;
 
-        for (int i = 0; i < waypointQuantity; i++)
-        {
 
-            float x = Random.Range(-1.0f, 1.0f);
-            float y = Random.Range(-1.0f, 1.0f);
-            float z = Random.Range(-1.0f, 1.0f);
-            Vector3 pos = new Vector3(x, y, z).normalized * raydius;
+        List<Vector3> points = new List<Vector3>();
+        int samples = Instance.waypointQuantity;
+        float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
+        for(int i = 0; i < samples; i++)
+        {
+            float y = 1.0f - (i / (float)(samples - 1) * 2.0f);
+            float radius = Mathf.Sqrt(1.0f - (y * y));
+            float theta = phi * i;
+            float x = Mathf.Cos(theta) * radius;
+            float z = Mathf.Sin(theta) * radius;
+            points.Add(new Vector3(x, y, z));
+        }
+
+
+        points.ForEach(p =>
+        {
+            Vector3 pos = p.normalized * raydius;
 
             Ray ray = new Ray(pos, -pos);
             RaycastHit hit;
-            if(Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, mask))
             {
-                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
                 {
+                    //Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.cyan, 10.0f);
                     Quaternion rot = Quaternion.FromToRotation(Vector3.forward, -pos);
-                    GameObject newWp = Instantiate(waypointPrefab, hit.point + (pos * 0.01f), rot, parent);
+                    GameObject newWp = Instantiate(waypointPrefab, hit.point + (pos.normalized), rot, parent);
                     Waypoints.Add(newWp.GetComponent<AiWaypoint>());
                 }
             }
-        }
+        });
+
+        int id = 0;
+        Waypoints.ForEach(w => { w.id = id; id++; });
 
         UpdateConnections();
         
@@ -69,7 +84,7 @@ public class WaypointManager : MonoBehaviour
             {
                 if (w1 != w2)
                 {
-                    if (w1.connectedWaypoints.Contains(w2))
+                    if (w1.connections.Contains(w2))
                     {
 
                     }
@@ -86,8 +101,8 @@ public class WaypointManager : MonoBehaviour
 
                             if (hit.collider == null)
                             {
-                                w1.connectedWaypoints.Add(w2);
-                                w2.connectedWaypoints.Add(w1);
+                                w1.connections.Add(w2);
+                                w2.connections.Add(w1);
                             }
                         }
                     }
@@ -95,11 +110,11 @@ public class WaypointManager : MonoBehaviour
             });
         });
 
-        AiWaypoint[] remove = Waypoints.FindAll(w => w.connectedWaypoints.Count > maxConnections).ToArray();
+        AiWaypoint[] remove = Waypoints.FindAll(w => w.connections.Count > maxConnections).ToArray();
         while (remove.Length > 0)
         {
             remove[0].Remove();
-            remove = Waypoints.FindAll(w => w.connectedWaypoints.Count > maxConnections).ToArray();
+            remove = Waypoints.FindAll(w => w.connections.Count > maxConnections).ToArray();
         }
     }
 
@@ -113,16 +128,16 @@ public class WaypointManager : MonoBehaviour
 
         Waypoints.ForEach(w =>
         {
-            w.gameObject.SetActive(showWaypoints && (showClusters < 0 || (w.connectedWaypoints.Count <= showClusters)));
+            w.gameObject.SetActive(showWaypoints && (showClusters < 0 || (w.connections.Count <= showClusters)));
         });
 
         if (drawLines)
         {
             Waypoints.ForEach(w1 =>
             {
-                w1.connectedWaypoints.ForEach(w2 =>
+                w1.connections.ForEach(w2 =>
                 {
-                    if(w1.connectedWaypoints.Count <= showClusters || showClusters < 0)
+                    if(w1.connections.Count <= showClusters || showClusters < 0)
                     Debug.DrawLine(w1.transform.position, w2.transform.position, Color.magenta);
                 });
             });
@@ -133,29 +148,26 @@ public class WaypointManager : MonoBehaviour
     public int showClusters = 2;
     public bool drawLines = false;
 
-    Queue<AiWaypoint> q;
-    Dictionary<AiWaypoint, AiWaypoint> cameFrom = new Dictionary<AiWaypoint, AiWaypoint>();
-    public static List<AiWaypoint> GetPath(Vector3 start, Vector3 end)
+    public static AiWaypoint Closest(Vector3 pos)
     {
-        AiWaypoint startNode = null;
-        AiWaypoint endNode = null;
-        float d1 = Mathf.Infinity;
-        float d2 = Mathf.Infinity;
+        AiWaypoint node = null;
+        float dist = Mathf.Infinity;
         Instance.Waypoints.ForEach(w =>
         {
-            float d = Vector3.Distance(start, w.transform.position);
-            if(d < d1)
+            float d = Vector3.Distance(pos, w.transform.position);
+            if (d < dist)
             {
-                startNode = w;
-                d1 = d;
-            }
-            d = Vector3.Distance(end, w.transform.position);
-            if (d < d2)
-            {
-                endNode = w;
-                d2 = d;
+                node = w;
+                dist = d;
             }
         });
+        return node;
+    }
+
+    public static List<AiWaypoint> GetPath(Vector3 start, Vector3 end)
+    {
+        AiWaypoint startNode = Closest(start);
+        AiWaypoint endNode = Closest(end);
 
         if (startNode == null)
         {
@@ -168,53 +180,53 @@ public class WaypointManager : MonoBehaviour
             return null;
         }
 
-        bool foundPath = false;
-        Instance.q = new Queue<AiWaypoint>();
-        Instance.q.Enqueue(startNode);
-        Instance.cameFrom = new Dictionary<AiWaypoint, AiWaypoint>();
+
+        return Breadthwise(startNode, endNode);
+    }
+
+    public static List<AiWaypoint> Breadthwise(AiWaypoint start, AiWaypoint end)
+    {
+
+        List<AiWaypoint> result = new List<AiWaypoint>();
+        List<AiWaypoint> visited = new List<AiWaypoint>();
+        Queue<AiWaypoint> work = new Queue<AiWaypoint>();
+
+        start.history = new List<AiWaypoint>();
+        visited.Add(start);
+        work.Enqueue(start);
         int tries = 0;
-        while (foundPath == false && tries <= Instance.Waypoints.Count && tries <= 1000)
+
+        while (work.Count > 0 && tries < Instance.Waypoints.Count)
         {
-            AiWaypoint current = Instance.q.Peek();
-
-            if(current == endNode)
+            tries++;
+            AiWaypoint current = work.Dequeue();
+            if (current == end)
             {
-                foundPath = true;
-                break;
+                //Found Node
+                result = current.history;
+                result.Add(current);
+                Debug.Log($"Found path between '{start.transform.position}' and '{end.transform.position}' after '{tries}' tries!");
+                return result;
             }
-
-            current.connectedWaypoints.ForEach(next =>
+            else
             {
-                if(!Instance.cameFrom.ContainsValue(next))
+                //Didn't find Node
+                for (int i = 0; i < current.connections.Count; i++)
                 {
-                    Instance.q.Enqueue(next);
-                    Instance.cameFrom[next] = current;
+                    AiWaypoint currentNeighbor = current.connections[i];
+                    if (!visited.Contains(currentNeighbor))
+                    {
+                        currentNeighbor.history = new List<AiWaypoint>(current.history);
+                        currentNeighbor.history.Add(current);
+                        visited.Add(currentNeighbor);
+                        work.Enqueue(currentNeighbor);
+                    }
                 }
-            });
-        }
-
-        if(foundPath)
-        {
-            List<AiWaypoint> path = new List<AiWaypoint>();
-            AiWaypoint c = endNode;
-            while (c != startNode)
-            {
-                path.Add(c);
-                c = Instance.cameFrom[c];
             }
-            path.Add(startNode);
-            path.Reverse();
-
-            string str = "";
-            path.ForEach(w => str += w.transform.position + ",");
-            Debug.Log($"Found path : {str}");
-
-            return path;
         }
-        else
-        {
-            Debug.LogWarning($"Could not find path between '{start}' and '{end}' after {tries} tries!");
-            return null;
-        }
+        //Route not found, loop ends
+
+        Debug.LogWarning($"Could not find path between '{start.transform.position}' and '{end.transform.position}' within '{tries}' tries!");
+        return null;
     }
 }
