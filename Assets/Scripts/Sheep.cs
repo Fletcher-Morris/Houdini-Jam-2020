@@ -48,6 +48,22 @@ public class Sheep : MonoBehaviour
         visual.transform.localPosition = new Vector3(0, m_bounceValue * bounceHeight, 0);
         legs.localEulerAngles = new Vector3(Mathf.LerpAngle(0, legBounceAngle, m_legValue), 0, 0);
         visual.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(0.0f, bounceTilt * m_bounceDirection, m_bounceValue));
+
+        if(updateWaypoint)
+        {
+            updateWaypoint = false;
+            if(followTarget != null)
+            {
+                SetPathfindTarget(followTarget.position);
+            }
+        }
+        if(pathfound.Count > 0)
+        {
+            for (int i = 0; i < pathfound.Count - 1; i++)
+            {
+                Debug.DrawLine(pathfound[i].transform.position, pathfound[i + 1].transform.position, Color.green);
+            }
+        }
     }
 
     void FixedUpdate()
@@ -59,6 +75,30 @@ public class Sheep : MonoBehaviour
 
     void Movement()
     {
+        if(pathfound != null)
+        {
+            AiWaypoint last = GetWaypoint(lastWaypoint);
+            AiWaypoint next = GetWaypoint(nextWaypoint);
+            if (next != null && last != null)
+            {
+                float lastDist = Vector3.Distance(transform.position, last.transform.position);
+                float nextDist = Vector3.Distance(transform.position, next.transform.position);
+                if(nextDist < lastDist)
+                {
+                    lastWaypoint++;
+                    nextWaypoint++;
+                    next = GetWaypoint(nextWaypoint);
+                }
+                targetPosition = next.transform.position;
+            }
+            else if (next != null)
+            {
+                targetPosition = next.transform.position;
+            }
+
+        }
+
+
         if (followTarget != null) targetPosition = followTarget.position;
 
         if (movementVector.magnitude > 0)
@@ -70,5 +110,24 @@ public class Sheep : MonoBehaviour
     public void CollectSheep()
     {
         GameManager.CollectSheep(this);
+    }
+
+    List<AiWaypoint> pathfound = new List<AiWaypoint>();
+    int lastWaypoint;
+    int nextWaypoint;
+    public bool updateWaypoint = false;
+    public void SetPathfindTarget(Vector3 targ)
+    {
+        pathfound = WaypointManager.GetPath(transform.position, targ);
+
+        if (pathfound == null) return;
+
+        lastWaypoint = -1;
+        nextWaypoint = 1;
+    }
+    private AiWaypoint GetWaypoint(int index)
+    {
+        if (index == -1 || index >= pathfound.Count || pathfound.Count == 0) return null;
+        return pathfound[index];
     }
 }
