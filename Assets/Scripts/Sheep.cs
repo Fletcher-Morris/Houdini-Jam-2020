@@ -35,14 +35,14 @@ public class Sheep : MonoBehaviour
         m_body = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
 
-        closestWaypointToTarget = WaypointManager.Closest(followTarget.position);
+        if (followTarget != null) closestWaypointToTarget = WaypointManager.Closest(followTarget.position);
         m_updateWaypointTimer = Random.Range(0.0f, updateWaypointInterval);
     }
 
     void Update()
     {
         m_updateWaypointTimer -= Time.deltaTime;
-        if(m_updateWaypointTimer <= 0)
+        if(m_updateWaypointTimer <= 0 && followTarget != null)
         {
             AiWaypoint newWaypoint = WaypointManager.Closest(followTarget.position);
             if (newWaypoint != null)
