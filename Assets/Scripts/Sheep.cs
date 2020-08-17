@@ -27,9 +27,12 @@ public class Sheep : MonoBehaviour
     private float m_legValue;
     private float m_bounceDirection = 1.0f;
 
+    private Rigidbody m_body;
+
 
     void Start()
     {
+        m_body = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
 
         closestWaypointToTarget = WaypointManager.Closest(followTarget.position);
@@ -85,6 +88,8 @@ public class Sheep : MonoBehaviour
     void FixedUpdate()
     {
         gravityDirection = -transform.position.normalized;
+
+        m_body.AddForce(gravityDirection * 10.0f);
 
         Movement();
     }
