@@ -16,10 +16,10 @@ public class EyePosition : MonoBehaviour
     public Material EyeMaterial;
     private Material m_mat;
 
+
     private int m_positionPropertyId = 0;
 
     private int m_blinkPropertyId = 1;
-
     private int m_openPropertyId = 2;
     public float openness = 0.95f;
     private float m_prevOpenness = -1.0f;
@@ -55,6 +55,7 @@ public class EyePosition : MonoBehaviour
     private int m_lazinessPropertyId = 10;
     public float eyeLaziness = 0.0f;
     private float m_prevEyeLaziness = -1.0f;
+
 
     void Start()
     {
