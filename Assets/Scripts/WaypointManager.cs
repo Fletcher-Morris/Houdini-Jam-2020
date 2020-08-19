@@ -24,15 +24,21 @@ public class WaypointManager : MonoBehaviour
         Instance = this;
     }
 
+    private void DeleteWaypoints()
+    {
+        deleteAll = false;
+        if (parent != null) DestroyImmediate(parent.gameObject);
+        Waypoints = new List<AiWaypoint>();
+        parent = new GameObject("WAYPOINT_PARENT").transform;
+        parent.position = Vector3.zero;
+    }
+
     public void UpdateWaypoints()
     {
         Instance = this;
         updateAll = false;
 
-        if (parent != null) DestroyImmediate(parent.gameObject);
-        Waypoints = new List<AiWaypoint>();
-        parent = new GameObject("WAYPOINT_PARENT").transform;
-        parent.position = Vector3.zero;
+        DeleteWaypoints();
 
 
         List<Vector3> points = new List<Vector3>();
@@ -118,11 +124,13 @@ public class WaypointManager : MonoBehaviour
         }
     }
 
+    public bool deleteAll = false;
     public bool updateAll = false;
     public bool updateConnections = false;
 
     void Update()
     {
+        if (deleteAll) DeleteWaypoints();
         if (updateAll) UpdateWaypoints();
         if (updateConnections) UpdateConnections();
 
