@@ -29,9 +29,16 @@ public class Sheep : MonoBehaviour
 
     private Rigidbody m_body;
 
+    private AudioSource m_audioSource;
+    [SerializeField] private List<AudioClip> m_bleats = new List<AudioClip>();
+    public float bleatChance = 0.5f;
+    [SerializeField] private float m_bleatInterval = 5.0f;
+    [SerializeField] private float m_bleatTimer = 5.0f;
+
 
     void Start()
     {
+        m_audioSource = GetComponent<AudioSource>();
         m_body = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
 
@@ -81,6 +88,21 @@ public class Sheep : MonoBehaviour
             for (int i = 0; i < pathfound.Count - 1; i++)
             {
                 Debug.DrawLine(pathfound[i].transform.position, pathfound[i + 1].transform.position, Color.green);
+            }
+        }
+
+
+
+
+        m_bleatTimer -= Time.deltaTime;
+        if(m_bleatTimer <= 0.0f)
+        {
+            m_bleatTimer = m_bleatInterval;
+
+            if(Random.Range(0.0f, 1.0f) <= bleatChance)
+            {
+                m_audioSource.pitch = Random.Range(0.8f, 1.2f);
+                m_audioSource.PlayOneShot(m_bleats.RandomItem());
             }
         }
     }
