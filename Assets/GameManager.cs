@@ -22,6 +22,10 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        WaypointManager.Instance.UpdateWaypoints();
+        GrassScatter.Instance.Scatter();
+
+
         remainingTime = gameLength;
     }
 

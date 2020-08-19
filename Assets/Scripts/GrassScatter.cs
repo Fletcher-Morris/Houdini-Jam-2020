@@ -5,6 +5,12 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class GrassScatter : MonoBehaviour
 {
+    public static GrassScatter Instance;
+    void Awake()
+    {
+        Instance = this;
+    }
+
     [System.Serializable]
     public class ScatterObject
     {
@@ -37,7 +43,7 @@ public class GrassScatter : MonoBehaviour
     }
 
 
-    void Scatter()
+    public void Scatter()
     {
         scatter = false;
 
