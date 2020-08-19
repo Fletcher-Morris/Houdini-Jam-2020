@@ -17,6 +17,8 @@ public class Sheep : MonoBehaviour
 
     public Vector3 gravityDirection;
 
+    public bool updateRotation = true;
+
     public Transform followTarget;
     public float updateWaypointInterval = 2.0f;
     public Vector3 targetPosition;
@@ -112,6 +114,12 @@ public class Sheep : MonoBehaviour
         gravityDirection = -transform.position.normalized;
 
         m_body.AddForce(gravityDirection * 10.0f);
+
+        if(updateRotation)
+        {
+            transform.LookAt(Vector3.zero);
+            transform.rotation = transform.rotation * Quaternion.Euler(-90, 0, 0);
+        }
 
         Movement();
     }
