@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     void Movement()
     {
-
+        Vector3 playerForwardDir;
     }
 
     void CameraMovement()
