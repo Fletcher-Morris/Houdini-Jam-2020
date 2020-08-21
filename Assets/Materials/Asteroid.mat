@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Asteroid
-  m_Shader: {fileID: -6465566751694194690, guid: 0350799062db6424595f4660f2921b5b,
+  m_Shader: {fileID: -6465566751694194690, guid: 5cfaa0bb9cbce46e1be24a377ef7ee37,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -24,9 +24,12 @@ Material:
     - Vector1_3F8F140D: 0.185
     - Vector1_5F76E7F1: 180
     - Vector1_7C3BB857: 0.32
+    - Vector1_7C5EC556: 10
     - Vector1_C6B979F6: 0.427
     - _ShadowColor: 0
     - _ShadowLerp: 0.343
     - _ShadowMultiplier: 0
     m_Colors:
+    - Color_D507E794: {r: 1, g: 0.5666982, b: 0, a: 0}
+    - Vector3_EB3096C0: {r: 0, g: -0.5, b: -1, a: 0}
     - _Color: {r: 0.447, g: 0.34685603, b: 0.282057, a: 1}
