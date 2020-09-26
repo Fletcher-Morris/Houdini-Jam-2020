@@ -39,8 +39,8 @@ Material:
     - _GrassBlades: 25
     - _GrassHeight: 0.005
     - _GrassWidth: 0.001
-    - _MaxCameraDistance: 100
-    - _MinAltitude: 47.7
+    - _MaxCameraDistance: 50
+    - _MinAltitude: 48
     - _MinNormal: 0
     - _MinimunGrassBlades: 0
     - _PositionRandomness: 0.002
