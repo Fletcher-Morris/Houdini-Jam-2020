@@ -16,6 +16,7 @@
 		_GrassHeight("Grass height", float) = 0
 		_GrassWidth("Grass width", Range(0.0, 1.0)) = 1.0
 		_PositionRandomness("Position randomness", float) = 0
+		_HeightRandomness("Height randomness", float) = 0
 		_GrassBlades("Grass blades per triangle ", Range(0, 25)) = 25
 		_MinimunGrassBlades("Minimum grass blades per triangle ", Range(0, 25)) = 1
 		_MinCameraDistance("Min camera distance", float) = 5
@@ -63,6 +64,7 @@
 		float _GrassHeight;
 		float _GrassWidth;
 		float _PositionRandomness;
+		float _HeightRandomness;
 		float _GrassBlades;
 		float _MinimunGrassBlades;
 		float _MinCameraDistance;
@@ -107,7 +109,7 @@
 			float3 normal = normalize(cross(input[1].vertex - input[0].vertex, input[2].vertex - input[0].vertex));
 
 			float realCamDist = distance(_WorldSpaceCameraPos,mul(unity_ObjectToWorld, input[0].vertex));
-			float tooCloseCamDist = clamp(pow(realCamDist/_MinCameraDistance,6),0.01,1.0);
+			float tooCloseCamDist = clamp(pow(realCamDist/_MinCameraDistance,6),0.0,1.0);
 			float camDist = clamp(invLerp(_MinCameraDistance, _MaxCameraDistance, realCamDist), 0.0, 1.0);
 			int grassBlades = ceil(lerp(_GrassBlades, _MinimunGrassBlades, camDist));
 
@@ -115,10 +117,12 @@
 			{
 				float r1 = random(mul(unity_ObjectToWorld, input[0].vertex).xy * (i1 + 1));
 				float r2 = random(mul(unity_ObjectToWorld, input[1].vertex).xy * (i1 + 1));
+				float r3 = random(mul(unity_ObjectToWorld, input[2].vertex).xy * (i1 + 1));
 				float4 midpoint = (1 - sqrt(r1)) * input[0].vertex + (sqrt(r1) * (1 - r2)) * input[1].vertex + (sqrt(r1) * r2) * input[2].vertex;
 				normal = normalize(lerp(normal, normalize(midpoint), _TrueNormal));
 				r1 = r1 * 2.0 - 1.0;
 				r2 = r2 * 2.0 - 1.0;
+				r3 = r3 * 2.0 - 1.0;
 				float4 worldPos = mul(unity_ObjectToWorld, midpoint);
 				float2 windTex = tex2Dlod(_WindTexture, float4(worldPos.xz * _WindTexture_ST.xy + _Time.y * _WindSpeed, 0.0, 0.0)).xy;
 				float2 wind = (windTex * 2.0 - 1.0) * _WindStrength;
@@ -129,12 +133,13 @@
 				float d = 1.0 / _TerrainScale;
 				float place = saturate(tex2Dlod(_PlacementTexture,float4(worldPos.x * d, worldPos.z * d, 0.0, 0.0)).r);
 				float heightFactor = 1.0;
+				heightFactor += _HeightRandomness*(r1+r2+r3)/3.0;
 				heightFactor *= place;
-				if (length(worldPos) < _MinAltitude) heightFactor = 0.0;
 				heightFactor *= noise;
 				heightFactor *= tooCloseCamDist;
+				if (length(worldPos) < _MinAltitude) heightFactor = 0.0;
 
-				if (heightFactor <= 0.001)
+				if (heightFactor <= 0.01)
 				{
 					heightFactor = 0.0;
 					useWidth = 0.0;
@@ -143,7 +148,7 @@
 				float4 pointA = midpoint + useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				float4 pointB = midpoint - useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				triStream.Append(GetVertex(pointA, float2(0, 0), fixed4(0, 0, 0, 1)));
-				float4 newVertexPoint = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, 0.0, r2, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
+				float4 newVertexPoint = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
 				triStream.Append(GetVertex(newVertexPoint, float2(0.5, 1),fixed4(1.0, length(windTex), 1.0, 1.0)));
 				triStream.Append(GetVertex(pointB, float2(1, 0), fixed4(0, 0, 0, 1)));
 				triStream.RestartStrip();
@@ -161,7 +166,7 @@
 
 		ENDCG Pass {
 			Tags {
-				"RenderType" = "Opaque"
+				"RenderType" = "ShadowCaster"
 			}
 
 			Cull Off
@@ -171,6 +176,8 @@
 			#pragma fragment frag
 			#pragma hull hull
 			#pragma domain domain
+		#pragma target 4.6
+		#pragma multi_compile_shadowcaster
 			ENDCG
 		}
 	}

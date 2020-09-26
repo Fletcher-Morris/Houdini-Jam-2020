@@ -37,15 +37,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _GrassBlades: 25
-    - _GrassHeight: 0.0075
-    - _GrassWidth: 0.0005
+    - _GrassHeight: 0.005
+    - _GrassWidth: 0.00025
+    - _HeightRandomness: 1
     - _Loops: 3
     - _MaxCameraDistance: 25
     - _MinAltitude: 48.05
     - _MinCameraDistance: 2.5
     - _MinNormal: 0
     - _MinimunGrassBlades: 1
-    - _PositionRandomness: 0.001
+    - _PositionRandomness: 0.0015
     - _TerrainScale: 1
     - _TessellationUniform: 1.66
     - _TrueNormal: 1
