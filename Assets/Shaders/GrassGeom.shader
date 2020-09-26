@@ -111,7 +111,8 @@
 
 			if (camDist >= 1.0) return;
 
-			for (uint i1 = 0; i1 < grassBlades; i1++) {
+			for (uint i1 = 0; i1 < grassBlades; i1++)
+			{
 				float r1 = random(mul(unity_ObjectToWorld, input[0].vertex).xy * (i1 + 1));
 				float r2 = random(mul(unity_ObjectToWorld, input[1].vertex).xy * (i1 + 1));
 				float4 midpoint = (1 - sqrt(r1)) * input[0].vertex + (sqrt(r1) * (1 - r2)) * input[1].vertex + (sqrt(r1) * r2) * input[2].vertex;
