@@ -213,18 +213,18 @@ public class EyePosition : MonoBehaviour
         float t = 0.0f;
         while(t < 1.0f)
         {
-            renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
             t += Time.deltaTime * blinkSpeed;
             yield return null;
         }
         t = 1.0f;
         while (t > 0.0f)
         {
-            renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
             t -= Time.deltaTime * blinkSpeed;
             yield return null;
         }
-        renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, 0));
+        if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, 0));
 
         m_blinking = false;
 
