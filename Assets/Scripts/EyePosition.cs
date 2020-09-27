@@ -118,7 +118,7 @@ public class EyePosition : MonoBehaviour
             if (invertX) pos.x *= -1;
             if (invertY) pos.y *= -1;
 
-            r.material.SetVector(m_positionPropertyId, pos);
+            if(Application.isPlaying) r.material.SetVector(m_positionPropertyId, pos);
 
         });
 
@@ -203,7 +203,7 @@ public class EyePosition : MonoBehaviour
 
     private void ManualBlink()
     {
-        renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt()));
+        if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt()));
     }
 
     private IEnumerator Blink()
