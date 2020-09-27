@@ -26,11 +26,12 @@
 		_TessellationUniform("Tessellation Uniform", Range(1, 4)) = 2
 	}
 
-	SubShader {
 
 		CGINCLUDE
-		#include "UnityCG.cginc"
+		#include "CGIncludes/UnityCG.cginc"
 		#include "CustomTessellation.cginc"
+		#include "CGIncludes/AutoLight.cginc"
+		#include "CGIncludes/UnityShadowLibrary.cginc"
 
 		struct appdata
 		{
@@ -45,9 +46,9 @@
 		struct g2f
 		{
 			float2 uv: TEXCOORD0;
-			float4 vertex: SV_POSITION;
-			float3 worldPos: TEXCOORD1;
+			float4 pos: SV_POSITION;
 			float4 col: COLOR;
+			unityShadowCoord4 _ShadowCoord : TEXCOORD1;
 		};
 
 		sampler2D _GradientMap;
@@ -84,10 +85,10 @@
 		g2f GetVertex(float4 pos, float2 uv, fixed4 col)
 		{
 			g2f o;
-			o.vertex = UnityObjectToClipPos(pos);
-			o.uv = uv;
-			o.worldPos = mul(unity_ObjectToWorld, pos);
+			o.pos = UnityObjectToClipPos(pos);
 			o.col = col;
+			o.uv = uv;
+			o._ShadowCoord = ComputeScreenPos(pos);
 			return o;
 		}
 
@@ -115,7 +116,7 @@
 		}
 
 		//3 + (3 * 31) = 96
-		[maxvertexcount(78)] void geom(triangle v2g input[3], inout TriangleStream < g2f > triStream)
+		[maxvertexcount(60)] void geom(triangle v2g input[3], inout TriangleStream < g2f > triStream)
 		{
 			float3 normal = normalize(cross(input[1].vertex - input[0].vertex, input[2].vertex - input[0].vertex));
 
@@ -167,27 +168,64 @@
 			triStream.RestartStrip();
 		}
 
-		fixed4 frag(g2f i): SV_Target {
-			fixed4 gradientMapCol = tex2D(_GradientMap, float2(i.col.x, 0.0));
-			fixed4 col = lerp(_RootColor, _TipColor, i.col.x);
-			//col *= AmbientColor;
-			return col;
-		}
+		
 
-		ENDCG Pass {
-			Tags {
-				"RenderType" = "ShadowCaster"
+		ENDCG
+		
+	SubShader
+	{
+		Cull Off
+
+		Pass
+		{
+			Tags
+			{
+				//"RenderType" = "Opaque"
+				//"LightMode" = "ForwardBase"
 			}
 
-			Cull Off
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma geometry geom
 			#pragma fragment frag
 			#pragma hull hull
 			#pragma domain domain
-		#pragma target 4.6
-		#pragma multi_compile_shadowcaster
+			#pragma target 4.6
+			#pragma multi_compile_fwdbase
+
+			fixed4 frag(g2f i): SV_Target
+			{
+				fixed4 gradientMapCol = tex2D(_GradientMap, float2(i.col.x, 0.0));
+				fixed4 col = lerp(_RootColor, _TipColor, i.col.x);
+				//col *= AmbientColor;
+				//col = SHADOW_ATTENUATION(i);
+				return col;
+			}
+
+			ENDCG
+		}
+
+		Pass
+		{
+			Tags
+			{
+				"LightMode" = "ShadowCaster"
+			}
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma geometry geom
+			#pragma fragment frag
+			#pragma hull hull
+			#pragma domain domain
+			#pragma target 4.6
+			#pragma multi_compile_shadowcaster
+
+			float4 frag(g2f i) : SV_Target
+			{
+				SHADOW_CASTER_FRAGMENT(i)
+			}
+
 			ENDCG
 		}
 	}
