@@ -41,11 +41,11 @@ Material:
     - _GrassWidth: 0.0005
     - _HeightRandomness: 1
     - _Loops: 3
-    - _MaxCameraDistance: 25
+    - _MaxCameraDistance: 20
     - _MinAltitude: 48.05
     - _MinCameraDistance: 3
     - _MinNormal: 0
-    - _MinimunGrassBlades: 1
+    - _MinimunGrassBlades: 2
     - _PositionRandomness: 0.0015
     - _TerrainScale: 1
     - _TessellationUniform: 2

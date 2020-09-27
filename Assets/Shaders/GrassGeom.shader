@@ -120,7 +120,7 @@
 			float3 normal = normalize(cross(input[1].vertex - input[0].vertex, input[2].vertex - input[0].vertex));
 
 			float realCamDist = distance(_WorldSpaceCameraPos,mul(unity_ObjectToWorld, input[0].vertex));
-			float tooCloseCamDist = clamp(pow(realCamDist/_MinCameraDistance,6),0.0,1.0);
+			float tooCloseCamDist = clamp(pow(realCamDist/_MinCameraDistance,6),0.1,1.0);
 			float camDist = clamp(invLerp(_MinCameraDistance, _MaxCameraDistance, realCamDist), 0.0, 1.0);
 			int grassBlades = ceil(lerp(_GrassBlades, _MinimunGrassBlades, camDist));
 

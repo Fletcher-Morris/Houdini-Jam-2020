@@ -143,6 +143,9 @@ public class EyePosition : MonoBehaviour
 
     private void CheckValues(bool _overide)
     {
+
+        if(!Application.isPlaying) return;
+
         if (openness != m_prevOpenness || _overide)
         {
             m_prevOpenness = openness;
