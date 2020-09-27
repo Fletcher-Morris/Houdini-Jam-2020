@@ -73,7 +73,7 @@
 		float _TrueNormal;
 		float4 _RootColor;
 		float4 _TipColor;
-		float3 PlayerPosition;
+		float4 DistortionbObjects[32];
 
 		float random(float2 st)
 		{
@@ -103,6 +103,17 @@
 			return (value - from) / (to - from);
 		}
 
+		float ObjectDistortion(float3 pos)
+		{
+			float total = 0.1;
+			for (int i = 0; i < 32; i++)
+			{
+				float d = distance(pos, DistortionbObjects[i].xyz);
+				total += step(d,DistortionbObjects[i].w);
+			}
+			return clamp(1.0 - total,0.1,1.0);
+		}
+
 		//3 + (3 * 31) = 96
 		[maxvertexcount(78)] void geom(triangle v2g input[3], inout TriangleStream < g2f > triStream)
 		{
@@ -127,13 +138,12 @@
 				float2 windTex = tex2Dlod(_WindTexture, float4(worldPos.xz * _WindTexture_ST.xy + _Time.y * _WindSpeed, 0.0, 0.0)).xy;
 				float2 wind = (windTex * 2.0 - 1.0) * _WindStrength;
 				float useWidth = _GrassWidth;
-				float playerDist = abs(length(worldPos.xyz - PlayerPosition.xyz));
-				float closeness = saturate(playerDist / 1.0);
 				float noise = tex2Dlod(_NoiseTexture, float4(worldPos.xz * _NoiseTexture_ST.xy, 0.0, 0.0)).x;
 				float d = 1.0 / _TerrainScale;
 				float place = saturate(tex2Dlod(_PlacementTexture,float4(worldPos.x * d, worldPos.z * d, 0.0, 0.0)).r);
 				float heightFactor = 1.0;
 				heightFactor += _HeightRandomness*(r1+r2+r3)/3.0;
+				heightFactor *= ObjectDistortion(worldPos.xyz);
 				heightFactor *= place;
 				heightFactor *= noise;
 				heightFactor *= tooCloseCamDist;
