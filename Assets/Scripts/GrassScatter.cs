@@ -90,7 +90,7 @@ public class GrassScatter : MonoBehaviour
                             GameObject newGrass = Instantiate(o.prefab, hit.point - (hit.point.normalized * sinkValue), Quaternion.identity, grassParent);
                             newGrass.transform.LookAt(Vector3.zero);
                             newGrass.transform.rotation = newGrass.transform.rotation * Quaternion.Euler(-90, 0, 0);
-                            newGrass.transform.localEulerAngles += new Vector3(0, Random.Range(0.0f, 360.0f), 0.0f);
+                            newGrass.transform.Rotate(transform.up, Random.Range(0.0f,360.0f));
                             newGrass.isStatic = true;
                             createdGrass.Add(newGrass);
                         }
