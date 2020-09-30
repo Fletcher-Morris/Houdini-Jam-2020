@@ -49,6 +49,7 @@ Material:
     - _PositionRandomness: 0.0015
     - _TerrainScale: 1
     - _TessellationUniform: 2
+    - _TipColorVariance: 0
     - _TrueNormal: 1
     - _WindSpeed: 0.05
     - _WindStrength: 0.001

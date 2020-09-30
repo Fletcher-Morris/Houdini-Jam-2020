@@ -4,6 +4,7 @@
 	Properties
 	{
 		_GradientMap("Gradient map", 2D) = "white" {}
+		_TipColorVariance("Tip Variance", Range(0.0,1.0)) = 0.0
 		_TipColor("Tip Color", Color) = (0.2574063, 0.3773585, 0, 0)
 		_RootColor("Root Color", Color) = (0.1116701, 0.245283, 0, 0)
 		_PlacementTexture("Placement texture", 2D) = "white" {}
@@ -49,6 +50,7 @@
 			float4 pos: SV_POSITION;
 			float4 col: COLOR;
 			unityShadowCoord4 _ShadowCoord : TEXCOORD1;
+			float3 midpoint : POSITION1;
 		};
 
 		sampler2D _GradientMap;
@@ -74,18 +76,24 @@
 		float _TrueNormal;
 		float4 _RootColor;
 		float4 _TipColor;
+		float _TipColorVariance;
 		float4 DistortionbObjects[32];
 
-		float random(float2 st)
+		float random2(float2 st)
 		{
 			return frac(sin(dot(st.xy,float2(12.9898, 78.233))) * 43758.5453123);
 		}
+		float random3(float3 co)
+		{
+			return frac(sin( dot(co.xyz ,float3(12.9898,78.233,45.5432) )) * 43758.5453);
+ 		}
 
 
-		g2f GetVertex(float4 pos, float2 uv, fixed4 col)
+		g2f GetVertex(float4 pos, float2 uv, fixed4 col, float4 midpoint)
 		{
 			g2f o;
 			o.pos = UnityObjectToClipPos(pos);
+			o.midpoint = midpoint.xyz;
 			o.col = col;
 			o.uv = uv;
 			o._ShadowCoord = ComputeScreenPos(pos);
@@ -127,9 +135,9 @@
 
 			for (uint i1 = 0; i1 < grassBlades; i1++)
 			{
-				float r1 = random(mul(unity_ObjectToWorld, input[0].vertex).xy * (i1 + 1));
-				float r2 = random(mul(unity_ObjectToWorld, input[1].vertex).xy * (i1 + 1));
-				float r3 = random(mul(unity_ObjectToWorld, input[2].vertex).xy * (i1 + 1));
+				float r1 = random2(mul(unity_ObjectToWorld, input[0].vertex).xy * (i1 + 1));
+				float r2 = random2(mul(unity_ObjectToWorld, input[1].vertex).xy * (i1 + 1));
+				float r3 = random2(mul(unity_ObjectToWorld, input[2].vertex).xy * (i1 + 1));
 				float4 midpoint = (1 - sqrt(r1)) * input[0].vertex + (sqrt(r1) * (1 - r2)) * input[1].vertex + (sqrt(r1) * r2) * input[2].vertex;
 				normal = normalize(lerp(normal, normalize(midpoint), _TrueNormal));
 				r1 = r1 * 2.0 - 1.0;
@@ -158,10 +166,10 @@
 
 				float4 pointA = midpoint + useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				float4 pointB = midpoint - useWidth * normalize(input[i1 % 3].vertex - midpoint);
-				triStream.Append(GetVertex(pointA, float2(0, 0), fixed4(0, 0, 0, 1)));
+				triStream.Append(GetVertex(pointA, float2(0, 0), fixed4(0, 0, 0, 1),midpoint));
 				float4 newVertexPoint = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
-				triStream.Append(GetVertex(newVertexPoint, float2(0.5, 1),fixed4(1.0, length(windTex), 1.0, 1.0)));
-				triStream.Append(GetVertex(pointB, float2(1, 0), fixed4(0, 0, 0, 1)));
+				triStream.Append(GetVertex(newVertexPoint, float2(0.5, 1),fixed4(1.0, length(windTex), 1.0, 1.0),midpoint));
+				triStream.Append(GetVertex(pointB, float2(1, 0), fixed4(0, 0, 0, 1),midpoint));
 				triStream.RestartStrip();
 			}
 
