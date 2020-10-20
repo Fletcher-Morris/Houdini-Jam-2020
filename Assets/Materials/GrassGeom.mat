@@ -42,6 +42,7 @@ Material:
     - _HeightRandomness: 1
     - _Loops: 3
     - _MaxCameraDistance: 20
+    - _MidpointVertexLerp: 0
     - _MinAltitude: 48.05
     - _MinCameraDistance: 3
     - _MinNormal: 0

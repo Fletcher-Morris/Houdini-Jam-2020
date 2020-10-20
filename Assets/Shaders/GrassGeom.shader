@@ -19,7 +19,8 @@
 		_PositionRandomness("Position randomness", float) = 0
 		_HeightRandomness("Height randomness", float) = 0
 		_GrassBlades("Grass blades per triangle ", Range(0, 25)) = 25
-		_MinimunGrassBlades("Minimum grass blades per triangle ", Range(0, 25)) = 1
+		_MinimunGrassBlades("Minimum grass blades per triangle", Range(0, 25)) = 1
+		_MidpointVertexLerp("Lerp position of middle vertex", Range(0, 1)) = 0.5
 		_MinCameraDistance("Min camera distance", float) = 5
 		_MaxCameraDistance("Max camera distance", float) = 50
 		_MinNormal("Min Normal ", Range(0.0, 1.0)) = 0.5
@@ -77,6 +78,7 @@
 		float4 _RootColor;
 		float4 _TipColor;
 		float _TipColorVariance;
+		float _MidpointVertexLerp;
 		float4 DistortionbObjects[32];
 
 		float random2(float2 st)
@@ -166,10 +168,12 @@
 
 				float4 pointA = midpoint + useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				float4 pointB = midpoint - useWidth * normalize(input[i1 % 3].vertex - midpoint);
+				float4 pointC = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
+
 				triStream.Append(GetVertex(pointA, float2(0, 0), fixed4(0, 0, 0, 1),midpoint));
-				float4 newVertexPoint = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
-				triStream.Append(GetVertex(newVertexPoint, float2(0.5, 1),fixed4(1.0, length(windTex), 1.0, 1.0),midpoint));
 				triStream.Append(GetVertex(pointB, float2(1, 0), fixed4(0, 0, 0, 1),midpoint));
+				triStream.Append(GetVertex(pointC, float2(0.5, 1), fixed4(1.0, length(windTex), 1.0, 1.0),midpoint));
+
 				triStream.RestartStrip();
 			}
 
