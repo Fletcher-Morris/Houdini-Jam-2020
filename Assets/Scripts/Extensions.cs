@@ -13,7 +13,6 @@ public static class Extensions
     public static Vector2 ToTopDownVec2(this Vector3 _value) => new Vector2(_value.x, _value.z);
     public static Vector2 Round(this Vector2 _value) => new Vector2(_value.x.RoundToInt(), _value.y.RoundToInt());
     public static Vector2 Scale(this Vector2 _a, Vector2 _b) => Vector2.Scale(_a, _b);
-    public static Vector3 Scale(this Vector3 _value, float _a, float _b, float _c) => Vector3.Scale(_value, new Vector3(_a,_b,_c));
     public static Vector3 Scale(this Vector3 _a, Vector3 _b) => Vector3.Scale(_a, _b);
     public static Vector4 Scale(this Vector4 _a, Vector4 _b) => Vector4.Scale(_a, _b);
     public static Vector3 RotateTowards(this Vector3 _value, Vector3 _target, float _degrees, float _mag) => Vector3.RotateTowards(_value, _target, _degrees * Mathf.Rad2Deg, _mag);
@@ -39,7 +38,7 @@ public static class Extensions
     public static int Loop(this int _value, int _min, int _max)
     {
         if (_value < _min) return ((_max + 1) - (_min - _value)).Loop(_min, _max);
-        else if (_value > _max) return((_min - 1) + (_value - _max)).Loop(_min, _max);
+        else if (_value > _max) return ((_min - 1) + (_value - _max)).Loop(_min, _max);
         return _value;
     }
     public static bool IsEven(this int _value) => _value % 2 == 0 ? true : false;
@@ -47,8 +46,6 @@ public static class Extensions
     public static bool ToBool(this int _value) => _value != 0;
     public static float FloorToFloat(this float _value) => Mathf.Floor(_value);
     public static int FloorToInt(this float _value) => Mathf.FloorToInt(_value);
-    public static float CeilToFloat(this float _value) => Mathf.Ceil(_value);
-    public static int CeilToInt(this float _value) => Mathf.CeilToInt(_value);
     public static float Clamp01(this int _value) => Mathf.Clamp01(_value);
     public static float Clamp(this float _value, float _min, float _max) => Mathf.Clamp(_value, _min, _max);
     public static float InverseLerp(this float _value, float _a, float _b) => Mathf.InverseLerp(_a, _b, _value);
@@ -60,6 +57,7 @@ public static class Extensions
     }
     public static float Abs(this float _value) => Mathf.Abs(_value);
     public static int RoundToInt(this float _value) => Mathf.RoundToInt(_value);
+    public static int CeilToInt(this float _value) => Mathf.CeilToInt(_value);
     public static bool ToBool(this float _value) => _value != 0.0f;
     public static float ClampAngle(this float _value, float _center, float _range)
     {
@@ -86,12 +84,16 @@ public static class Extensions
         return te.text;
     }
     public static bool ToBool(this string str) => str == "true" || str == "1";
+    public static bool CoinFlip()
+    {
+        return (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f);
+    }
     public static string Sanitize(this string _string)
     {
         StringBuilder builder = new StringBuilder(_string);
-        for(int i= 0; i < _string.Length; i++)
+        for (int i = 0; i < _string.Length; i++)
         {
-            if(!AlphaNumeric.Contains(_string[i].ToString().ToLower()))
+            if (!AlphaNumeric.Contains(_string[i].ToString().ToLower()))
             {
                 builder.Remove(i, 1);
                 builder.Insert(i, '_');
@@ -105,7 +107,7 @@ public static class Extensions
         if (_length <= 0) return result;
         for (int i = 0; i < _length; i++)
         {
-            if(_alphanumeric) result += AlphaNumeric[Random.Range(0, AlphaNumeric.Length)];
+            if (_alphanumeric) result += AlphaNumeric[Random.Range(0, AlphaNumeric.Length)];
             else result += Alphabet[Random.Range(0, Alphabet.Length)];
         }
         return result;
@@ -113,16 +115,34 @@ public static class Extensions
     public static string RandomString() => RandomString(false);
     public static string RandomString(int _length) => RandomString(_length, false);
     public static string RandomString(bool _alphanumeric) => RandomString(16, _alphanumeric);
-
     public static string Alphabet = "abcdefghijklmnopqrstuvwxyz";
     public static string AlphaNumeric = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-
     public static List<T> ToList<T>(this T[] _array) => new List<T>(_array);
     public static T RandomItem<T>(this T[] _array) => _array.ToList().RandomItem();
     public static T RandomItem<T>(this List<T> _list)
     {
         int count = _list.Count;
         return _list[Random.Range(0, count - 1)];
+    }
+    public static T LastItem<T>(this List<T> _list)
+    {
+        if (_list.Count == 0) return default;
+        return _list[_list.Count - 1];
+    }
+    public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
+    public static List<Vector3> FibonacciPoints(int _samples)
+    {
+        List<Vector3> points = new List<Vector3>();
+        float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
+        for (int i = 0; i < _samples; i++)
+        {
+            float y = 1.0f - (i / (float)(_samples - 1) * 2.0f);
+            float radius = Mathf.Sqrt(1.0f - (y * y));
+            float theta = phi * i;
+            float x = Mathf.Cos(theta) * radius;
+            float z = Mathf.Sin(theta) * radius;
+            points.Add(new Vector3(x, y, z));
+        }
+        return points;
     }
 }

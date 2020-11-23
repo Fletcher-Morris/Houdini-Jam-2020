@@ -138,17 +138,19 @@ public class Sheep : MonoBehaviour
 
         m_body.AddForce(gravityDirection * 10.0f);
 
+        Movement();
+
         if(updateRotation)
         {
             Vector3 lookAt;
             if(targetPosition != Vector3.zero) lookAt = targetPosition;
             else lookAt = Random.onUnitSphere.normalized;
 
-            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, transform.right);
+            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
+            Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, Time.fixedDeltaTime);
             transform.rotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
         }
 
-        Movement();
     }
 
     void Movement()
