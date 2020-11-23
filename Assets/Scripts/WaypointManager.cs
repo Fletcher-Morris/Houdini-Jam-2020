@@ -158,6 +158,9 @@ public class WaypointManager : MonoBehaviour
 
     public static AiWaypoint Closest(Vector3 pos)
     {
+        if(Instance == null) return null;
+        if(Instance.Waypoints == null) return null;
+        if(Instance.Waypoints.Count == 0) return null;
         AiWaypoint node = null;
         float dist = Mathf.Infinity;
         Instance.Waypoints.ForEach(w =>
@@ -169,6 +172,10 @@ public class WaypointManager : MonoBehaviour
                 dist = d;
             }
         });
+        if(node == null)
+        {
+            Debug.LogWarning("Cannot Find Clolsest Waypoint To Target!");
+        }
         return node;
     }
 

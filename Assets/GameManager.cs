@@ -64,6 +64,8 @@ public class GameManager : MonoBehaviour
     public List<Sheep> SheepList = new List<Sheep>();
     public static void AddSheep(Sheep sheep)
     {
+        if(Instance == null) return;
+        if(Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
         Instance.SheepList.Add(sheep);
         Instance.remainingSheep = Instance.SheepList.Count;
     }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class Sheep : MonoBehaviour
 {
+    public bool enableMovement = true;
     public float moveSpeed = 3.0f;
     public float bounceHeight = 1.0f;
     public float bounceSpeed = 4.0f;
@@ -50,22 +52,43 @@ public class Sheep : MonoBehaviour
 
     void Update()
     {
+        if(updateWaypoint)
+        {
+            m_updateWaypointTimer = 0.0f;
+            updateWaypoint = false;
+        }
+
         m_updateWaypointTimer -= Time.deltaTime;
         if(m_updateWaypointTimer <= 0 && followTarget != null)
         {
-            AiWaypoint newWaypoint = WaypointManager.Closest(followTarget.position);
-            if (newWaypoint != null)
+            if(Vector3.Distance(transform.position, followTarget.position) > waypointTollerance)
             {
-                if (newWaypoint.id != closestWaypointToTarget.id)
+                AiWaypoint newWaypoint = WaypointManager.Closest(followTarget.position);
+                if (newWaypoint != null)
                 {
-                    if (followTarget != null)
+                    if(closestWaypointToTarget == null)
                     {
-                        SetPathfindTarget(followTarget.position);
+                        if (followTarget != null)
+                        {
+                            SetPathfindTarget(followTarget.position);
+                        }
                     }
+                    else if (newWaypoint.id != closestWaypointToTarget.id)
+                    {
+                        if (followTarget != null)
+                        {
+                            SetPathfindTarget(followTarget.position);
+                        }
+                    }
+                    closestWaypointToTarget = newWaypoint;
                 }
-                closestWaypointToTarget = newWaypoint;
-                m_updateWaypointTimer = updateWaypointInterval;
             }
+            else
+            {
+                targetPosition = followTarget.position;
+            }
+
+            m_updateWaypointTimer = updateWaypointInterval;
         }
 
         if (movementVector.magnitude > 0)
@@ -86,7 +109,7 @@ public class Sheep : MonoBehaviour
         if(pathfound.Count > 0)
         {
             AiWaypoint n = GetWaypoint(nextWaypoint);
-            if(n != null) Debug.DrawLine(transform.position, GetWaypoint(nextWaypoint).transform.position, Color.green);
+            if(n != null) Debug.DrawLine(transform.position, n.transform.position, Color.blue);
             for (int i = 0; i < pathfound.Count - 1; i++)
             {
                 Debug.DrawLine(pathfound[i].transform.position, pathfound[i + 1].transform.position, Color.green);
@@ -117,8 +140,12 @@ public class Sheep : MonoBehaviour
 
         if(updateRotation)
         {
-            transform.LookAt(Vector3.zero);
-            transform.rotation = transform.rotation * Quaternion.Euler(-90, 0, 0);
+            Vector3 lookAt;
+            if(targetPosition != Vector3.zero) lookAt = targetPosition;
+            else lookAt = Random.onUnitSphere.normalized;
+
+            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, transform.right);
+            transform.rotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
         }
 
         Movement();
@@ -128,19 +155,21 @@ public class Sheep : MonoBehaviour
     {
         if(pathfound != null)
         {
-            AiWaypoint last = GetWaypoint(lastWaypoint);
+            AiWaypoint last = GetWaypoint(Mathf.Max(0,lastWaypoint));
             AiWaypoint next = GetWaypoint(nextWaypoint);
             if (next != null && last != null)
             {
                 float lastDist = Vector3.Distance(transform.position, last.transform.position);
                 float nextDist = Vector3.Distance(transform.position, next.transform.position);
-                if(nextDist < lastDist)
+                if(nextDist < lastDist + waypointTollerance)
                 {
                     lastWaypoint++;
                     nextWaypoint++;
                     next = GetWaypoint(nextWaypoint);
                 }
-                targetPosition = next.transform.position;
+                if(nextWaypoint >= pathfound.Count)
+                targetPosition = followTarget.position;
+                else targetPosition = next.transform.position;
             }
             else if (next != null)
             {
@@ -149,12 +178,12 @@ public class Sheep : MonoBehaviour
 
         }
 
+        Vector3 posDiff = targetPosition - transform.position;
 
-        if (followTarget != null) targetPosition = followTarget.position;
-
-        if (movementVector.magnitude > 0)
+        if(posDiff.magnitude > 0.0f && enableMovement && targetPosition != Vector3.zero)
         {
-
+            transform.position += (posDiff.normalized * moveSpeed * Time.fixedDeltaTime);
+            Physics.SyncTransforms();
         }
     }
 
@@ -164,8 +193,8 @@ public class Sheep : MonoBehaviour
     }
 
     public List<AiWaypoint> pathfound = new List<AiWaypoint>();
-    int lastWaypoint;
-    int nextWaypoint;
+    [SerializeField] int lastWaypoint;
+    [SerializeField] int nextWaypoint;
     public bool updateWaypoint = false;
     public void SetPathfindTarget(Vector3 targ)
     {
@@ -182,5 +211,6 @@ public class Sheep : MonoBehaviour
         return pathfound[index];
     }
     private AiWaypoint closestWaypointToTarget;
+    public float waypointTollerance = 0.1f;
     private float m_updateWaypointTimer;
 }
