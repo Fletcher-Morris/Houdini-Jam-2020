@@ -140,7 +140,7 @@ public class Sheep : MonoBehaviour
 
         Movement();
 
-        if(updateRotation)
+        if(updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
         {
             Vector3 lookAt;
             if(targetPosition != Vector3.zero) lookAt = targetPosition;
@@ -182,7 +182,7 @@ public class Sheep : MonoBehaviour
 
         Vector3 posDiff = targetPosition - transform.position;
 
-        if(posDiff.magnitude > 0.0f && enableMovement && targetPosition != Vector3.zero)
+        if(posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
         {
             transform.position += (posDiff.normalized * moveSpeed * Time.fixedDeltaTime);
             Physics.SyncTransforms();
