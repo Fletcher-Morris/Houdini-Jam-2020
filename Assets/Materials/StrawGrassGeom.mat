@@ -36,14 +36,16 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AltitudeHeightFade: 0.5
     - _GrassBlades: 5
     - _GrassHeight: 0.01
-    - _GrassWidth: 0.0002
+    - _GrassWidth: 0.0003
     - _HeightRandomness: 1
     - _Loops: 3
-    - _MaxCameraDistance: 20
+    - _MaxAltitude: 200
+    - _MaxCameraDistance: 30
     - _MidpointVertexLerp: 0
-    - _MinAltitude: 48.05
+    - _MinAltitude: 48.9
     - _MinCameraDistance: 2.5
     - _MinNormal: 0
     - _MinimunGrassBlades: 0
@@ -55,6 +57,6 @@ Material:
     - _WindSpeed: 0.02
     - _WindStrength: 0.005
     m_Colors:
-    - _RootColor: {r: 0.3945323, g: 0.50980395, b: 0.29411766, a: 1}
-    - _TipColor: {r: 0.5026756, g: 0.56078434, b: 0.34901962, a: 1}
+    - _RootColor: {r: 0.44489536, g: 0.5283019, b: 0.27162692, a: 1}
+    - _TipColor: {r: 0.5544202, g: 0.5754717, b: 0.3013083, a: 1}
   m_BuildTextureStacks: []
