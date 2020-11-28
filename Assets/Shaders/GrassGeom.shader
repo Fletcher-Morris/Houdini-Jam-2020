@@ -10,6 +10,8 @@
 		_PlacementTexture("Placement texture", 2D) = "white" {}
 		_TerrainScale("Terrain scale", float) = 1
 		_MinAltitude("Minimum Altitude", float) = 50
+		_MaxAltitude("Maximum Altitude", float) = 200
+		_AltitudeHeightFade("Altitude Height Fade", float) = 0.25
 		_NoiseTexture("Noise texture", 2D) = "white" {}
 		_WindTexture("Wind texture", 2D) = "white" {}
 		_WindStrength("Wind strength", float) = 0
@@ -59,6 +61,8 @@
 		sampler2D _PlacementTexture_ST;
 		float _TerrainScale;
 		float _MinAltitude;
+		float _MaxAltitude;
+		float _AltitudeHeightFade;
 		sampler2D _NoiseTexture;
 		float4 _NoiseTexture_ST;
 		sampler2D _WindTexture;
@@ -125,7 +129,6 @@
 			return clamp(1.0 - total,0.1,1.0);
 		}
 
-		//3 + (3 * 31) = 96
 		[maxvertexcount(60)] void geom(triangle v2g input[3], inout TriangleStream < g2f > triStream)
 		{
 			float3 normal = normalize(cross(input[1].vertex - input[0].vertex, input[2].vertex - input[0].vertex));
@@ -158,13 +161,16 @@
 				heightFactor *= place;
 				heightFactor *= noise;
 				heightFactor *= tooCloseCamDist;
-				if (length(worldPos) < _MinAltitude) heightFactor = 0.0;
 
-				if (heightFactor <= 0.01)
-				{
-					heightFactor = 0.0;
-					useWidth = 0.0;
-				}
+				float worldHeight = length(worldPos);
+				heightFactor *= step(_MinAltitude, worldHeight);
+				heightFactor *= step(worldHeight, _MaxAltitude);
+				float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), worldHeight));
+				heightFactor *= heightBlend;
+
+
+				heightFactor *= step(0.005, heightFactor);
+				useWidth *= step(0.005, heightFactor);
 
 				float4 pointA = midpoint + useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				float4 pointB = midpoint - useWidth * normalize(input[i1 % 3].vertex - midpoint);
