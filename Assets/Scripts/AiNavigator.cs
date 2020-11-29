@@ -28,6 +28,7 @@ public class AiNavigator
 
     public void Initialize(float offset, Transform setSelf)
     {
+        if(!Application.isPlaying) return;
         m_pathRefreshTimer = offset;
         self = setSelf;
         initialized = true;
@@ -189,6 +190,7 @@ public class AiNavigator
             if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, Color.blue);
             for (int i = 0; i < pathFound.Count - 1; i++)
             {
+                if(pathFound[i] != null)
                 Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, Color.green);
             }
         }

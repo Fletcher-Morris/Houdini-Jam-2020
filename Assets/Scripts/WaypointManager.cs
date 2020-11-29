@@ -220,7 +220,7 @@ public class WaypointManager : MonoBehaviour
                 //Found Node
                 result = current.history;
                 result.Add(current);
-                Debug.Log($"Found path between '{start.transform.position}' and '{end.transform.position}' after '{tries}' tries!");
+                //Debug.Log($"Found path between '{start.transform.position}' and '{end.transform.position}' after '{tries}' tries!");
                 return result;
             }
             else
