@@ -56,6 +56,9 @@ public static class Extensions
         return _value;
     }
     public static float Abs(this float _value) => Mathf.Abs(_value);
+    public static float Distance(this Transform _a, Transform _b) => Vector3.Distance(_a.position,_b.position);
+    public static float Distance(this Transform _a, Vector3 _b) => Vector3.Distance(_a.position,_b);
+    public static float Distance(this Vector3 _a, Transform _b) => Vector3.Distance(_a,_b.position);
     public static int RoundToInt(this float _value) => Mathf.RoundToInt(_value);
     public static int CeilToInt(this float _value) => Mathf.CeilToInt(_value);
     public static bool ToBool(this float _value) => _value != 0.0f;

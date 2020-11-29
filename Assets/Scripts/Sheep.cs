@@ -39,57 +39,20 @@ public class Sheep : MonoBehaviour
     [SerializeField] private float m_bleatInterval = 5.0f;
     [SerializeField] private float m_bleatTimer = 5.0f;
 
+    public AiNavigator navigator = new AiNavigator();
+
 
     void Start()
     {
         m_audioSource = GetComponent<AudioSource>();
         m_body = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
-
-        if (followTarget != null) closestWaypointToTarget = WaypointManager.Closest(followTarget.position);
-        m_updateWaypointTimer = Random.Range(0.0f, updateWaypointInterval);
+        navigator.Initialize(Random.Range(0.0f, updateWaypointInterval), transform);
     }
 
     void Update()
     {
-        if(updateWaypoint)
-        {
-            m_updateWaypointTimer = 0.0f;
-            updateWaypoint = false;
-        }
-
-        m_updateWaypointTimer -= Time.deltaTime;
-        if(m_updateWaypointTimer <= 0 && followTarget != null)
-        {
-            if(Vector3.Distance(transform.position, followTarget.position) > waypointTollerance)
-            {
-                AiWaypoint newWaypoint = WaypointManager.Closest(followTarget.position);
-                if (newWaypoint != null)
-                {
-                    if(closestWaypointToTarget == null)
-                    {
-                        if (followTarget != null)
-                        {
-                            SetPathfindTarget(followTarget.position);
-                        }
-                    }
-                    else if (newWaypoint.id != closestWaypointToTarget.id)
-                    {
-                        if (followTarget != null)
-                        {
-                            SetPathfindTarget(followTarget.position);
-                        }
-                    }
-                    closestWaypointToTarget = newWaypoint;
-                }
-            }
-            else
-            {
-                targetPosition = followTarget.position;
-            }
-
-            m_updateWaypointTimer = updateWaypointInterval;
-        }
+        navigator.Update(Time.deltaTime);
 
         if (movementVector.magnitude > 0)
         {
@@ -106,18 +69,7 @@ public class Sheep : MonoBehaviour
         legs.localEulerAngles = new Vector3(Mathf.LerpAngle(0, legBounceAngle, m_legValue), 0, 0);
         visual.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(0.0f, bounceTilt * m_bounceDirection, m_bounceValue));
 
-        if(pathfound.Count > 0)
-        {
-            AiWaypoint n = GetWaypoint(nextWaypoint);
-            if(n != null) Debug.DrawLine(transform.position, n.transform.position, Color.blue);
-            for (int i = 0; i < pathfound.Count - 1; i++)
-            {
-                Debug.DrawLine(pathfound[i].transform.position, pathfound[i + 1].transform.position, Color.green);
-            }
-        }
-
-
-
+        navigator.DrawLines(transform.position, Time.deltaTime);
 
         m_bleatTimer -= Time.deltaTime;
         if(m_bleatTimer <= 0.0f)
@@ -155,21 +107,21 @@ public class Sheep : MonoBehaviour
 
     void Movement()
     {
-        if(pathfound != null)
+        if(navigator.pathFound != null)
         {
-            AiWaypoint last = GetWaypoint(Mathf.Max(0,lastWaypoint));
-            AiWaypoint next = GetWaypoint(nextWaypoint);
+            AiWaypoint last = navigator.GetWaypointFromIndex(Mathf.Max(0,navigator.prevWaypoint));
+            AiWaypoint next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
             if (next != null && last != null)
             {
                 float lastDist = Vector3.Distance(transform.position, last.transform.position);
                 float nextDist = Vector3.Distance(transform.position, next.transform.position);
-                if(nextDist < lastDist + waypointTollerance)
+                if(nextDist < lastDist + navigator.waypointTollerance)
                 {
-                    lastWaypoint++;
-                    nextWaypoint++;
-                    next = GetWaypoint(nextWaypoint);
+                    navigator.prevWaypoint++;
+                    navigator.nextWaypoint++;
+                    next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
                 }
-                if(nextWaypoint >= pathfound.Count)
+                if(navigator.nextWaypoint >= navigator.pathFound.Count)
                 targetPosition = followTarget.position;
                 else targetPosition = next.transform.position;
             }
@@ -193,26 +145,4 @@ public class Sheep : MonoBehaviour
     {
         GameManager.CollectSheep(this);
     }
-
-    public List<AiWaypoint> pathfound = new List<AiWaypoint>();
-    [SerializeField] int lastWaypoint;
-    [SerializeField] int nextWaypoint;
-    public bool updateWaypoint = false;
-    public void SetPathfindTarget(Vector3 targ)
-    {
-        pathfound = WaypointManager.GetPath(transform.position, targ);
-
-        if (pathfound == null) return;
-
-        lastWaypoint = -1;
-        nextWaypoint = 1;
-    }
-    private AiWaypoint GetWaypoint(int index)
-    {
-        if (index == -1 || index >= pathfound.Count || pathfound.Count == 0) return null;
-        return pathfound[index];
-    }
-    private AiWaypoint closestWaypointToTarget;
-    public float waypointTollerance = 0.1f;
-    private float m_updateWaypointTimer;
 }
