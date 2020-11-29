@@ -17,9 +17,14 @@ public class AiNavigator
     public float waypointTollerance = 0.1f;
     public float pathRefreshInterval = 3.0f;
     private float m_pathRefreshTimer;
-    public NavPathUpdateMode updateMode;
+    public NavPathUpdateMode updateMode = NavPathUpdateMode.Always;
+
+    public bool sphereRaycastTarget = true;
+    public LayerMask raycastLayermask = default;
 
     [HideInInspector] Vector3 targetPosition;
+
+    [SerializeField] private bool debugLines = true;
 
     public void Initialize(float offset, Transform setSelf)
     {
@@ -136,6 +141,21 @@ public class AiNavigator
         }
         pathFound = null;
         m_prevTarget = target;
+
+
+        if(sphereRaycastTarget)
+        {
+            RaycastHit hit;
+            if(Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 2000, raycastLayermask))
+            {
+                if(debugLines)
+                {
+                    Debug.DrawLine(end.normalized * 1000, hit.point, Color.yellow, pathRefreshInterval);
+                }
+                end = hit.point;
+            }
+        }
+
         if(target != null)
         {
             m_prevTargetPosition = end;
@@ -166,7 +186,7 @@ public class AiNavigator
         if(pathFound.Count > 0)
         {
             AiWaypoint n = GetWaypointFromIndex(nextWaypoint);
-            if(n != null) Debug.DrawLine(start, n.transform.position, Color.blue);
+            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, Color.blue);
             for (int i = 0; i < pathFound.Count - 1; i++)
             {
                 Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, Color.green);

@@ -7,6 +7,7 @@ public class Sheep : MonoBehaviour
 {
     public bool enableMovement = true;
     public float moveSpeed = 3.0f;
+    public float rotationSpeed = 10.0f;
     public float bounceHeight = 1.0f;
     public float bounceSpeed = 4.0f;
     private float legBounceAngle = 30.0f;
@@ -24,6 +25,7 @@ public class Sheep : MonoBehaviour
     public Transform followTarget;
     public float updateWaypointInterval = 2.0f;
     public Vector3 targetPosition;
+    private Vector3 m_lastTargetPosition;
     public Vector3 movementVector;
 
     private float m_bounceTimer;
@@ -87,25 +89,13 @@ public class Sheep : MonoBehaviour
     void FixedUpdate()
     {
         gravityDirection = -transform.position.normalized;
-
         m_body.AddForce(gravityDirection * 10.0f);
-
-        Movement();
-
-        if(updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
-        {
-            Vector3 lookAt;
-            if(targetPosition != Vector3.zero) lookAt = targetPosition;
-            else lookAt = Random.onUnitSphere.normalized;
-
-            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
-            Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, Time.fixedDeltaTime);
-            transform.rotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
-        }
+        Movement(Time.fixedDeltaTime);
+        Rotation(Time.fixedDeltaTime);
 
     }
 
-    void Movement()
+    void Movement(float delta)
     {
         if(navigator.pathFound != null)
         {
@@ -122,7 +112,7 @@ public class Sheep : MonoBehaviour
                     next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
                 }
                 if(navigator.nextWaypoint >= navigator.pathFound.Count)
-                targetPosition = followTarget.position;
+                targetPosition = transform.position;
                 else targetPosition = next.transform.position;
             }
             else if (next != null)
@@ -136,8 +126,35 @@ public class Sheep : MonoBehaviour
 
         if(posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
         {
-            transform.position += (posDiff.normalized * moveSpeed * Time.fixedDeltaTime);
+            transform.position += (posDiff.normalized * moveSpeed * delta);
             Physics.SyncTransforms();
+        }
+    }
+
+    private void Rotation(float delta)
+    {
+        if(updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
+        {
+            Vector3 lookAt;
+            if(targetPosition != Vector3.zero && targetPosition != transform.position)
+            {
+                lookAt = targetPosition;
+                m_lastTargetPosition = targetPosition;
+            }
+            else if(m_lastTargetPosition != Vector3.zero && m_lastTargetPosition != transform.position)
+            {
+                lookAt = m_lastTargetPosition;
+            }
+            else
+            {
+                lookAt = Random.onUnitSphere.normalized;
+                m_lastTargetPosition = lookAt;
+            }
+
+            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
+            Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, delta);
+            Quaternion newRotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
+            transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotationSpeed * delta);
         }
     }
 
