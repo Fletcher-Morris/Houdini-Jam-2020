@@ -38,8 +38,8 @@ Material:
     m_Floats:
     - _AltitudeHeightFade: 1
     - _GrassBlades: 25
-    - _GrassHeight: 0.005
-    - _GrassWidth: 0.0005
+    - _GrassHeight: 0.5
+    - _GrassWidth: 0.5
     - _HeightRandomness: 1
     - _Loops: 3
     - _MaxAltitude: 100

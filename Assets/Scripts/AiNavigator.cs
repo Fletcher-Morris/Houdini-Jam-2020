@@ -54,7 +54,6 @@ public class AiNavigator
     {
         if(!initialized)
         {
-            Debug.LogWarning("Not initialized!");
             return;
         }
         m_pathRefreshTimer -= delta;
@@ -181,7 +180,6 @@ public class AiNavigator
     {
         if(!initialized)
         {
-            Debug.LogWarning("Not initialized!");
             return;
         }
         if(pathFound.Count > 0)

@@ -151,7 +151,7 @@
 				float4 worldPos = mul(unity_ObjectToWorld, midpoint);
 				float2 windTex = tex2Dlod(_WindTexture, float4(worldPos.xz * _WindTexture_ST.xy + _Time.y * _WindSpeed, 0.0, 0.0)).xy;
 				float2 wind = (windTex * 2.0 - 1.0) * _WindStrength;
-				float useWidth = _GrassWidth;
+				float useWidth = _GrassWidth / 1000;
 				float noise = tex2Dlod(_NoiseTexture, float4(worldPos.xz * _NoiseTexture_ST.xy, 0.0, 0.0)).x;
 				float d = 1.0 / _TerrainScale;
 				float place = saturate(tex2Dlod(_PlacementTexture,float4(worldPos.x * d, worldPos.z * d, 0.0, 0.0)).r);
@@ -174,7 +174,7 @@
 
 				float4 pointA = midpoint + useWidth * normalize(input[i1 % 3].vertex - midpoint);
 				float4 pointB = midpoint - useWidth * normalize(input[i1 % 3].vertex - midpoint);
-				float4 pointC = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
+				float4 pointC = midpoint + float4(normal, 0.0) * (heightFactor * _GrassHeight / 100) + float4(r1, r2, r3, 0.0) * _PositionRandomness + float4(wind.x, 0.0, wind.y, 0.0);
 
 				triStream.Append(GetVertex(pointA, float2(0, 0), fixed4(0, 0, 0, 1),midpoint));
 				triStream.Append(GetVertex(pointB, float2(1, 0), fixed4(0, 0, 0, 1),midpoint));

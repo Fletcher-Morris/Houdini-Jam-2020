@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: StrawGrassGeom
-  m_Shader: {fileID: 4800000, guid: 8b97838909ef8e643a320d0439714426, type: 3}
+  m_Shader: {fileID: 4800000, guid: eb3324ac9cc98ba4fb7d7b6e6fd11b3f, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -38,25 +38,25 @@ Material:
     m_Floats:
     - _AltitudeHeightFade: 0.5
     - _GrassBlades: 5
-    - _GrassHeight: 0.01
-    - _GrassWidth: 0.0003
-    - _HeightRandomness: 1
+    - _GrassHeight: 1
+    - _GrassWidth: 0.1
+    - _HeightRandomness: 0.5
     - _Loops: 3
     - _MaxAltitude: 200
     - _MaxCameraDistance: 30
     - _MidpointVertexLerp: 0
     - _MinAltitude: 48.9
-    - _MinCameraDistance: 2.5
+    - _MinCameraDistance: 2
     - _MinNormal: 0
     - _MinimunGrassBlades: 0
-    - _PositionRandomness: 0.003
+    - _PositionRandomness: 0.0015
     - _TerrainScale: 1
     - _TessellationUniform: 1
     - _TipColorVariance: 0
     - _TrueNormal: 0.5
-    - _WindSpeed: 0.02
-    - _WindStrength: 0.005
+    - _WindSpeed: 0.05
+    - _WindStrength: 0.001
     m_Colors:
-    - _RootColor: {r: 0.44489536, g: 0.5283019, b: 0.27162692, a: 1}
+    - _RootColor: {r: 0.28627452, g: 0.5058824, b: 0.28235295, a: 1}
     - _TipColor: {r: 0.5544202, g: 0.5754717, b: 0.3013083, a: 1}
   m_BuildTextureStacks: []
