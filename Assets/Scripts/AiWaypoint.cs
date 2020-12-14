@@ -11,6 +11,8 @@ public class AiWaypoint : MonoBehaviour
 
     public int id;
 
+    public int cluster;
+
     public void Remove()
     {
         connections.ForEach(w => w.connections.Remove(this));
