@@ -44,18 +44,7 @@ public class WaypointManager : MonoBehaviour
         DeleteWaypoints();
 
 
-        List<Vector3> points = new List<Vector3>();
-        int samples = Instance.waypointQuantity;
-        float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
-        for(int i = 0; i < samples; i++)
-        {
-            float y = 1.0f - (i / (float)(samples - 1) * 2.0f);
-            float radius = Mathf.Sqrt(1.0f - (y * y));
-            float theta = phi * i;
-            float x = Mathf.Cos(theta) * radius;
-            float z = Mathf.Sin(theta) * radius;
-            points.Add(new Vector3(x, y, z));
-        }
+        List<Vector3> points = Extensions.FibonacciPoints(Instance.waypointQuantity);
 
 
         points.ForEach(p =>
@@ -76,11 +65,15 @@ public class WaypointManager : MonoBehaviour
             }
         });
 
+
+        points = Extensions.FibonacciPoints(clusterCount);
+
         int id = 0;
         Waypoints.ForEach(w => 
         {
             w.id = id; id++;
             w.gameObject.name = "WP_" + w.id;
+            w.cluster = points.ClosestPoint(w.transform.position);
         });
 
         UpdateConnections();
@@ -142,7 +135,7 @@ public class WaypointManager : MonoBehaviour
 
         Waypoints.ForEach(w =>
         {
-            w.gameObject.SetActive(showWaypoints && (showClusters < 0 || (w.connections.Count <= showClusters)));
+            w.gameObject.SetActive(showWaypoints);
         });
 
         if (drawLines)
@@ -151,16 +144,18 @@ public class WaypointManager : MonoBehaviour
             {
                 w1.connections.ForEach(w2 =>
                 {
-                    if(w1.connections.Count <= showClusters || showClusters < 0)
-                    Debug.DrawLine(w1.transform.position, w2.transform.position, Color.magenta);
+                    Color lineCol = (w1.cluster == w2.cluster) ? showClusters ? w1.cluster.NumberToColor(clusterCount) : Color.magenta : Color.grey;
+                    lineCol.a = 0.5f;
+                    Debug.DrawLine(w1.transform.position, w2.transform.position, lineCol, Time.deltaTime);
                 });
             });
         }
     }
 
     public bool showWaypoints = true;
-    public int showClusters = 2;
     public bool drawLines = false;
+    public bool showClusters = true;
+    [SerializeField] private int clusterCount = 8;
 
     public static AiWaypoint Closest(Vector3 pos)
     {

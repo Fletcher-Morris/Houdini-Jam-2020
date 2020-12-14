@@ -59,6 +59,25 @@ public static class Extensions
     public static float Distance(this Transform _a, Transform _b) => Vector3.Distance(_a.position,_b.position);
     public static float Distance(this Transform _a, Vector3 _b) => Vector3.Distance(_a.position,_b);
     public static float Distance(this Vector3 _a, Transform _b) => Vector3.Distance(_a,_b.position);
+    public static int ClosestPoint(this Vector3 _value, List<Vector3> _list)
+    {
+        int result = 0;
+        float closestDist = Mathf.Infinity;
+        for(int i = 0; i < _list.Count; i++)
+        {
+            float dist = Vector3.Distance(_value, _list[i]);
+            if(dist < closestDist)
+            {
+                closestDist = dist;
+                result = i;
+            }
+        }
+        return result;
+    }
+    public static int ClosestPoint(this List<Vector3> _list, Vector3 _value)
+    {
+        return ClosestPoint(_value, _list);
+    }
     public static int RoundToInt(this float _value) => Mathf.RoundToInt(_value);
     public static int CeilToInt(this float _value) => Mathf.CeilToInt(_value);
     public static bool ToBool(this float _value) => _value != 0.0f;
@@ -139,6 +158,16 @@ public static class Extensions
         return reversedList;
     }
     public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
+    public static Color NumberToColor(this float _value, float _max)
+    {
+        float hue = Mathf.InverseLerp(0.0f,_max,_value);
+        return Color.HSVToRGB(hue,1.0f,1.0f);
+    }
+    public static Color NumberToColor(this int _value, int _max)
+    {
+        float hue = Mathf.InverseLerp(0.0f,_max,_value);
+        return Color.HSVToRGB(hue,1.0f,1.0f);
+    }
     public static List<Vector3> FibonacciPoints(int _samples)
     {
         List<Vector3> points = new List<Vector3>();

@@ -11,7 +11,7 @@ public class AiWaypoint : MonoBehaviour
 
     public int id;
 
-    //public int cluster;
+    public int cluster;
 
     public void Remove()
     {
