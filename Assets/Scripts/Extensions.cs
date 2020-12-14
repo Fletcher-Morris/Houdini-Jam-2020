@@ -132,6 +132,12 @@ public static class Extensions
         if (_list.Count == 0) return default;
         return _list[_list.Count - 1];
     }
+    public static List<T> Reversed<T>(this List<T> _list)
+    {
+        List<T> reversedList = new List<T>(_list);
+        reversedList.Reverse();
+        return reversedList;
+    }
     public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
     public static List<Vector3> FibonacciPoints(int _samples)
     {

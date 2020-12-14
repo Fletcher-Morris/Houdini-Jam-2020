@@ -10,6 +10,9 @@ public class WaypointManager : MonoBehaviour
     public List<AiWaypoint> Waypoints = new List<AiWaypoint>();
     public GameObject waypointPrefab;
 
+    public List<WaypointPath> bakedPaths = default;
+    [SerializeField] private bool m_storeKnownPaths = true;
+
     public LayerMask mask;
     public int waypointQuantity = 50;
     public float raydius = 100.0f;
@@ -74,10 +77,13 @@ public class WaypointManager : MonoBehaviour
         });
 
         int id = 0;
-        Waypoints.ForEach(w => { w.id = id; id++; });
+        Waypoints.ForEach(w => 
+        {
+            w.id = id; id++;
+            w.gameObject.name = "WP_" + w.id;
+        });
 
         UpdateConnections();
-        
     }
 
     public void UpdateConnections()
@@ -196,7 +202,35 @@ public class WaypointManager : MonoBehaviour
         }
 
 
-        return Breadthwise(startNode, endNode);
+        return GetBakedPath(startNode, endNode);
+    }
+
+    public static List<AiWaypoint> GetBakedPath(AiWaypoint start, AiWaypoint end)
+    {
+        if(Instance.m_storeKnownPaths)
+        {
+            WaypointPath foundBakedPath = null;
+            foundBakedPath = Instance.bakedPaths.Find(print=>print.A==start&&print.B==end);
+            if(foundBakedPath != null)
+            {
+                Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
+                return foundBakedPath.Path;
+            }
+            foundBakedPath = Instance.bakedPaths.Find(print=>print.A==end&&print.B==start);
+            if(foundBakedPath != null)
+            {
+                Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
+                return foundBakedPath.Path.Reversed();
+            }
+        }
+        //  Path is not yet baked.
+        List<AiWaypoint> newPath = Breadthwise(start,end);
+        if(Instance.m_storeKnownPaths)
+        {
+            Instance.bakedPaths.Add(new WaypointPath(start,end,newPath));
+            Debug.Log($"Baking path between waypoints '{start.id}' & '{end.id}'.");
+        }
+        return newPath;
     }
 
     public static List<AiWaypoint> Breadthwise(AiWaypoint start, AiWaypoint end)
