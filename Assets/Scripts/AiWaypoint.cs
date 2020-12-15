@@ -7,15 +7,18 @@ public class AiWaypoint : MonoBehaviour
 {
     public List<AiWaypoint> connections;
 
-    public List<AiWaypoint> history;
+    [HideInInspector] public List<AiWaypoint> history;
 
     public int id;
 
     public int cluster;
+    public List<AiWaypoint> clusterConnections;
 
     public void Remove()
     {
         connections.ForEach(w => w.connections.Remove(this));
+        connections.ForEach(w => w.clusterConnections.Remove(this));
+        WaypointManager.Instance.waypointClusters[cluster].Remove(this);
         WaypointManager.Instance.Waypoints.Remove(this);
         DestroyImmediate(gameObject);
     }

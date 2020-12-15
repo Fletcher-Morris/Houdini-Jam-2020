@@ -146,7 +146,7 @@ public class AiNavigator
         if(sphereRaycastTarget)
         {
             RaycastHit hit;
-            if(Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 2000, raycastLayermask))
+            if(Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 1000, raycastLayermask))
             {
                 if(debugLines)
                 {
@@ -185,11 +185,11 @@ public class AiNavigator
         if(pathFound.Count > 0)
         {
             AiWaypoint n = GetWaypointFromIndex(nextWaypoint);
-            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, Color.blue);
+            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, Color.white);
             for (int i = 0; i < pathFound.Count - 1; i++)
             {
                 if(pathFound[i] != null)
-                Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, Color.green);
+                Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, Color.white);
             }
         }
     }
