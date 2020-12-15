@@ -152,7 +152,7 @@ public class Sheep : MonoBehaviour
             }
 
             Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
-            Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, delta);
+            //Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, delta);
             Quaternion newRotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
             transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotationSpeed * delta);
         }

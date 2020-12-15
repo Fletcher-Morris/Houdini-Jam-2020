@@ -148,9 +148,9 @@ public class AiNavigator
             RaycastHit hit;
             if(Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 1000, raycastLayermask))
             {
-                if(debugLines)
+                if(debugLines && WaypointManager.Instance.lineDebugOpacity > 0.0f)
                 {
-                    Debug.DrawLine(end.normalized * 1000, hit.point, Color.yellow, pathRefreshInterval);
+                    Debug.DrawLine(end.normalized * 1000, hit.point, Color.yellow * WaypointManager.Instance.lineDebugOpacity, pathRefreshInterval);
                 }
                 end = hit.point;
             }
@@ -182,14 +182,20 @@ public class AiNavigator
         {
             return;
         }
+        if(WaypointManager.Instance.lineDebugOpacity <= 0.0f)
+        {
+            return;
+        }
         if(pathFound.Count > 0)
         {
+            Color lineCol = Color.white;
+            lineCol.a = WaypointManager.Instance.lineDebugOpacity;
             AiWaypoint n = GetWaypointFromIndex(nextWaypoint);
-            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, Color.white);
+            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, lineCol);
             for (int i = 0; i < pathFound.Count - 1; i++)
             {
                 if(pathFound[i] != null)
-                Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, Color.white);
+                Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, lineCol);
             }
         }
     }
