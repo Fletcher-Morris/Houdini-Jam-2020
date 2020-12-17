@@ -34,7 +34,7 @@ public class GlobeCam : MonoBehaviour
     }
     void Update()
     {
-        if(enableMovement) return;
+        if(!enableMovement) return;
 
         m_yAxis.Rotate(-Vector3.up, rotateSpeed * Time.deltaTime * Input.GetAxisRaw("Horizontal"));
         m_xAxis.Rotate(Vector3.right, rotateSpeed * Time.deltaTime * Input.GetAxisRaw("Vertical"));
