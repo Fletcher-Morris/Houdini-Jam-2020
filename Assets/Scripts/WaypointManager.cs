@@ -318,4 +318,12 @@ public class WaypointManager : MonoBehaviour
 
         return null;
     }
+
+    void OnGUI()
+    {
+        GUILayout.BeginArea(new Rect(5.0f,5.0f,100.0f,50.0f));
+        GUILayout.Label("Debug Opacity");
+        lineDebugOpacity = GUILayout.HorizontalSlider(lineDebugOpacity, 0.0f,1.0f);
+        GUILayout.EndArea();
+    }
 }

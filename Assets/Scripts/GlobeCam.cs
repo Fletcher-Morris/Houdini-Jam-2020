@@ -5,7 +5,9 @@ using UnityEngine;
 public class GlobeCam : MonoBehaviour
 {
     public bool enableMovement = false;
-    public float rotateSpeed = 45.0f;
+    public float minRotateSpeed = 15.0f;
+    public float maxRotateSpeed = 45.0f;
+    [SerializeField] private float m_rotSpeed = 45.0f;
     public float zoomSpeed = 10.0f;
     public float minZoom = 60.0f;
     public float maxZoom = 150.0f;
@@ -36,8 +38,9 @@ public class GlobeCam : MonoBehaviour
     {
         if(!enableMovement) return;
 
-        m_yAxis.Rotate(-Vector3.up, rotateSpeed * Time.deltaTime * Input.GetAxisRaw("Horizontal"));
-        m_xAxis.Rotate(Vector3.right, rotateSpeed * Time.deltaTime * Input.GetAxisRaw("Vertical"));
+        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
+        m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * Input.GetAxisRaw("Horizontal"));
+        m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * Input.GetAxisRaw("Vertical"));
         m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0);
 
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
