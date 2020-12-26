@@ -147,10 +147,7 @@ public class WaypointManager : MonoBehaviour
         if (updateAll) UpdateWaypoints();
         if (updateConnections) UpdateConnections();
 
-        Waypoints.ForEach(w =>
-        {
-            w.gameObject.SetActive(showWaypoints);
-        });
+        //  Waypoints.ForEach(w => w.gameObject.SetActive(showWaypoints));
 
         if (lineDebugOpacity > 0.0f)
         {

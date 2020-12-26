@@ -44,6 +44,7 @@ public class GlobeCam : MonoBehaviour
         m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0);
 
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
+        m_zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f * zoomSpeed;
         m_zoomValue = m_zoomValue.Clamp(minZoom,maxZoom);
         transform.position = -m_xAxis.forward * m_zoomValue;
     }
