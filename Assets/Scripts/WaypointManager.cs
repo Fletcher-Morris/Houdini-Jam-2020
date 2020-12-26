@@ -151,13 +151,32 @@ public class WaypointManager : MonoBehaviour
 
         if (lineDebugOpacity > 0.0f)
         {
+            float camToPlanetDist = 0.0f;
+            if(m_cullLines && m_lineCullCam != null)
+            {
+                camToPlanetDist = Vector3.Distance(m_lineCullCam.transform.position, transform.position);
+            }
             Waypoints.ForEach(w1 =>
             {
                 w1.connections.ForEach(w2 =>
                 {
-                    Color lineCol = (w1.cluster == w2.cluster) ? showClusters ? w1.cluster.NumberToColor(clusterCount) : Color.magenta : Color.grey;
-                    lineCol.a = lineDebugOpacity;
-                    Debug.DrawLine(w1.transform.position, w2.transform.position, lineCol);
+                    bool cullLine = false;
+                    if(m_lineCullCam == null || m_cullLines == false)
+                    {
+
+                    }
+                    else
+                    {
+                        float dist = Mathf.Min(Vector3.Distance(m_lineCullCam.transform.position,w1.transform.position),Vector3.Distance(m_lineCullCam.transform.position,w2.transform.position));
+                        cullLine = dist > camToPlanetDist;
+                    }
+
+                    if(cullLine == false)
+                    {
+                        Color lineCol = (w1.cluster == w2.cluster) ? showClusters ? w1.cluster.NumberToColor(clusterCount) : Color.magenta : Color.grey;
+                        lineCol.a = lineDebugOpacity;
+                        Debug.DrawLine(w1.transform.position, w2.transform.position, lineCol);
+                    }
                 });
             });
         }
@@ -167,6 +186,8 @@ public class WaypointManager : MonoBehaviour
     [Range(0.0f,1.0f)] public float lineDebugOpacity = 0.25f;
     public bool showClusters = true;
     [SerializeField] private int clusterCount = 8;
+    [SerializeField] private Camera m_lineCullCam = default;
+    [SerializeField] private bool m_cullLines = true;
 
     [HideInInspector] public List<List<AiWaypoint>> waypointClusters = default;
 
