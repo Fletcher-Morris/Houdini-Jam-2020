@@ -34,13 +34,23 @@ public class GlobeCam : MonoBehaviour
             transform.position = -m_xAxis.forward * defaultZoom;
         }
     }
+
+    private float m_rotDragX;
+    private float m_rotDragY;
+    [SerializeField] private float rotationDragLerp = 2.0f;
     void Update()
     {
         if(!enableMovement) return;
 
         m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
-        m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * Input.GetAxisRaw("Horizontal"));
-        m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * Input.GetAxisRaw("Vertical"));
+        m_rotDragX += Input.GetAxisRaw("Horizontal");
+        m_rotDragY += Input.GetAxisRaw("Vertical");
+        m_rotDragX = m_rotDragX.Clamp(-1.0f,1.0f);
+        m_rotDragY = m_rotDragY.Clamp(-1.0f,1.0f);
+        m_rotDragX = Mathf.Lerp(m_rotDragX,0.0f,rotationDragLerp * Time.deltaTime);
+        m_rotDragY = Mathf.Lerp(m_rotDragY,0.0f,rotationDragLerp * Time.deltaTime);
+        m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * m_rotDragX);
+        m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * m_rotDragY);
         m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0);
 
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
