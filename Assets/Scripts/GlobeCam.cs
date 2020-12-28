@@ -16,6 +16,9 @@ public class GlobeCam : MonoBehaviour
     
     private Transform m_yAxis = default;
     private Transform m_xAxis = default;
+
+    public Transform focusTarget = default;
+    [SerializeField] private bool m_followFocusTarget = false;
     
     void Start()
     {
@@ -41,10 +44,22 @@ public class GlobeCam : MonoBehaviour
     void Update()
     {
         if(!enableMovement) return;
+        
+        Vector2 inDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        if(inDir.magnitude >= 0.05f) m_followFocusTarget = false;
+
+        if(m_followFocusTarget)
+        {
+            //  Follow the predefined target transform.
+        }
+        else
+        {
+            //  Follow via input axis.
+        }
 
         m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
-        m_rotDragX += Input.GetAxisRaw("Horizontal");
-        m_rotDragY += Input.GetAxisRaw("Vertical");
+        m_rotDragX += inDir.x;
+        m_rotDragY += inDir.y;
         m_rotDragX = m_rotDragX.Clamp(-1.0f,1.0f);
         m_rotDragY = m_rotDragY.Clamp(-1.0f,1.0f);
         m_rotDragX = Mathf.Lerp(m_rotDragX,0.0f,rotationDragLerp * Time.deltaTime);
@@ -57,5 +72,24 @@ public class GlobeCam : MonoBehaviour
         m_zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f * zoomSpeed;
         m_zoomValue = m_zoomValue.Clamp(minZoom,maxZoom);
         transform.position = -m_xAxis.forward * m_zoomValue;
+    }
+
+    public void SetFocusTarget(Transform targ)
+    {
+        focusTarget = targ;
+        m_followFocusTarget = false;
+        if(focusTarget != null)
+        {
+            m_followFocusTarget = true;
+        }
+    }
+
+    public Vector2 CalcAxisRotations(Vector3 pos)
+    {
+        Vector2 result = Vector2.zero;
+
+        Vector3 vec = pos.normalized;
+
+        return result;
     }
 }
