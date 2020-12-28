@@ -248,4 +248,6 @@
 			ENDCG
 		}
 	}
+
+	Fallback "Cuttout"
 }
