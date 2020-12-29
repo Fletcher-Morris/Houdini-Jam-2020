@@ -2,17 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class AiWaypoint : MonoBehaviour
+public class AiWaypoint
 {
-    public List<AiWaypoint> connections;
+    public List<AiWaypoint> connections = default;
 
-    [HideInInspector] public List<AiWaypoint> history;
+    public List<AiWaypoint> history = default;
 
     public int id;
 
     public int cluster;
-    public List<AiWaypoint> clusterConnections;
+    public List<AiWaypoint> clusterConnections = default;
+
+    public Vector3 position = default;
+
+    public AiWaypoint(Vector3 pos)
+    {
+        position = pos;
+        connections = new List<AiWaypoint>();
+        history = new List<AiWaypoint>();
+        id = -1;
+        cluster = -1;
+        clusterConnections = new List<AiWaypoint>();
+    }
 
     public void Remove()
     {
@@ -20,7 +31,6 @@ public class AiWaypoint : MonoBehaviour
         connections.ForEach(w => w.clusterConnections.Remove(this));
         WaypointManager.Instance.waypointClusters[cluster].Remove(this);
         WaypointManager.Instance.Waypoints.Remove(this);
-        DestroyImmediate(gameObject);
     }
 }
 

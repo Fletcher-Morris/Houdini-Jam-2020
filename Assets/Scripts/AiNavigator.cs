@@ -191,11 +191,11 @@ public class AiNavigator
             Color lineCol = Color.white;
             lineCol.a = WaypointManager.Instance.lineDebugOpacity;
             AiWaypoint n = GetWaypointFromIndex(nextWaypoint);
-            if(n != null && debugLines) Debug.DrawLine(start, n.transform.position, lineCol);
+            if(n != null && debugLines) Debug.DrawLine(start, n.position, lineCol);
             for (int i = 0; i < pathFound.Count - 1; i++)
             {
                 if(pathFound[i] != null)
-                Debug.DrawLine(pathFound[i].transform.position, pathFound[i + 1].transform.position, lineCol);
+                Debug.DrawLine(pathFound[i].position, pathFound[i + 1].position, lineCol);
             }
         }
     }

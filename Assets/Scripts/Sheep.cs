@@ -103,8 +103,8 @@ public class Sheep : MonoBehaviour
             AiWaypoint next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
             if (next != null && last != null)
             {
-                float lastDist = Vector3.Distance(transform.position, last.transform.position);
-                float nextDist = Vector3.Distance(transform.position, next.transform.position);
+                float lastDist = Vector3.Distance(transform.position, last.position);
+                float nextDist = Vector3.Distance(transform.position, next.position);
                 if(nextDist < lastDist + navigator.waypointTollerance)
                 {
                     navigator.prevWaypoint++;
@@ -113,11 +113,11 @@ public class Sheep : MonoBehaviour
                 }
                 if(navigator.nextWaypoint >= navigator.pathFound.Count)
                 targetPosition = transform.position;
-                else targetPosition = next.transform.position;
+                else targetPosition = next.position;
             }
             else if (next != null)
             {
-                targetPosition = next.transform.position;
+                targetPosition = next.position;
             }
 
         }

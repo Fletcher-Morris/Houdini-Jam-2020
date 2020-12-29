@@ -8,7 +8,6 @@ public class WaypointManager : MonoBehaviour
     public static WaypointManager Instance;
 
     public List<AiWaypoint> Waypoints = new List<AiWaypoint>();
-    public GameObject waypointPrefab;
 
     public List<WaypointPath> bakedPaths = default;
     [SerializeField] private bool m_storeKnownPaths = true;
@@ -22,8 +21,6 @@ public class WaypointManager : MonoBehaviour
     public float waypointRange = 5.0f;
     public int maxConnections = 10;
 
-    public Transform parent;
-
     void Awake()
     {
         Instance = this;
@@ -32,10 +29,7 @@ public class WaypointManager : MonoBehaviour
     private void DeleteWaypoints()
     {
         deleteAll = false;
-        if (parent != null) DestroyImmediate(parent.gameObject);
         Waypoints = new List<AiWaypoint>();
-        parent = new GameObject("WAYPOINT_PARENT").transform;
-        parent.position = Vector3.zero;
     }
 
     public void UpdateWaypoints()
@@ -59,10 +53,7 @@ public class WaypointManager : MonoBehaviour
             {
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
                 {
-                    //Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.cyan, 10.0f);
-                    Quaternion rot = Quaternion.FromToRotation(Vector3.forward, -pos);
-                    GameObject newWp = Instantiate(waypointPrefab, hit.point + (pos.normalized), rot, parent);
-                    Waypoints.Add(newWp.GetComponent<AiWaypoint>());
+                    Waypoints.Add(new AiWaypoint(hit.point + (pos.normalized)));
                 }
             }
         });
@@ -79,10 +70,11 @@ public class WaypointManager : MonoBehaviour
         Waypoints.ForEach(w => 
         {
             w.id = id; id++;
-            w.gameObject.name = "WP_" + w.id;
-            w.cluster = points.ClosestPoint(w.transform.position);
+            w.cluster = points.ClosestPoint(w.position);
             waypointClusters[w.cluster].Add(w);
         });
+        
+        Debug.Log($"Created {Waypoints.Count} waypoints!");
 
         UpdateConnections();
     }
@@ -99,12 +91,11 @@ public class WaypointManager : MonoBehaviour
                 {
                     if (w1.connections.Contains(w2))
                     {
-
                     }
                     else
                     {
-                        Vector3 p1 = w1.transform.position;
-                        Vector3 p2 = w2.transform.position;
+                        Vector3 p1 = w1.position;
+                        Vector3 p2 = w2.position;
 
                         float dist = Vector3.Distance(p1, p2);
                         if (dist <= waypointRange)
@@ -147,8 +138,6 @@ public class WaypointManager : MonoBehaviour
         if (updateAll) UpdateWaypoints();
         if (updateConnections) UpdateConnections();
 
-        //  Waypoints.ForEach(w => w.gameObject.SetActive(showWaypoints));
-
         if (lineDebugOpacity > 0.0f)
         {
             float camToPlanetDist = 0.0f;
@@ -167,7 +156,7 @@ public class WaypointManager : MonoBehaviour
                     }
                     else
                     {
-                        float dist = Mathf.Min(Vector3.Distance(m_lineCullCam.transform.position,w1.transform.position),Vector3.Distance(m_lineCullCam.transform.position,w2.transform.position));
+                        float dist = Mathf.Min(Vector3.Distance(m_lineCullCam.transform.position,w1.position),Vector3.Distance(m_lineCullCam.transform.position,w2.position));
                         cullLine = dist > camToPlanetDist;
                     }
 
@@ -175,14 +164,13 @@ public class WaypointManager : MonoBehaviour
                     {
                         Color lineCol = (w1.cluster == w2.cluster) ? showClusters ? w1.cluster.NumberToColor(clusterCount) : Color.magenta : Color.grey;
                         lineCol.a = lineDebugOpacity;
-                        Debug.DrawLine(w1.transform.position, w2.transform.position, lineCol);
+                        Debug.DrawLine(w1.position, w2.position, lineCol);
                     }
                 });
             });
         }
     }
 
-    public bool showWaypoints = true;
     [Range(0.0f,1.0f)] public float lineDebugOpacity = 0.25f;
     public bool showClusters = true;
     [SerializeField] private int clusterCount = 8;
@@ -200,7 +188,7 @@ public class WaypointManager : MonoBehaviour
         float dist = Mathf.Infinity;
         Instance.Waypoints.ForEach(w =>
         {
-            float d = Vector3.Distance(pos, w.transform.position);
+            float d = Vector3.Distance(pos, w.position);
             if (d < dist)
             {
                 node = w;
