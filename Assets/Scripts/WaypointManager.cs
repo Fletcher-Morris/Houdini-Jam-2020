@@ -242,14 +242,14 @@ public class WaypointManager : MonoBehaviour
             foundBakedPath = Instance.bakedPaths.Find(print=>print.A==start&&print.B==end);
             if(foundBakedPath != null)
             {
-                Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
+                //Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
                 Instance.m_knownPathsUsed++;
                 return foundBakedPath.Path;
             }
             foundBakedPath = Instance.bakedPaths.Find(print=>print.A==end&&print.B==start);
             if(foundBakedPath != null)
             {
-                Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
+                //Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
                 Instance.m_knownPathsUsed++;
                 return foundBakedPath.Path.Reversed();
             }
