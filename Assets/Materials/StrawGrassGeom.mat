@@ -39,7 +39,7 @@ Material:
     - _AltitudeHeightFade: 0.5
     - _GrassBlades: 5
     - _GrassHeight: 1
-    - _GrassWidth: 0.1
+    - _GrassWidth: 0.2
     - _HeightRandomness: 0.5
     - _Loops: 3
     - _MaxAltitude: 200
@@ -57,6 +57,6 @@ Material:
     - _WindSpeed: 0.05
     - _WindStrength: 0.001
     m_Colors:
-    - _RootColor: {r: 0.28627452, g: 0.5058824, b: 0.28235295, a: 1}
+    - _RootColor: {r: 0.42906037, g: 0.5058824, b: 0.28235295, a: 1}
     - _TipColor: {r: 0.5544202, g: 0.5754717, b: 0.3013083, a: 1}
   m_BuildTextureStacks: []
