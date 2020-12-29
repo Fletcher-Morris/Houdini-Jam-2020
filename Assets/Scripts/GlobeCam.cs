@@ -59,8 +59,9 @@ public class GlobeCam : MonoBehaviour
         {
             //  Follow the predefined target transform.
             m_targetCamRotation = CalcAxisRotations(focusTarget.position);
-            m_yAxis.localEulerAngles = new Vector3(0,Mathf.LerpAngle(m_yAxis.localEulerAngles.y, m_targetCamRotation.y, m_followRotationLerpSpeed * Time.deltaTime),0);
-            m_xAxis.localEulerAngles = new Vector3(Mathf.LerpAngle(m_xAxis.localEulerAngles.x, m_targetCamRotation.x, m_followRotationLerpSpeed * Time.deltaTime),0,0);
+            float followLerpSpeed = m_followRotationLerpSpeed;
+            m_yAxis.localEulerAngles = new Vector3(0,Mathf.LerpAngle(m_yAxis.localEulerAngles.y, m_targetCamRotation.y, followLerpSpeed * Time.deltaTime),0);
+            m_xAxis.localEulerAngles = new Vector3(Mathf.LerpAngle(m_xAxis.localEulerAngles.x, m_targetCamRotation.x, followLerpSpeed * Time.deltaTime),0,0);
         }
         else
         {
@@ -82,27 +83,20 @@ public class GlobeCam : MonoBehaviour
         transform.position = -m_xAxis.forward * m_zoomValue;
     }
 
+    private int m_selectedSheep = 0;
     private void SelectTargetSheep()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if(Input.GetKeyDown(KeyCode.RightBracket))
         {
-            SetFocusTarget(GameManager.Instance.SheepList[0].transform);
+            m_selectedSheep++;
+            m_selectedSheep = m_selectedSheep.Loop(0,GameManager.Instance.SheepList.Count - 1);
+            SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
         }
-        else if(Input.GetKeyDown(KeyCode.Alpha2))
+        else if(Input.GetKeyDown(KeyCode.LeftBracket))
         {
-            SetFocusTarget(GameManager.Instance.SheepList[1].transform);
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SetFocusTarget(GameManager.Instance.SheepList[2].transform);
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            SetFocusTarget(GameManager.Instance.SheepList[3].transform);
-        }
-        else if(Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            SetFocusTarget(GameManager.Instance.SheepList[4].transform);
+            m_selectedSheep--;
+            m_selectedSheep = m_selectedSheep.Loop(0,GameManager.Instance.SheepList.Count - 1);
+            SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
         }
     }
 
