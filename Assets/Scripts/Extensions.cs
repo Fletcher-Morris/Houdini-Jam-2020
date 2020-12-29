@@ -25,6 +25,11 @@ public static class Extensions
             + _value.y * Mathf.Cos(_degrees * Mathf.Deg2Rad)
             );
     public static Vector2Int RoundToVec2Int(this Vector2 _value) => new Vector2Int(_value.x.RoundToInt(), _value.y.RoundToInt());
+    public static float ToAngle(this Vector2 _value)
+    {
+        if(_value == Vector2.zero) return 0.0f;
+        return Mathf.Atan2(_value.x, _value.y) * Mathf.Rad2Deg;
+    }
     public static bool IsInRange(this int _value, int _min, int _max) => Mathf.Clamp(_value, _min, _max) == _value;
     public static bool IsInRange(this Vector2Int _value, Vector2Int _min, Vector2Int _max) => (_value.x.IsInRange(_min.x, _max.x) && _value.y.IsInRange(_min.y, _max.y));
     public static int Abs(this int _value) => Mathf.Abs(_value);

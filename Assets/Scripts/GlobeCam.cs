@@ -41,8 +41,12 @@ public class GlobeCam : MonoBehaviour
     private float m_rotDragX;
     private float m_rotDragY;
     [SerializeField] private float rotationDragLerp = 2.0f;
+
+    private Vector2 m_targetCamRotation = new Vector2();
     void Update()
     {
+        SelectTargetSheep();
+
         if(!enableMovement) return;
         
         Vector2 inDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -51,27 +55,54 @@ public class GlobeCam : MonoBehaviour
         if(m_followFocusTarget)
         {
             //  Follow the predefined target transform.
+            m_targetCamRotation = CalcAxisRotations(focusTarget.position);
+
+            m_yAxis.localEulerAngles = new Vector3(0,m_targetCamRotation.y,0);
+            m_xAxis.localEulerAngles = new Vector3(m_targetCamRotation.x,0,0);
         }
         else
         {
             //  Follow via input axis.
+            m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
+            m_rotDragX += inDir.x;
+            m_rotDragY += inDir.y;
+            m_rotDragX = m_rotDragX.Clamp(-1.0f,1.0f);
+            m_rotDragY = m_rotDragY.Clamp(-1.0f,1.0f);
+            m_rotDragX = Mathf.Lerp(m_rotDragX,0.0f,rotationDragLerp * Time.deltaTime);
+            m_rotDragY = Mathf.Lerp(m_rotDragY,0.0f,rotationDragLerp * Time.deltaTime);
+            m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * m_rotDragX);
+            m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * m_rotDragY);
+            m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0); 
         }
-
-        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
-        m_rotDragX += inDir.x;
-        m_rotDragY += inDir.y;
-        m_rotDragX = m_rotDragX.Clamp(-1.0f,1.0f);
-        m_rotDragY = m_rotDragY.Clamp(-1.0f,1.0f);
-        m_rotDragX = Mathf.Lerp(m_rotDragX,0.0f,rotationDragLerp * Time.deltaTime);
-        m_rotDragY = Mathf.Lerp(m_rotDragY,0.0f,rotationDragLerp * Time.deltaTime);
-        m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * m_rotDragX);
-        m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * m_rotDragY);
-        m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0);
 
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
         m_zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f * zoomSpeed;
         m_zoomValue = m_zoomValue.Clamp(minZoom,maxZoom);
         transform.position = -m_xAxis.forward * m_zoomValue;
+    }
+
+    private void SelectTargetSheep()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SetFocusTarget(GameManager.Instance.SheepList[0].transform);
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SetFocusTarget(GameManager.Instance.SheepList[1].transform);
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SetFocusTarget(GameManager.Instance.SheepList[2].transform);
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SetFocusTarget(GameManager.Instance.SheepList[3].transform);
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            SetFocusTarget(GameManager.Instance.SheepList[4].transform);
+        }
     }
 
     public void SetFocusTarget(Transform targ)
@@ -84,12 +115,5 @@ public class GlobeCam : MonoBehaviour
         }
     }
 
-    public Vector2 CalcAxisRotations(Vector3 pos)
-    {
-        Vector2 result = Vector2.zero;
-
-        Vector3 vec = pos.normalized;
-
-        return result;
-    }
+    public Vector2 CalcAxisRotations(Vector3 pos) => new Vector2(Mathf.Asin(pos.normalized.y) * Mathf.Rad2Deg, 180 + pos.ToTopDownVec2().ToAngle());
 }
