@@ -19,6 +19,7 @@ public class GlobeCam : MonoBehaviour
 
     public Transform focusTarget = default;
     [SerializeField] private bool m_followFocusTarget = false;
+    [SerializeField] private float m_followRotationLerpSpeed = 15.0f;
     
     void Start()
     {
@@ -52,18 +53,18 @@ public class GlobeCam : MonoBehaviour
         Vector2 inDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if(inDir.magnitude >= 0.05f) m_followFocusTarget = false;
 
+        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
+
         if(m_followFocusTarget)
         {
             //  Follow the predefined target transform.
             m_targetCamRotation = CalcAxisRotations(focusTarget.position);
-
-            m_yAxis.localEulerAngles = new Vector3(0,m_targetCamRotation.y,0);
-            m_xAxis.localEulerAngles = new Vector3(m_targetCamRotation.x,0,0);
+            m_yAxis.localEulerAngles = new Vector3(0,Mathf.LerpAngle(m_yAxis.localEulerAngles.y, m_targetCamRotation.y, m_followRotationLerpSpeed * Time.deltaTime),0);
+            m_xAxis.localEulerAngles = new Vector3(Mathf.LerpAngle(m_xAxis.localEulerAngles.x, m_targetCamRotation.x, m_followRotationLerpSpeed * Time.deltaTime),0,0);
         }
         else
         {
             //  Follow via input axis.
-            m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
             m_rotDragX += inDir.x;
             m_rotDragY += inDir.y;
             m_rotDragX = m_rotDragX.Clamp(-1.0f,1.0f);
@@ -72,7 +73,7 @@ public class GlobeCam : MonoBehaviour
             m_rotDragY = Mathf.Lerp(m_rotDragY,0.0f,rotationDragLerp * Time.deltaTime);
             m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * m_rotDragX);
             m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * m_rotDragY);
-            m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0); 
+            m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f,89.0f),0,0);
         }
 
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
