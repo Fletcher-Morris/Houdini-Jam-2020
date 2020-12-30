@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene(0);
         }
+        else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
 
         if(runClock)
         {

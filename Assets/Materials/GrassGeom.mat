@@ -38,7 +38,7 @@ Material:
     m_Floats:
     - _AltitudeHeightFade: 1
     - _GrassBlades: 25
-    - _GrassHeight: 0.5
+    - _GrassHeight: 0.4
     - _GrassWidth: 0.5
     - _HeightRandomness: 1
     - _Loops: 3
@@ -54,8 +54,8 @@ Material:
     - _TessellationUniform: 3
     - _TipColorVariance: 0
     - _TrueNormal: 1
-    - _WindSpeed: 0.05
-    - _WindStrength: 0.001
+    - _WindSpeed: 0.1
+    - _WindStrength: 0.002
     m_Colors:
     - _RootColor: {r: 0.28627452, g: 0.5019608, b: 0.2784314, a: 1}
     - _TipColor: {r: 0.35802382, g: 0.561, b: 0.350064, a: 1}

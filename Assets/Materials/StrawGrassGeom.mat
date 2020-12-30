@@ -54,7 +54,7 @@ Material:
     - _TessellationUniform: 1
     - _TipColorVariance: 0
     - _TrueNormal: 0.5
-    - _WindSpeed: 0.05
+    - _WindSpeed: 0.1
     - _WindStrength: 0.001
     m_Colors:
     - _RootColor: {r: 0.42906037, g: 0.5058824, b: 0.28235295, a: 1}

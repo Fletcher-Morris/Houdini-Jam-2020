@@ -9,6 +9,7 @@ public class GlobeCam : MonoBehaviour
     public float maxRotateSpeed = 45.0f;
     [SerializeField] private float m_rotSpeed = 45.0f;
     public float zoomSpeed = 10.0f;
+    public float closeUpZoomStart = 70.0f;
     public float minZoom = 60.0f;
     public float maxZoom = 150.0f;
     public float defaultZoom = 100.0f;
@@ -80,7 +81,10 @@ public class GlobeCam : MonoBehaviour
         m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
         m_zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f * zoomSpeed;
         m_zoomValue = m_zoomValue.Clamp(minZoom,maxZoom);
-        transform.position = -m_xAxis.forward * m_zoomValue;
+
+        float closeUpLerp = Mathf.InverseLerp(closeUpZoomStart, minZoom, m_zoomValue).Clamp(0.0f,1.0f);
+        transform.localPosition = Vector3.Lerp(new Vector3(0,0,-1) * m_zoomValue, (new Vector3(0,0,-1) * m_zoomValue) + (new Vector3(0,-7.5f,0)), closeUpLerp);
+        transform.localEulerAngles = Vector3.Lerp(Vector3.zero, new Vector3(-60.0f,0,0), closeUpLerp);
     }
 
     private int m_selectedSheep = 0;
