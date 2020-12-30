@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
@@ -72,7 +73,7 @@ public class GameManager : MonoBehaviour
 
     void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(105.0f,5.0f,200.0f,50.0f));
+        GUILayout.BeginArea(new Rect(105.0f,5.0f,300.0f,50.0f));
         //GUILayout.Space(50.0f);
         GUILayout.BeginHorizontal();
         GUILayout.Label("Quality");
