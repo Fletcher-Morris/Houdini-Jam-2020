@@ -9,6 +9,7 @@ public static class Extensions
     public static Vector2Int RandomVec2(int _minX, int _minY, Vector2Int _max) => RandomVec2(_minX, _minY, _max.x, _max.y);
     public static Vector2Int RandomVec2(Vector2Int _min, int _maxX, int _maxY) => RandomVec2(_min.x, _min.y, _maxX, _maxY);
     public static Vector2Int RandomVec2(int _minX, int _minY, int _maxX, int _maxY) => new Vector2Int(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY));
+    public static Vector3 RandomVec3(float _min, float _max) => new Vector3(Random.Range(_min, _max),Random.Range(_min, _max),Random.Range(_min, _max));
     public static Vector3 ToTopDownVec3(this Vector2 _value) => new Vector3(_value.x, 0, _value.y);
     public static Vector2 ToTopDownVec2(this Vector3 _value) => new Vector2(_value.x, _value.z);
     public static Vector2 Round(this Vector2 _value) => new Vector2(_value.x.RoundToInt(), _value.y.RoundToInt());
