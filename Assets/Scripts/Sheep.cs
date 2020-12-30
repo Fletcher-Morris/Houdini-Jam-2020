@@ -36,6 +36,7 @@ public class Sheep : MonoBehaviour
     private Rigidbody m_body;
 
     private AudioSource m_audioSource;
+    private float m_bleatPitch = 1.0f;
     [SerializeField] private List<AudioClip> m_bleats = new List<AudioClip>();
     public float bleatChance = 0.5f;
     [SerializeField] private float m_bleatInterval = 5.0f;
@@ -47,6 +48,7 @@ public class Sheep : MonoBehaviour
     void Start()
     {
         m_audioSource = GetComponent<AudioSource>();
+        m_bleatPitch = Random.Range(0.8f, 1.2f);
         m_body = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
         navigator.Initialize(Random.Range(0.0f, updateWaypointInterval), transform);
@@ -80,7 +82,7 @@ public class Sheep : MonoBehaviour
 
             if(Random.Range(0.0f, 1.0f) <= bleatChance)
             {
-                m_audioSource.pitch = Random.Range(0.8f, 1.2f);
+                m_audioSource.pitch = m_bleatPitch;
                 m_audioSource.PlayOneShot(m_bleats.RandomItem());
             }
         }
