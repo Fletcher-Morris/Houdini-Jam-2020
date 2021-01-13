@@ -58,5 +58,5 @@ Material:
     - _WindStrength: 0.001
     m_Colors:
     - _RootColor: {r: 0.42906037, g: 0.5058824, b: 0.28235295, a: 1}
-    - _TipColor: {r: 0.5544202, g: 0.5754717, b: 0.3013083, a: 1}
+    - _TipColor: {r: 0.5544201, g: 0.57547164, b: 0.30130824, a: 1}
   m_BuildTextureStacks: []
