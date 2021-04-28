@@ -12,7 +12,7 @@ public class RockScatter : MonoBehaviour
     }
     public bool scatter = false;
     public bool delete = false;
-    public List<GameObject> createdRocks = new List<GameObject>();
+    [HideInInspector] public List<GameObject> createdRocks = new List<GameObject>();
     public Transform rockParent;
     public LayerMask mask;
 
@@ -25,14 +25,15 @@ public class RockScatter : MonoBehaviour
 
     void Update()
     {
-        if (delete) DeleteGrass();
+        if (delete) DeleteRocks();
         if (scatter) Scatter();
     }
 
-    void DeleteGrass()
+    void DeleteRocks()
     {
         delete = false;
         if (rockParent != null) DestroyImmediate(rockParent.gameObject);
+        createdRocks = new List<GameObject>();
     }
 
 
@@ -40,7 +41,7 @@ public class RockScatter : MonoBehaviour
     {
         scatter = false;
 
-        DeleteGrass();
+        DeleteRocks();
 
         rockParent = new GameObject("ROCKS_PARENT").transform;
         rockParent.position = Vector3.zero;

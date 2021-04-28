@@ -23,7 +23,7 @@ public class GrassScatter : MonoBehaviour
 
     public bool scatter = false;
     public bool delete = false;
-    public List<GameObject> createdGrass = new List<GameObject>();
+    [HideInInspector] public List<GameObject> createdGrass = new List<GameObject>();
     public Transform grassParent;
     public LayerMask mask;
     public float sinkValue = 2.0f;
@@ -40,6 +40,7 @@ public class GrassScatter : MonoBehaviour
     {
         delete = false;
         if (grassParent != null) DestroyImmediate(grassParent.gameObject);
+        createdGrass = new List<GameObject>();
     }
 
 
