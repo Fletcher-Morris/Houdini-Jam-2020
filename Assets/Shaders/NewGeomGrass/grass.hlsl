@@ -50,6 +50,10 @@ float _RandomWidth;
 float _WindStrength;
 float _Height;
 float _RandomHeight;
+float _TerrainScale;
+float _MinAltitude;
+float _MaxAltitude;
+float _AltitudeHeightFade;
 uint _BladeSegments;
 uint _GrassBlades = 4;
 uint _MinimumGrassBlades = 1;
@@ -140,6 +144,12 @@ void geom(uint primitiveID : SV_PrimitiveID, triangle Varyings input[3], inout T
 		heightFactor *- _RandomHeight * (rand(positionWS.yxz) - 0.5);
 		heightFactor *= ObjectDistortion(positionWS);
 		heightFactor *= tooCloseCamDist;
+
+		float worldHeight = length(positionWS.xyz);
+		heightFactor *= step(_MinAltitude, worldHeight);
+		heightFactor *= step(worldHeight, _MaxAltitude);
+		float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), worldHeight));
+		heightFactor *= heightBlend;
 
 		// Wind (based on sin / cos, aka a circular motion, but strength of 0.1 * sine)
 		float2 wind = float2(sin(_Time.y + positionWS.x * 0.5), cos(_Time.y + positionWS.z * 0.5)) * _WindStrength * sin(_Time.y + r);

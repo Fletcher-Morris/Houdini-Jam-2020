@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrassGeom - Copy
+  m_Name: NewGeomGrass
   m_Shader: {fileID: 4800000, guid: 22519ee0ec87f5d44bd7bd09dadb46a0, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -21,34 +21,39 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _AltitudeHeightFade: 1
     - _AmbientStrength: 0.5
     - _BladeCurve: 2
     - _BladeForward: 0.38
     - _BladeSegments: 1
     - _BladesPerVertex: 2.22
-    - _GrassBlades: 5.59
+    - _GrassBlades: 16
     - _GrassHeight: 1
     - _GrassWidth: 0.06
-    - _Height: 2.27
+    - _Height: 0.33333334
+    - _MaxAltitude: 100
     - _MaxCameraDistance: 20
     - _MaxDist: 60
+    - _MinAltitude: 48
     - _MinCameraDistance: 3
     - _MinDist: 40
-    - _MinimumGrassBlades: 1.07
+    - _MinimumGrassBlades: 8
     - _MinumumGrassBlades: 1
     - _Rad: 0.6
     - _Radius: 0.3
     - _RandomHeight: 0
-    - _RandomWidth: 0.1
+    - _RandomWidth: 0.01
     - _Strength: 5
-    - _TessellationUniform: 1
+    - _TessellationUniform: 2.12
     - _TrueNormal: 0.481
-    - _Width: 0.1
+    - _Width: 0.02
     - _WindSpeed: 100
-    - _WindStrength: 0.1
+    - _WindStrength: 0.2
     m_Colors:
     - _BottomColor: {r: 0, g: 1, b: 0, a: 1}
     - _Color: {r: 0.29803923, g: 0.5058824, b: 0.28627452, a: 1}
     - _Color2: {r: 0.44614106, g: 0.6509434, b: 0.31011927, a: 1}
+    - _RootColor: {r: 0.2901961, g: 0.5137255, b: 0.28627452, a: 1}
+    - _TipColor: {r: 0.33782396, g: 0.5660378, b: 0.3337487, a: 1}
     - _TopColor: {r: 1, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []

@@ -6,6 +6,9 @@
 		_RandomWidth("Random Width", Float) = 1
 		_Height("Height", Float) = 1
 		_RandomHeight("Random Height", Float) = 1
+		_MinAltitude("Minimum Altitude", float) = 50
+		_MaxAltitude("Maximum Altitude", float) = 200
+		_AltitudeHeightFade("Altitude Height Fade", float) = 0.25
 		_BladeSegments("Blade Segments", Range(1,4)) = 2
 		_WindStrength("Wind Strength", Float) = 0.1
 		[Space]
