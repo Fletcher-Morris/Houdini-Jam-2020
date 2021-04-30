@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,7 +43,6 @@ public class GrassScatter : MonoBehaviour
         createdGrass = new List<GameObject>();
     }
 
-
     public void Scatter()
     {
         scatter = false;
@@ -53,7 +52,6 @@ public class GrassScatter : MonoBehaviour
         grassParent = new GameObject("GRASS_PARENT").transform;
         grassParent.position = Vector3.zero;
 
-
         objects.ForEach(o =>
         {
             List<Vector3> points = new List<Vector3>();
@@ -61,14 +59,13 @@ public class GrassScatter : MonoBehaviour
             float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
             for (int i = 0; i < samples; i++)
             {
-                float y = 1.0f - (i / (float)(samples - 1) * 2.0f);
+                float y = 1.0f - (i / (float) (samples - 1) * 2.0f);
                 float radius = Mathf.Sqrt(1.0f - (y * y));
                 float theta = phi * i;
                 float x = Mathf.Cos(theta) * radius;
                 float z = Mathf.Sin(theta) * radius;
                 points.Add(new Vector3(x, y, z));
             }
-
 
             points.ForEach(p =>
             {
@@ -91,7 +88,7 @@ public class GrassScatter : MonoBehaviour
                             GameObject newGrass = Instantiate(o.prefab, hit.point - (hit.point.normalized * sinkValue), Quaternion.identity, grassParent);
                             newGrass.transform.LookAt(Vector3.zero);
                             newGrass.transform.rotation = newGrass.transform.rotation * Quaternion.Euler(-90, 0, 0);
-                            newGrass.transform.Rotate(transform.up, Random.Range(0.0f,360.0f));
+                            newGrass.transform.Rotate(transform.up, Random.Range(0.0f, 360.0f));
                             newGrass.isStatic = true;
                             createdGrass.Add(newGrass);
                         }

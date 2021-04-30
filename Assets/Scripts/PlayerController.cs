@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,14 +11,12 @@ public class PlayerController : MonoBehaviour
         Instance = this;
     }
 
-
     public float moveSpeed;
     public float gravityForce = 10.0f;
     public float jumpForce = 10.0f;
     public Sheep sheep;
     public bool isCarrying => sheep != null;
     public LayerMask groundMask;
-
 
     private Rigidbody m_body;
     [SerializeField] private Vector2 m_inputDir;
@@ -27,19 +25,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 m_gravityDirection;
     [SerializeField] private Camera m_cam;
 
-
     void Start()
     {
         m_body = GetComponent<Rigidbody>();
         m_cam = Camera.main;
     }
 
-
     void Update()
     {
         m_inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         m_jump = Input.GetButtonDown("Jump");
-
 
         Movement();
     }
@@ -63,10 +58,9 @@ public class PlayerController : MonoBehaviour
         if (m_jump && m_grounded) m_body.AddForce(transform.position.normalized * jumpForce, ForceMode.Impulse);
     }
 
-
     void Movement()
     {
-        
+
     }
 
     void CameraMovement()

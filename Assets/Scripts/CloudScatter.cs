@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,16 +17,14 @@ public class CloudScatter : MonoBehaviour
 
     public int m_prevSum = -1;
 
-
     public List<GameObject> m_createdParents = new List<GameObject>();
-
 
     void Update()
     {
         if (delete) Delete();
         if (create) Create();
 
-        if(autoUpdate)
+        if (autoUpdate)
         {
             int s = CheckSum();
             if (s != m_prevSum)
@@ -55,14 +53,14 @@ public class CloudScatter : MonoBehaviour
 
         if (cloudPrefabs.Count <= 0) return;
 
-        for(int layer = 0; layer < cloudLayers; layer++)
+        for (int layer = 0; layer < cloudLayers; layer++)
         {
 
             GameObject newLayer = new GameObject($"Clouds_{layer}");
             newLayer.transform.parent = transform;
             m_createdParents.Add(newLayer);
             float layerHeight = baseLayerHeight;
-            if(layer > 0)
+            if (layer > 0)
             {
                 layerHeight += (additionLayerHeight * layer);
             }
@@ -76,7 +74,7 @@ public class CloudScatter : MonoBehaviour
             float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
             for (int i = 0; i < samples; i++)
             {
-                float y = 1.0f - (i / (float)(samples - 1) * 2.0f);
+                float y = 1.0f - (i / (float) (samples - 1) * 2.0f);
                 float radius = Mathf.Sqrt(1.0f - (y * y));
                 float theta = phi * i;
                 float x = Mathf.Cos(theta) * radius;

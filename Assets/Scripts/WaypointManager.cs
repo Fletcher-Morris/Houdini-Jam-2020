@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,9 +39,7 @@ public class WaypointManager : MonoBehaviour
 
         DeleteWaypoints();
 
-
         List<Vector3> points = Extensions.FibonacciPoints(Instance.waypointQuantity);
-
 
         points.ForEach(p =>
         {
@@ -58,22 +56,22 @@ public class WaypointManager : MonoBehaviour
             }
         });
 
-
         points = Extensions.FibonacciPoints(clusterCount);
         waypointClusters = new List<List<AiWaypoint>>();
-        for(int i = 0; i < clusterCount; i++)
+        for (int i = 0; i < clusterCount; i++)
         {
             waypointClusters.Add(new List<AiWaypoint>());
         }
 
         int id = 0;
-        Waypoints.ForEach(w => 
+        Waypoints.ForEach(w =>
         {
-            w.id = id; id++;
+            w.id = id;
+            id++;
             w.cluster = points.ClosestPoint(w.position);
-            waypointClusters[w.cluster].Add(w);
+            waypointClusters [w.cluster].Add(w);
         });
-        
+
         Debug.Log($"Created {Waypoints.Count} waypoints!");
 
         UpdateConnections();
@@ -90,8 +88,7 @@ public class WaypointManager : MonoBehaviour
                 if (w1 != w2)
                 {
                     if (w1.connections.Contains(w2))
-                    {
-                    }
+                    { }
                     else
                     {
                         Vector3 p1 = w1.position;
@@ -108,7 +105,7 @@ public class WaypointManager : MonoBehaviour
                                 w1.connections.Add(w2);
                                 w2.connections.Add(w1);
 
-                                if(w1.cluster == w2.cluster)
+                                if (w1.cluster == w2.cluster)
                                 {
                                     w1.clusterConnections.Add(w2);
                                     w2.clusterConnections.Add(w1);
@@ -120,10 +117,10 @@ public class WaypointManager : MonoBehaviour
             });
         });
 
-        AiWaypoint[] remove = Waypoints.FindAll(w => w.connections.Count > maxConnections).ToArray();
+        AiWaypoint [] remove = Waypoints.FindAll(w => w.connections.Count > maxConnections).ToArray();
         while (remove.Length > 0)
         {
-            remove[0].Remove();
+            remove [0].Remove();
             remove = Waypoints.FindAll(w => w.connections.Count > maxConnections).ToArray();
         }
     }
@@ -141,7 +138,7 @@ public class WaypointManager : MonoBehaviour
         if (lineDebugOpacity > 0.0f)
         {
             float camToPlanetDist = 0.0f;
-            if(m_cullLines && m_lineCullCam != null)
+            if (m_cullLines && m_lineCullCam != null)
             {
                 camToPlanetDist = Vector3.Distance(m_lineCullCam.transform.position, transform.position);
             }
@@ -150,17 +147,17 @@ public class WaypointManager : MonoBehaviour
                 w1.connections.ForEach(w2 =>
                 {
                     bool cullLine = false;
-                    if(m_lineCullCam == null || m_cullLines == false)
+                    if (m_lineCullCam == null || m_cullLines == false)
                     {
 
                     }
                     else
                     {
-                        float dist = Mathf.Min(Vector3.Distance(m_lineCullCam.transform.position,w1.position),Vector3.Distance(m_lineCullCam.transform.position,w2.position));
+                        float dist = Mathf.Min(Vector3.Distance(m_lineCullCam.transform.position, w1.position), Vector3.Distance(m_lineCullCam.transform.position, w2.position));
                         cullLine = dist > camToPlanetDist;
                     }
 
-                    if(cullLine == false)
+                    if (cullLine == false)
                     {
                         Color lineCol = (w1.cluster == w2.cluster) ? showClusters ? w1.cluster.NumberToColor(clusterCount) : Color.magenta : Color.grey;
                         lineCol.a = lineDebugOpacity;
@@ -171,7 +168,7 @@ public class WaypointManager : MonoBehaviour
         }
     }
 
-    [Range(0.0f,1.0f)] public float lineDebugOpacity = 0.25f;
+    [Range(0.0f, 1.0f)] public float lineDebugOpacity = 0.25f;
     public bool showClusters = true;
     [SerializeField] private int clusterCount = 8;
     [SerializeField] private Camera m_lineCullCam = default;
@@ -181,9 +178,9 @@ public class WaypointManager : MonoBehaviour
 
     public static AiWaypoint Closest(Vector3 pos)
     {
-        if(Instance == null) return null;
-        if(Instance.Waypoints == null) return null;
-        if(Instance.Waypoints.Count == 0) return null;
+        if (Instance == null) return null;
+        if (Instance.Waypoints == null) return null;
+        if (Instance.Waypoints.Count == 0) return null;
         AiWaypoint node = null;
         float dist = Mathf.Infinity;
         Instance.Waypoints.ForEach(w =>
@@ -195,7 +192,7 @@ public class WaypointManager : MonoBehaviour
                 dist = d;
             }
         });
-        if(node == null)
+        if (node == null)
         {
             Debug.LogWarning("Cannot Find Clolsest Waypoint To Target!");
         }
@@ -218,24 +215,23 @@ public class WaypointManager : MonoBehaviour
             return null;
         }
 
-
         return GetBakedPath(startNode, endNode);
     }
 
     public static List<AiWaypoint> GetBakedPath(AiWaypoint start, AiWaypoint end)
     {
-        if(Instance.m_storeKnownPaths)
+        if (Instance.m_storeKnownPaths)
         {
             WaypointPath foundBakedPath = null;
-            foundBakedPath = Instance.bakedPaths.Find(print=>print.A==start&&print.B==end);
-            if(foundBakedPath != null)
+            foundBakedPath = Instance.bakedPaths.Find(print => print.A == start && print.B == end);
+            if (foundBakedPath != null)
             {
                 //Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
                 Instance.m_knownPathsUsed++;
                 return foundBakedPath.Path;
             }
-            foundBakedPath = Instance.bakedPaths.Find(print=>print.A==end&&print.B==start);
-            if(foundBakedPath != null)
+            foundBakedPath = Instance.bakedPaths.Find(print => print.A == end && print.B == start);
+            if (foundBakedPath != null)
             {
                 //Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
                 Instance.m_knownPathsUsed++;
@@ -243,11 +239,11 @@ public class WaypointManager : MonoBehaviour
             }
         }
         //  Path is not yet baked.
-        List<AiWaypoint> newPath = Breadthwise(start,end);
+        List<AiWaypoint> newPath = Breadthwise(start, end);
         Instance.m_newPathsCalculated++;
-        if(Instance.m_storeKnownPaths)
+        if (Instance.m_storeKnownPaths)
         {
-            Instance.bakedPaths.Add(new WaypointPath(start,end,newPath));
+            Instance.bakedPaths.Add(new WaypointPath(start, end, newPath));
         }
         return newPath;
     }
@@ -255,24 +251,23 @@ public class WaypointManager : MonoBehaviour
     public static List<AiWaypoint> Breadthwise(AiWaypoint start, AiWaypoint end)
     {
         List<AiWaypoint> result = null;
-        if(start.cluster == end.cluster) result = Breadthwise(start,end,Instance.waypointClusters[start.cluster]);
-        if(result != null) return result;
-        result = Breadthwise(start,end,null);
+        if (start.cluster == end.cluster) result = Breadthwise(start, end, Instance.waypointClusters [start.cluster]);
+        if (result != null) return result;
+        result = Breadthwise(start, end, null);
         return result;
     }
     public static List<AiWaypoint> Breadthwise(AiWaypoint start, AiWaypoint end, List<AiWaypoint> searchList)
     {
         bool searchAll = true;
-        if(searchList == null)
+        if (searchList == null)
         {
             //  No cluster provided, search all waypoints.
-           searchList = Instance.Waypoints;
+            searchList = Instance.Waypoints;
         }
         else
         {
             searchAll = searchList.Count == Instance.Waypoints.Count;
         }
-
 
         List<AiWaypoint> result = new List<AiWaypoint>();
         List<AiWaypoint> visited = new List<AiWaypoint>();
@@ -299,7 +294,7 @@ public class WaypointManager : MonoBehaviour
                 //Didn't find Node
                 for (int i = 0; i < (searchAll ? current.connections.Count : current.clusterConnections.Count); i++)
                 {
-                    AiWaypoint currentNeighbor = searchAll ? current.connections[i] : current.clusterConnections[i];
+                    AiWaypoint currentNeighbor = searchAll ? current.connections [i] : current.clusterConnections [i];
                     if (!visited.Contains(currentNeighbor))
                     {
                         currentNeighbor.history = new List<AiWaypoint>(current.history);
@@ -313,7 +308,7 @@ public class WaypointManager : MonoBehaviour
 
         //Route not found, loop ends
 
-        if(searchAll)
+        if (searchAll)
         {
             Debug.LogWarning($"Could not find path between '{start.id}' and '{end.id}'!");
         }
@@ -327,9 +322,9 @@ public class WaypointManager : MonoBehaviour
 
     void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(5.0f,5.0f,100.0f,50.0f));
+        GUILayout.BeginArea(new Rect(5.0f, 5.0f, 100.0f, 50.0f));
         GUILayout.Label("Debug Opacity");
-        lineDebugOpacity = GUILayout.HorizontalSlider(lineDebugOpacity, 0.0f,1.0f);
+        lineDebugOpacity = GUILayout.HorizontalSlider(lineDebugOpacity, 0.0f, 1.0f);
         GUILayout.EndArea();
     }
 }

@@ -1,8 +1,8 @@
 using System.Collections;
 using UnityEngine;
 #if UNITY_EDITOR
-using UnityEditor;
 using System.IO;
+using UnityEditor;
 #endif
 
 [RequireComponent(typeof(ParticleSystem))]
@@ -14,10 +14,8 @@ public class BakeParticleSystemToMesh : MonoBehaviour
     public string fileName = "NewBakedParticleSystemMesh";
     public bool keepVertexColors = true;
     public int maxQuads = 200;
-
     public uint seed;
     public void NewSeed() => seed = (uint)Random.Range(int.MinValue, int.MaxValue);
-
     public enum NormalType
     {
         KeepNormals,
@@ -45,13 +43,9 @@ public class BakeParticleSystemToMesh : MonoBehaviour
         pS.emission.SetBurst(0, new ParticleSystem.Burst(0, maxQuads / (lod + 1)));
         pS.Play();
         yield return new WaitForSecondsRealtime(0.25f);
-
-
-        // Bake
         Mesh mesh = new Mesh();
         GetComponent<ParticleSystemRenderer>().BakeMesh(mesh, true);
-        if (!keepVertexColors)
-            mesh.colors32 = null;
+        if (!keepVertexColors) mesh.colors32 = null;
         switch (handleNormals)
         {
             case NormalType.KeepNormals:
@@ -70,16 +64,11 @@ public class BakeParticleSystemToMesh : MonoBehaviour
                 mesh.normals = null;
                 break;
         }
-
         string fileName = Path.GetFileNameWithoutExtension(this.fileName + "_" + lod) + ".asset";
         Directory.CreateDirectory("Assets/" + folderPath);
         string assetPath = "Assets/" + folderPath + "/" + fileName;
-
         Object existingAsset = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
-        if (existingAsset == null)
-        {
-            AssetDatabase.CreateAsset(mesh, assetPath);
-        }
+        if (existingAsset == null) AssetDatabase.CreateAsset(mesh, assetPath);
         else
         {
             if (existingAsset is Mesh)

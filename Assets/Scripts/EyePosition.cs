@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +15,6 @@ public class EyePosition : MonoBehaviour
 
     public Material EyeMaterial;
     private Material m_mat;
-
 
     private int m_positionPropertyId = 0;
 
@@ -55,7 +54,6 @@ public class EyePosition : MonoBehaviour
     private int m_lazinessPropertyId = 10;
     public float eyeLaziness = 0.0f;
     private float m_prevEyeLaziness = -1.0f;
-
 
     void Start()
     {
@@ -114,14 +112,12 @@ public class EyePosition : MonoBehaviour
 
             if (pos.magnitude > maxMagnitude) pos = pos.normalized * maxMagnitude;
 
-
             if (invertX) pos.x *= -1;
             if (invertY) pos.y *= -1;
 
-            if(Application.isPlaying) r.material.SetVector(m_positionPropertyId, pos);
+            if (Application.isPlaying) r.material.SetVector(m_positionPropertyId, pos);
 
         });
-
 
         m_blinkTimer += Time.deltaTime;
         if (m_blinkTimer >= blinkInterval && autoBlink)
@@ -132,11 +128,10 @@ public class EyePosition : MonoBehaviour
                 StartCoroutine(Blink());
             }
         }
-        if(!autoBlink)
+        if (!autoBlink)
         {
             ManualBlink();
         }
-
 
         CheckValues(false);
     }
@@ -144,7 +139,7 @@ public class EyePosition : MonoBehaviour
     private void CheckValues(bool _overide)
     {
 
-        if(!Application.isPlaying) return;
+        if (!Application.isPlaying) return;
 
         if (openness != m_prevOpenness || _overide)
         {
@@ -203,7 +198,7 @@ public class EyePosition : MonoBehaviour
 
     private void ManualBlink()
     {
-        if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt()));
+        if (Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt()));
     }
 
     private IEnumerator Blink()
@@ -211,20 +206,20 @@ public class EyePosition : MonoBehaviour
         m_blinking = true;
 
         float t = 0.0f;
-        while(t < 1.0f)
+        while (t < 1.0f)
         {
-            if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            if (Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
             t += Time.deltaTime * blinkSpeed;
             yield return null;
         }
         t = 1.0f;
         while (t > 0.0f)
         {
-            if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            if (Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
             t -= Time.deltaTime * blinkSpeed;
             yield return null;
         }
-        if(Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, 0));
+        if (Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, 0));
 
         m_blinking = false;
 

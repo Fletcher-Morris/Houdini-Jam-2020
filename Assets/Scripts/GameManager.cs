@@ -1,9 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,32 +18,28 @@ public class GameManager : MonoBehaviour
     public bool runClock = false;
     public Text remainingTimeText;
 
-
     public int remainingSheep;
-
 
     void Start()
     {
         WaypointManager.Instance.UpdateWaypoints();
         GrassScatter.Instance.Scatter();
 
-
         remainingTime = gameLength;
     }
 
-
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Home))
+        if (Input.GetKeyDown(KeyCode.Home))
         {
             SceneManager.LoadScene(0);
         }
-        else if(Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
         }
 
-        if(runClock)
+        if (runClock)
         {
             remainingTime -= Time.deltaTime;
             remainingTime = remainingTime.Clamp(0, gameLength);
@@ -52,39 +48,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     public static void CollectSheep(Sheep sheep)
     {
         Instance.SheepList.Remove(sheep);
         Instance.remainingSheep = Instance.SheepList.Count;
     }
 
-
     void TimeUp()
     {
         runClock = false;
     }
 
-
     public List<Sheep> SheepList = new List<Sheep>();
     public static void AddSheep(Sheep sheep)
     {
-        if(Instance == null) return;
-        if(Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
+        if (Instance == null) return;
+        if (Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
         Instance.SheepList.Add(sheep);
         Instance.remainingSheep = Instance.SheepList.Count;
     }
 
     void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(105.0f,5.0f,300.0f,50.0f));
+        GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
         //GUILayout.Space(50.0f);
         GUILayout.BeginHorizontal();
         GUILayout.Label("Quality");
         int level = 0;
-        QualitySettings.names.ToList().ForEach(l=>
+        QualitySettings.names.ToList().ForEach(l =>
         {
-            if(GUILayout.Button(l))
+            if (GUILayout.Button(l))
             {
                 QualitySettings.SetQualityLevel(level, true);
             }

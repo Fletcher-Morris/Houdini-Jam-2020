@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +17,6 @@ public class GrassObject : MonoBehaviour
     public float radius = 1.0f;
     public Vector4 GetVector()
     {
-        return new Vector4(transform.position.x,transform.position.y,transform.position.z,radius);
+        return new Vector4(transform.position.x, transform.position.y, transform.position.z, radius);
     }
 }

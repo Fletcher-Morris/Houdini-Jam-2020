@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,7 +44,6 @@ public class Sheep : MonoBehaviour
 
     public AiNavigator navigator = new AiNavigator();
 
-
     void Start()
     {
         m_audioSource = GetComponent<AudioSource>();
@@ -66,7 +65,7 @@ public class Sheep : MonoBehaviour
         {
             m_bounceTimer = 0;
         }
-        m_bounceDirection = Mathf.Lerp(-1,1, m_bounceTimer.FloorToInt().IsEven().ToInt());
+        m_bounceDirection = Mathf.Lerp(-1, 1, m_bounceTimer.FloorToInt().IsEven().ToInt());
         m_bounceValue = bounceAnimCurve.Evaluate(m_bounceTimer);
         m_legValue = legAnimCurve.Evaluate(m_bounceTimer);
         visual.transform.localPosition = new Vector3(0, m_bounceValue * bounceHeight, 0);
@@ -76,11 +75,11 @@ public class Sheep : MonoBehaviour
         navigator.DrawLines(transform.position, Time.deltaTime);
 
         m_bleatTimer -= Time.deltaTime;
-        if(m_bleatTimer <= 0.0f)
+        if (m_bleatTimer <= 0.0f)
         {
             m_bleatTimer = m_bleatInterval;
 
-            if(Random.Range(0.0f, 1.0f) <= bleatChance)
+            if (Random.Range(0.0f, 1.0f) <= bleatChance)
             {
                 m_audioSource.pitch = m_bleatPitch;
                 m_audioSource.PlayOneShot(m_bleats.RandomItem());
@@ -99,22 +98,22 @@ public class Sheep : MonoBehaviour
 
     void Movement(float delta)
     {
-        if(navigator.pathFound != null)
+        if (navigator.pathFound != null)
         {
-            AiWaypoint last = navigator.GetWaypointFromIndex(Mathf.Max(0,navigator.prevWaypoint));
+            AiWaypoint last = navigator.GetWaypointFromIndex(Mathf.Max(0, navigator.prevWaypoint));
             AiWaypoint next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
             if (next != null && last != null)
             {
                 float lastDist = Vector3.Distance(transform.position, last.position);
                 float nextDist = Vector3.Distance(transform.position, next.position);
-                if(nextDist < lastDist + navigator.waypointTollerance)
+                if (nextDist < lastDist + navigator.waypointTollerance)
                 {
                     navigator.prevWaypoint++;
                     navigator.nextWaypoint++;
                     next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
                 }
-                if(navigator.nextWaypoint >= navigator.pathFound.Count)
-                targetPosition = transform.position;
+                if (navigator.nextWaypoint >= navigator.pathFound.Count)
+                    targetPosition = transform.position;
                 else targetPosition = next.position;
             }
             else if (next != null)
@@ -126,7 +125,7 @@ public class Sheep : MonoBehaviour
 
         Vector3 posDiff = targetPosition - transform.position;
 
-        if(posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
+        if (posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
         {
             transform.position += (posDiff.normalized * moveSpeed * delta);
             Physics.SyncTransforms();
@@ -135,15 +134,15 @@ public class Sheep : MonoBehaviour
 
     private void Rotation(float delta)
     {
-        if(updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
+        if (updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
         {
             Vector3 lookAt;
-            if(targetPosition != Vector3.zero && targetPosition != transform.position)
+            if (targetPosition != Vector3.zero && targetPosition != transform.position)
             {
                 lookAt = targetPosition;
                 m_lastTargetPosition = targetPosition;
             }
-            else if(m_lastTargetPosition != Vector3.zero && m_lastTargetPosition != transform.position)
+            else if (m_lastTargetPosition != Vector3.zero && m_lastTargetPosition != transform.position)
             {
                 lookAt = m_lastTargetPosition;
             }

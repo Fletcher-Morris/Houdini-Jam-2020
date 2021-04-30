@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ public class AiWaypoint
     {
         connections.ForEach(w => w.connections.Remove(this));
         connections.ForEach(w => w.clusterConnections.Remove(this));
-        WaypointManager.Instance.waypointClusters[cluster].Remove(this);
+        WaypointManager.Instance.waypointClusters [cluster].Remove(this);
         WaypointManager.Instance.Waypoints.Remove(this);
     }
 }

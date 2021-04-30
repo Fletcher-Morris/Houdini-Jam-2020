@@ -1,7 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Text;
+using UnityEngine;
 
 public static class Extensions
 {
@@ -9,7 +9,7 @@ public static class Extensions
     public static Vector2Int RandomVec2(int _minX, int _minY, Vector2Int _max) => RandomVec2(_minX, _minY, _max.x, _max.y);
     public static Vector2Int RandomVec2(Vector2Int _min, int _maxX, int _maxY) => RandomVec2(_min.x, _min.y, _maxX, _maxY);
     public static Vector2Int RandomVec2(int _minX, int _minY, int _maxX, int _maxY) => new Vector2Int(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY));
-    public static Vector3 RandomVec3(float _min, float _max) => new Vector3(Random.Range(_min, _max),Random.Range(_min, _max),Random.Range(_min, _max));
+    public static Vector3 RandomVec3(float _min, float _max) => new Vector3(Random.Range(_min, _max), Random.Range(_min, _max), Random.Range(_min, _max));
     public static Vector3 ToTopDownVec3(this Vector2 _value) => new Vector3(_value.x, 0, _value.y);
     public static Vector2 ToTopDownVec2(this Vector3 _value) => new Vector2(_value.x, _value.z);
     public static Vector2 Round(this Vector2 _value) => new Vector2(_value.x.RoundToInt(), _value.y.RoundToInt());
@@ -20,15 +20,15 @@ public static class Extensions
     public static Quaternion RotateTowards(this Quaternion _value, Quaternion _target, float _degrees) => Quaternion.RotateTowards(_value, _target, _degrees);
     public static Quaternion ToQuaternion(this Vector3 _value) => Quaternion.Euler(_value);
     public static Vector2 Rotate(this Vector2 _value, float _degrees) => new Vector2(
-            _value.x * Mathf.Cos(_degrees * Mathf.Deg2Rad)
-            - _value.y * Mathf.Sin(_degrees * Mathf.Deg2Rad),
-            _value.x * Mathf.Sin(_degrees * Mathf.Deg2Rad)
-            + _value.y * Mathf.Cos(_degrees * Mathf.Deg2Rad)
-            );
+        _value.x * Mathf.Cos(_degrees * Mathf.Deg2Rad) -
+        _value.y * Mathf.Sin(_degrees * Mathf.Deg2Rad),
+        _value.x * Mathf.Sin(_degrees * Mathf.Deg2Rad) +
+        _value.y * Mathf.Cos(_degrees * Mathf.Deg2Rad)
+    );
     public static Vector2Int RoundToVec2Int(this Vector2 _value) => new Vector2Int(_value.x.RoundToInt(), _value.y.RoundToInt());
     public static float ToAngle(this Vector2 _value)
     {
-        if(_value == Vector2.zero) return 0.0f;
+        if (_value == Vector2.zero) return 0.0f;
         return Mathf.Atan2(_value.x, _value.y) * Mathf.Rad2Deg;
     }
     public static bool IsInRange(this int _value, int _min, int _max) => Mathf.Clamp(_value, _min, _max) == _value;
@@ -62,17 +62,17 @@ public static class Extensions
         return _value;
     }
     public static float Abs(this float _value) => Mathf.Abs(_value);
-    public static float Distance(this Transform _a, Transform _b) => Vector3.Distance(_a.position,_b.position);
-    public static float Distance(this Transform _a, Vector3 _b) => Vector3.Distance(_a.position,_b);
-    public static float Distance(this Vector3 _a, Transform _b) => Vector3.Distance(_a,_b.position);
+    public static float Distance(this Transform _a, Transform _b) => Vector3.Distance(_a.position, _b.position);
+    public static float Distance(this Transform _a, Vector3 _b) => Vector3.Distance(_a.position, _b);
+    public static float Distance(this Vector3 _a, Transform _b) => Vector3.Distance(_a, _b.position);
     public static int ClosestPoint(this Vector3 _value, List<Vector3> _list)
     {
         int result = 0;
         float closestDist = Mathf.Infinity;
-        for(int i = 0; i < _list.Count; i++)
+        for (int i = 0; i < _list.Count; i++)
         {
-            float dist = Vector3.Distance(_value, _list[i]);
-            if(dist < closestDist)
+            float dist = Vector3.Distance(_value, _list [i]);
+            if (dist < closestDist)
             {
                 closestDist = dist;
                 result = i;
@@ -121,7 +121,7 @@ public static class Extensions
         StringBuilder builder = new StringBuilder(_string);
         for (int i = 0; i < _string.Length; i++)
         {
-            if (!AlphaNumeric.Contains(_string[i].ToString().ToLower()))
+            if (!AlphaNumeric.Contains(_string [i].ToString().ToLower()))
             {
                 builder.Remove(i, 1);
                 builder.Insert(i, '_');
@@ -135,8 +135,8 @@ public static class Extensions
         if (_length <= 0) return result;
         for (int i = 0; i < _length; i++)
         {
-            if (_alphanumeric) result += AlphaNumeric[Random.Range(0, AlphaNumeric.Length)];
-            else result += Alphabet[Random.Range(0, Alphabet.Length)];
+            if (_alphanumeric) result += AlphaNumeric [Random.Range(0, AlphaNumeric.Length)];
+            else result += Alphabet [Random.Range(0, Alphabet.Length)];
         }
         return result;
     }
@@ -145,17 +145,17 @@ public static class Extensions
     public static string RandomString(bool _alphanumeric) => RandomString(16, _alphanumeric);
     public static string Alphabet = "abcdefghijklmnopqrstuvwxyz";
     public static string AlphaNumeric = "abcdefghijklmnopqrstuvwxyz0123456789";
-    public static List<T> ToList<T>(this T[] _array) => new List<T>(_array);
-    public static T RandomItem<T>(this T[] _array) => _array.ToList().RandomItem();
+    public static List<T> ToList<T>(this T [] _array) => new List<T>(_array);
+    public static T RandomItem<T>(this T [] _array) => _array.ToList().RandomItem();
     public static T RandomItem<T>(this List<T> _list)
     {
         int count = _list.Count;
-        return _list[Random.Range(0, count - 1)];
+        return _list [Random.Range(0, count - 1)];
     }
     public static T LastItem<T>(this List<T> _list)
     {
         if (_list.Count == 0) return default;
-        return _list[_list.Count - 1];
+        return _list [_list.Count - 1];
     }
     public static List<T> Reversed<T>(this List<T> _list)
     {
@@ -166,13 +166,13 @@ public static class Extensions
     public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
     public static Color NumberToColor(this float _value, float _max)
     {
-        float hue = Mathf.InverseLerp(0.0f,_max,_value);
-        return Color.HSVToRGB(hue,1.0f,1.0f);
+        float hue = Mathf.InverseLerp(0.0f, _max, _value);
+        return Color.HSVToRGB(hue, 1.0f, 1.0f);
     }
     public static Color NumberToColor(this int _value, int _max)
     {
-        float hue = Mathf.InverseLerp(0.0f,_max,_value);
-        return Color.HSVToRGB(hue,1.0f,1.0f);
+        float hue = Mathf.InverseLerp(0.0f, _max, _value);
+        return Color.HSVToRGB(hue, 1.0f, 1.0f);
     }
     public static List<Vector3> FibonacciPoints(int _samples)
     {
@@ -180,7 +180,7 @@ public static class Extensions
         float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
         for (int i = 0; i < _samples; i++)
         {
-            float y = 1.0f - (i / (float)(_samples - 1) * 2.0f);
+            float y = 1.0f - (i / (float) (_samples - 1) * 2.0f);
             float radius = Mathf.Sqrt(1.0f - (y * y));
             float theta = phi * i;
             float x = Mathf.Cos(theta) * radius;

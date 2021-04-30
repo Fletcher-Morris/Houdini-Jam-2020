@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,7 +31,7 @@ public class Rotator : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (updateMethod !=UpdateMethod.FixedUpdate) return;
+        if (updateMethod != UpdateMethod.FixedUpdate) return;
         Rotate(Time.fixedDeltaTime);
     }
 

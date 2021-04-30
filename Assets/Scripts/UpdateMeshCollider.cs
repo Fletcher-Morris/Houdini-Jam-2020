@@ -5,8 +5,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class UpdateMeshCollider : MonoBehaviour
 {
-	public void UpdateCollider()
-	{
+    public void UpdateCollider()
+    {
         GameObject holder = gameObject.GetComponentInChildren<MeshFilter>().gameObject;
         Mesh mesh = holder.GetComponent<MeshFilter>().sharedMesh;
         if (mesh == null) return;
@@ -14,5 +14,5 @@ public class UpdateMeshCollider : MonoBehaviour
         if (collider == null) collider = holder.AddComponent<MeshCollider>();
         collider.sharedMesh = mesh;
         Debug.Log($"Updated mesh collider on '{holder.gameObject.name}'!");
-	}
+    }
 }

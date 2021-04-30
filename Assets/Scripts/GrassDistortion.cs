@@ -1,7 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 [ExecuteInEditMode]
 public class GrassDistortion : MonoBehaviour
@@ -15,19 +15,18 @@ public class GrassDistortion : MonoBehaviour
     {
         Instance = this;
     }
-    
+
     const int MAX_OBJECTS = 32;
     public List<GrassObject> trackObjects = new List<GrassObject>();
     private List<GrassObject> sortedList = new List<GrassObject>();
-    private Vector4[] m_values = new Vector4[MAX_OBJECTS];
-
+    private Vector4 [] m_values = new Vector4 [MAX_OBJECTS];
 
     private void Update()
     {
-        if(Instance == null) Instance = this;
+        if (Instance == null) Instance = this;
 
-        if(trackObjects.Count <= 0) return;
-        if(trackObjects.Count > MAX_OBJECTS)
+        if (trackObjects.Count <= 0) return;
+        if (trackObjects.Count > MAX_OBJECTS)
         {
             CheckClosestObjects();
         }
@@ -35,15 +34,15 @@ public class GrassDistortion : MonoBehaviour
         {
             sortedList = trackObjects;
         }
-        for(int i = 0; i < MAX_OBJECTS; i++)
+        for (int i = 0; i < MAX_OBJECTS; i++)
         {
-            if(sortedList.Count <= i || sortedList[i] == null)
+            if (sortedList.Count <= i || sortedList [i] == null)
             {
-                m_values[i] = Vector4.zero;
+                m_values [i] = Vector4.zero;
             }
             else
             {
-                m_values[i] = sortedList[i].GetVector();
+                m_values [i] = sortedList [i].GetVector();
             }
         }
     }
@@ -54,7 +53,7 @@ public class GrassDistortion : MonoBehaviour
     private void CheckClosestObjects()
     {
         Vector3 camPos = Camera.main.transform.position;
-        sortedList = trackObjects.OrderBy(o=>(Vector3.Distance(o.transform.position,camPos)-o.radius).Clamp(0,Mathf.Infinity)).ToList();
+        sortedList = trackObjects.OrderBy(o => (Vector3.Distance(o.transform.position, camPos) - o.radius).Clamp(0, Mathf.Infinity)).ToList();
     }
 
     public void UpdateShaderArray()
@@ -64,11 +63,11 @@ public class GrassDistortion : MonoBehaviour
 
     public void AddObject(GrassObject obj)
     {
-        if(trackObjects.Contains(obj)==false)trackObjects.Add(obj);
+        if (trackObjects.Contains(obj) == false) trackObjects.Add(obj);
     }
     public void RemoveObject(GrassObject obj)
     {
-        if(trackObjects.Contains(obj))trackObjects.Remove(obj);
+        if (trackObjects.Contains(obj)) trackObjects.Remove(obj);
     }
 
 }
