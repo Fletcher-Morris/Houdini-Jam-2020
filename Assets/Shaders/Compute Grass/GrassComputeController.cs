@@ -105,6 +105,12 @@ public class GrassComputeController : MonoBehaviour
         }
         m_drawBuffer.SetCounterValue(0);
         m_argsBuffer.SetData(m_argsBufferReset);
-        Bounds bounds = TransformBounds(m_localBounds);
+
+        //  POSSIBLE ERROR
+        Bounds bounds = this.TransformBounds(m_localBounds);
+
+        m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
+        m_compute.Dispatch(m_kernelId, m_dispatchSize, 1,1);
+        Graphics.DrawProceduralIndirect(m_mat, bounds, MeshTopology.Triangles, m_argsBuffer,0,null,null,UnityEngine.Rendering.ShadowCastingMode.On, true, gameObject.layer);
     }
 }

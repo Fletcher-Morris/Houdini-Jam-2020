@@ -87,7 +87,7 @@ public static class Extensions
         float closestDist = Mathf.Infinity;
         for (int i = 0; i < _list.Count; i++)
         {
-            float dist = Vector3.Distance(_value, _list [i]);
+            float dist = Vector3.Distance(_value, _list[i]);
             if (dist < closestDist)
             {
                 closestDist = dist;
@@ -141,7 +141,7 @@ public static class Extensions
         StringBuilder builder = new StringBuilder(_string);
         for (int i = 0; i < _string.Length; i++)
         {
-            if (!AlphaNumeric.Contains(_string [i].ToString().ToLower()))
+            if (!AlphaNumeric.Contains(_string[i].ToString().ToLower()))
             {
                 builder.Remove(i, 1);
                 builder.Insert(i, '_');
@@ -158,7 +158,7 @@ public static class Extensions
         StringBuilder builder = new StringBuilder(_string);
         for (int i = 0; i < _string.Length; i++)
         {
-            if (!Alphabet.Contains(_string [i].ToString().ToLower()))
+            if (!Alphabet.Contains(_string[i].ToString().ToLower()))
             {
                 builder.Remove(i, 1);
                 builder.Insert(i, '_');
@@ -168,7 +168,7 @@ public static class Extensions
     }
     public static string ToTitleCase(this string _string)
     {
-        return string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string [0]) + (_string.Substring(1).ToLower());
+        return string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string[0]) + (_string.Substring(1).ToLower());
     }
     public static string RandomString(int _length, bool _alphanumeric)
     {
@@ -176,8 +176,8 @@ public static class Extensions
         if (_length <= 0) return result;
         for (int i = 0; i < _length; i++)
         {
-            if (_alphanumeric) result += AlphaNumeric [Random.Range(0, AlphaNumeric.Length)];
-            else result += Alphabet [Random.Range(0, Alphabet.Length)];
+            if (_alphanumeric) result += AlphaNumeric[Random.Range(0, AlphaNumeric.Length)];
+            else result += Alphabet[Random.Range(0, Alphabet.Length)];
         }
         return result;
     }
@@ -186,17 +186,17 @@ public static class Extensions
     public static string RandomString(bool _alphanumeric) => RandomString(16, _alphanumeric);
     public static string Alphabet = "abcdefghijklmnopqrstuvwxyz";
     public static string AlphaNumeric = "abcdefghijklmnopqrstuvwxyz0123456789";
-    public static List<T> ToList<T>(this T [] _array) => new List<T>(_array);
-    public static T RandomItem<T>(this T [] _array) => _array.ToList().RandomItem();
+    public static List<T> ToList<T>(this T[] _array) => new List<T>(_array);
+    public static T RandomItem<T>(this T[] _array) => _array.ToList().RandomItem();
     public static T RandomItem<T>(this List<T> _list)
     {
         int count = _list.Count;
-        return _list [Random.Range(0, count - 1)];
+        return _list[Random.Range(0, count - 1)];
     }
     public static T LastItem<T>(this List<T> _list)
     {
         if (_list.Count == 0) return default;
-        return _list [_list.Count - 1];
+        return _list[_list.Count - 1];
     }
     public static List<T> Reversed<T>(this List<T> _list)
     {
@@ -225,7 +225,7 @@ public static class Extensions
         float phi = Mathf.PI * (3.0f - Mathf.Sqrt(5.0f));
         for (int i = 0; i < _samples; i++)
         {
-            float y = 1.0f - (i / (float) (_samples - 1) * 2.0f);
+            float y = 1.0f - (i / (float)(_samples - 1) * 2.0f);
             float radius = Mathf.Sqrt(1.0f - (y * y));
             float theta = phi * i;
             float x = Mathf.Cos(theta) * radius;
@@ -233,5 +233,17 @@ public static class Extensions
             points.Add(new Vector3(x, y, z));
         }
         return points;
+    }
+    public static Bounds TransformBounds(this MonoBehaviour _mb, Bounds _localBounds)
+    {
+        var center = _mb.transform.TransformPoint(_localBounds.center);
+        var extents = _localBounds.extents;
+        var axisX = _mb.transform.TransformVector(extents.x, 0, 0);
+        var axisY = _mb.transform.TransformVector(0, extents.y, 0);
+        var axisZ = _mb.transform.TransformVector(0, 0, extents.z);
+        extents.x = Mathf.Abs(axisX.x) + Mathf.Abs(axisY.x) + Mathf.Abs(axisZ.x);
+        extents.y = Mathf.Abs(axisX.y) + Mathf.Abs(axisY.y) + Mathf.Abs(axisZ.y);
+        extents.z = Mathf.Abs(axisX.z) + Mathf.Abs(axisY.z) + Mathf.Abs(axisZ.z);
+        return new Bounds { center = center, extents = extents };
     }
 }

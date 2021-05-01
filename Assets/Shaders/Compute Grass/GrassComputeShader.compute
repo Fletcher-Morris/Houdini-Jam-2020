@@ -1,14 +1,43 @@
-// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+#pragma kernel Main
 
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-RWTexture2D<float4> Result;
-
-[numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+struct SourceVertex
 {
-    // TODO: insert actual code here!
+    float3 positionOS;
+}
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+StructuredBuffer<SourceVertex> _SourceVertices;
+StructuredBuffer<int> _SourceTriangles;
+
+struct DrawVertex{
+    float3 positionOS;
+    float height;
+}
+
+struct DrawTriangle
+{
+    float3 lightingNormalWS;
+    DrawVertex vertices[3];
+}
+
+AppendStructuredBuffer<DrawTriangle> _DrawTriangles;
+
+struct IndirectArgs
+{
+    uint verticesPerInstance;
+    uint instanceCount;
+    uint startVertexIndex;
+    uint startInstanceIndex;
+}
+
+RWStructuredBuffer<IndirectArgs> _IndirectArgs;
+
+int _SourceTriangleCount;
+float4x4 _localToWorld;
+
+[numthreads(128,1,1)]
+void Main(uint3 id : SV_DISPATCHTHREADID)
+{
+    if((int)id.x >= _SourceTriangleCount) return;
+
+    
 }
