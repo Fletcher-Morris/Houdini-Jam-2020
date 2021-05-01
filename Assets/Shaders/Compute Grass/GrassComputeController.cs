@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 public class GrassComputeController : MonoBehaviour
 {
     [SerializeField] private Mesh sourceMesh = default;
-    [SerializeField] private ComputeShader grassComputeShader = default;
+    [SerializeField] private ComputeShader m_compute = default;
     [SerializeField] private Material material = default;
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     private struct SourceVertex
@@ -31,7 +31,7 @@ public class GrassComputeController : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Assert(grassComputeShader != null, "The grass compute shader is null", gameObject);
+        Debug.Assert(m_compute != null, "The grass compute shader is null", gameObject);
         Debug.Assert(material != null, "The material is null", gameObject);
 
         if (initialized)
@@ -60,18 +60,19 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer = new ComputeBuffer(numSourceTriangles, DRAW_STRIDE, ComputeBufferType.Append);
         drawBuffer.SetCounterValue(0);
         argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
+        m_grassSettingsBuffer = new ComputeBuffer(1, GRASS_SETTINGS_STRIDE, ComputeBufferType.Structured,ComputeBufferMode.Dynamic);
+        idGrassKernel = m_compute.FindKernel("Main");
 
-        idGrassKernel = grassComputeShader.FindKernel("Main");
-
-        grassComputeShader.SetBuffer(idGrassKernel, "_SourceVertices", sourceVertBuffer);
-        grassComputeShader.SetBuffer(idGrassKernel, "_SourceTriangles", sourceTriBuffer);
-        grassComputeShader.SetBuffer(idGrassKernel, "_DrawTriangles", drawBuffer);
-        grassComputeShader.SetBuffer(idGrassKernel, "_IndirectArgsBuffer", argsBuffer);
-        grassComputeShader.SetInt("_NumSourceTriangles", numSourceTriangles);
+        m_compute.SetBuffer(idGrassKernel, "_SourceVertices", sourceVertBuffer);
+        m_compute.SetBuffer(idGrassKernel, "_SourceTriangles", sourceTriBuffer);
+        m_compute.SetBuffer(idGrassKernel, "_DrawTriangles", drawBuffer);
+        m_compute.SetBuffer(idGrassKernel, "_IndirectArgsBuffer", argsBuffer);
+        m_compute.SetInt("_NumSourceTriangles", numSourceTriangles);
+        m_compute.SetBuffer(idGrassKernel, "_GrassSettingsBuffer", m_grassSettingsBuffer);
 
         material.SetBuffer("_DrawTriangles", drawBuffer);
 
-        grassComputeShader.GetKernelThreadGroupSizes(idGrassKernel, out uint threadGroupSize, out _, out _);
+        m_compute.GetKernelThreadGroupSizes(idGrassKernel, out uint threadGroupSize, out _, out _);
         dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
 
         localBounds = sourceMesh.bounds;
@@ -86,6 +87,7 @@ public class GrassComputeController : MonoBehaviour
             sourceTriBuffer.Release();
             drawBuffer.Release();
             argsBuffer.Release();
+            m_grassSettingsBuffer.Release();
         }
         initialized = false;
     }
@@ -113,13 +115,27 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer.SetCounterValue(0);
         argsBuffer.SetData(argsBufferReset);
 
+        if(m_prevGrassSettings.GetHashCode() != grassSettings.SettingsData.GetHashCode()) SubmitGrassSettings();
+
         Bounds bounds = TransformBounds(localBounds);
 
-        grassComputeShader.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
+        m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
 
-        grassComputeShader.Dispatch(idGrassKernel, dispatchSize, 1, 1);
+        m_compute.Dispatch(idGrassKernel, dispatchSize, 1, 1);
 
         Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
             null, null, ShadowCastingMode.Off, true, gameObject.layer);
+    }
+
+    private const int GRASS_SETTINGS_STRIDE = (sizeof(float)*4)+(sizeof(int));
+    public ComputeGrassSettings grassSettings = default;
+    private ComputeGrassSettingsData m_prevGrassSettings = default;
+    private ComputeBuffer m_grassSettingsBuffer;
+    private void SubmitGrassSettings()
+    {
+        ComputeGrassSettingsData[] data = new ComputeGrassSettingsData[1];
+        data[0] = grassSettings.SettingsData;
+        m_grassSettingsBuffer.SetData(data);
+        m_prevGrassSettings = grassSettings.SettingsData;
     }
 }
