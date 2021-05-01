@@ -60,7 +60,6 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer = new ComputeBuffer(numSourceTriangles, DRAW_STRIDE, ComputeBufferType.Append);
         drawBuffer.SetCounterValue(0);
         argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
-        m_grassSettingsBuffer = new ComputeBuffer(1, GRASS_SETTINGS_STRIDE, ComputeBufferType.Structured,ComputeBufferMode.Dynamic);
         idGrassKernel = m_compute.FindKernel("Main");
 
         m_compute.SetBuffer(idGrassKernel, "_SourceVertices", sourceVertBuffer);
@@ -68,7 +67,6 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetBuffer(idGrassKernel, "_DrawTriangles", drawBuffer);
         m_compute.SetBuffer(idGrassKernel, "_IndirectArgsBuffer", argsBuffer);
         m_compute.SetInt("_NumSourceTriangles", numSourceTriangles);
-        m_compute.SetBuffer(idGrassKernel, "_GrassSettingsBuffer", m_grassSettingsBuffer);
 
         material.SetBuffer("_DrawTriangles", drawBuffer);
 
@@ -87,7 +85,6 @@ public class GrassComputeController : MonoBehaviour
             sourceTriBuffer.Release();
             drawBuffer.Release();
             argsBuffer.Release();
-            m_grassSettingsBuffer.Release();
         }
         initialized = false;
     }
@@ -115,7 +112,7 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer.SetCounterValue(0);
         argsBuffer.SetData(argsBufferReset);
 
-        if(m_prevGrassSettings.GetHashCode() != grassSettings.SettingsData.GetHashCode()) SubmitGrassSettings();
+        if(m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
 
         Bounds bounds = TransformBounds(localBounds);
 
@@ -126,16 +123,17 @@ public class GrassComputeController : MonoBehaviour
         Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
             null, null, ShadowCastingMode.Off, true, gameObject.layer);
     }
-
-    private const int GRASS_SETTINGS_STRIDE = (sizeof(float)*4)+(sizeof(int));
     public ComputeGrassSettings grassSettings = default;
     private ComputeGrassSettingsData m_prevGrassSettings = default;
-    private ComputeBuffer m_grassSettingsBuffer;
     private void SubmitGrassSettings()
     {
-        ComputeGrassSettingsData[] data = new ComputeGrassSettingsData[1];
-        data[0] = grassSettings.SettingsData;
-        m_grassSettingsBuffer.SetData(data);
         m_prevGrassSettings = grassSettings.SettingsData;
+
+        m_compute.SetFloat("_GrassHeight", grassSettings.SettingsData.grassHeight);
+        m_compute.SetFloat("_GrassHeightRanom", grassSettings.SettingsData.grassHeightRandom);
+        m_compute.SetFloat("_GrassWidth", grassSettings.SettingsData.grassWidth);
+        m_compute.SetFloat("_GrassWdthRandom", grassSettings.SettingsData.grassWidthRandom);
+        m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
+        m_compute.SetInt("_GrassPerVertex", grassSettings.SettingsData.grassPerVertex);
     }
 }

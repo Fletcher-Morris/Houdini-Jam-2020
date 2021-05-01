@@ -35,15 +35,13 @@ int _NumSourceTriangles;
 float4x4 _LocalToWorld;
 
 // GRASS PROPERTIES
-struct GrassSettings
-{
     float _GrassHeight;
     float _GrassHeightRandom;
     float _GrassWidth;
     float _GrassWidthRandom;
     int _GrassSegments;
-};
-StructuredBuffer<GrassSettings> _GrassSettingsBuffer;
+    int _GrassPerVertex;
+    float _RandomPosition;
 
 void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS, out float3x3 tsToWs)
 {
@@ -54,9 +52,9 @@ void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float
     GetTriangleNormalAndTSToWSMatrix(positionA_WS, positionB_WS, positionC_WS, normalWS, tsToWs);
 }
 
-DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv)
+DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
 {
-    float3 offsetTS = float3(uv.x - 0.5f, 0, uv.y);
+    float3 offsetTS = float3((uv.x - 0.5f)*bladeWidth, 0, bladeHeight);
     float3 offsetWS = mul(tsToWs, offsetTS);
     float3 positionWS = anchorWS + offsetWS;
     DrawVertex output = (DrawVertex)0;
@@ -82,21 +80,56 @@ void Main(uint3 id : SV_DispatchThreadID)
     _SourceVertices[_SourceTriangles[triStart + 2]],
     positionWS, normalWS, tsToWs);
 
-    DrawVertex vertices[3];
+    for(int grassBlade = 0; grassBlade < _GrassPerVertex; grassBlade++)
+    {
+        uint bladeSegments = _GrassSegments;
+        uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
+
+        DrawVertex vertices[3];
+
+        float3 randomPosWS = positionWS + (_RandomPosition * rand(float4(positionWS,grassBlade)));
+
+        float bladeHeight = (rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) * _GrassHeightRandom) + _GrassHeight;
     
-    vertices[0] = SetupBladePoint(positionWS, tsToWs, float2(0, 0));
-    
-    vertices[1] = SetupBladePoint(positionWS, tsToWs, float2(1, 0));
-    
-    vertices[2] = SetupBladePoint(positionWS, tsToWs, float2(0.5, 1));
-    
-    DrawTriangle tri = (DrawTriangle)0;
-    tri.lightingNormalWS = normalWS;
-    tri.vertices[0] = vertices[0];
-    tri.vertices[1] = vertices[1];
-    tri.vertices[2] = vertices[2];
-    _DrawTriangles.Append(tri);
-    
-    InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3);
-    
+        DrawTriangle tri = (DrawTriangle)0;
+
+        for(uint segment = 0; segment < bladeSegments-1; segment++)
+        {
+            float segmentLerp = segment / bladeSegments;
+            float lower = segmentLerp;
+            float upper = segmentLerp + (1.0f / bladeSegments);
+
+
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*bladeHeight,1*_GrassWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*bladeHeight,1*_GrassWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,1*_GrassWidth);
+            tri.lightingNormalWS = normalWS;
+            tri.vertices[0] = vertices[0];
+            tri.vertices[1] = vertices[1];
+            tri.vertices[2] = vertices[2];
+            _DrawTriangles.Append(tri);
+
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*bladeHeight,1*_GrassWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,1*_GrassWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),lower*bladeHeight,1*_GrassWidth);
+            tri.lightingNormalWS = normalWS;
+            tri.vertices[0] = vertices[0];
+            tri.vertices[1] = vertices[1];
+            tri.vertices[2] = vertices[2];
+            _DrawTriangles.Append(tri);
+        }
+
+        float tipLower = 1.0f - (1.0f / bladeSegments);
+        vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower,1*_GrassWidth);
+        vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower,1*_GrassWidth);
+        vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),bladeHeight,1*_GrassWidth);
+        
+        tri.lightingNormalWS = normalWS;
+        tri.vertices[0] = vertices[0];
+        tri.vertices[1] = vertices[1];
+        tri.vertices[2] = vertices[2];
+        _DrawTriangles.Append(tri);
+        
+    }    
+        InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3);
 }

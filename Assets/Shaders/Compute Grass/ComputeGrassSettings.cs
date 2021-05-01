@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
-using UnityEditor;
 
 [CreateAssetMenu(fileName = "Compute Grass")]
 public class ComputeGrassSettings : ScriptableObject
@@ -10,12 +10,29 @@ public class ComputeGrassSettings : ScriptableObject
 }
 
 [System.Serializable]
-[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
 public struct ComputeGrassSettingsData
 {
-    float grassHeight;
-    float grassHeightRandom;
-    float grassWidth;
-    float grassWidthRandom;
-    [Range(1, 4)] int grassSegments;
+    [Min(0)] public float grassHeight;
+    [Min(0)] public float grassHeightRandom;
+    [Min(0)] public float grassWidth;
+    [Min(0)] public float grassWidthRandom;
+    [Range(1, 4)] public int grassSegments;
+    [Range(1, 8)] public int grassPerVertex;
+    [Min(0)] public float randomPosition;
+
+    public int Checksum
+    {
+        get
+        {
+            int result = 0;
+            result += (grassHeight * 12345).RoundToInt();
+            result += (grassWidth * 12345).RoundToInt();
+            result += (grassHeightRandom * 12345).RoundToInt();
+            result += (grassWidthRandom * 112345).RoundToInt();
+            result += grassSegments;
+            result += grassPerVertex * 123;
+            result += (randomPosition * 1234).RoundToInt();
+            return result;
+        }
+    }
 }
