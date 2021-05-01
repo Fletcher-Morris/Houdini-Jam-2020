@@ -1,116 +1,125 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
+[ExecuteInEditMode]
 public class GrassComputeController : MonoBehaviour
 {
-    [Header("Critical Properties")]
-    [SerializeField] private Mesh m_mesh = default;
-    [SerializeField] private ComputeShader m_compute = default;
-    [SerializeField] private Material m_mat = default;
-    [Header("Grass Settings")]
-    [SerializeField] private float m_grassHeight = 1.0f;
-
-    private bool m_computeInitialised = default;
-    private ComputeBuffer m_sourceVertBuffer = default;
-    private ComputeBuffer m_sourceTriBuffer = default;
-    private ComputeBuffer m_drawBuffer = default;
-    private ComputeBuffer m_argsBuffer = default;
-    private int m_kernelId = default;
-    private int m_dispatchSize = default;
-    private Bounds m_localBounds = default;
-    private const int SOURCE_VERT_STRIDE = sizeof(float) * 3;
-    private const int SOURCE_TRI_STRIDE = sizeof(int);
-    private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
-    private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
-    private int[] m_argsBufferReset = new int[] { 0, 1, 0, 0 };
-
+    [SerializeField] private Mesh sourceMesh = default;
+    [SerializeField] private ComputeShader grassComputeShader = default;
+    [SerializeField] private Material material = default;
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     private struct SourceVertex
     {
         public Vector3 position;
     }
+    private bool initialized;
+    private ComputeBuffer sourceVertBuffer;
+    private ComputeBuffer sourceTriBuffer;
+    private ComputeBuffer drawBuffer;
+    private ComputeBuffer argsBuffer;
+    private int idGrassKernel;
+    private int dispatchSize;
+    private Bounds localBounds;
+
+    private const int SOURCE_VERT_STRIDE = sizeof(float) * 3;
+    private const int SOURCE_TRI_STRIDE = sizeof(int);
+    private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
+    private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
+    private int[] argsBufferReset = new int[] { 0, 1, 0, 0 };
 
     private void OnEnable()
     {
-        //  Initialise.
-        Debug.Assert(m_compute != null, "The grass compute shader is null!", gameObject);
-        Debug.Assert(m_mat != null, "The grass material is null!", gameObject);
-        if (m_computeInitialised)
+        Debug.Assert(grassComputeShader != null, "The grass compute shader is null", gameObject);
+        Debug.Assert(material != null, "The material is null", gameObject);
+
+        if (initialized)
         {
             OnDisable();
         }
-        m_computeInitialised = true;
+        initialized = true;
 
-        //  Get input mesh data.
-        Vector3[] positions = m_mesh.vertices;
-        int[] tris = m_mesh.triangles;
-        SourceVertex[] verts = new SourceVertex[positions.Length];
-        for (int v = 0; v < verts.Length; v++)
+        Vector3[] positions = sourceMesh.vertices;
+        int[] tris = sourceMesh.triangles;
+
+        SourceVertex[] vertices = new SourceVertex[positions.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
-            verts[v] = new SourceVertex() { position = positions[v] };
+            vertices[i] = new SourceVertex()
+            {
+                position = positions[i],
+            };
         }
-        int sourceTriCount = tris.Length / 3;
+        int numSourceTriangles = tris.Length / 3;
 
-        //  Create compute buffers.
-        m_sourceVertBuffer = new ComputeBuffer(verts.Length,
-            SOURCE_VERT_STRIDE,
-            ComputeBufferType.Structured,
-            ComputeBufferMode.Immutable);
-        m_sourceVertBuffer.SetData(verts);
-        m_sourceTriBuffer = new ComputeBuffer(
-            tris.Length,
-            SOURCE_TRI_STRIDE,
-            ComputeBufferType.Structured,
-            ComputeBufferMode.Immutable);
-        m_sourceTriBuffer.SetData(tris);
-        m_drawBuffer = new ComputeBuffer(sourceTriCount, DRAW_STRIDE, ComputeBufferType.Append);
-        m_drawBuffer.SetCounterValue(0);
-        m_argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
+        sourceVertBuffer = new ComputeBuffer(vertices.Length, SOURCE_VERT_STRIDE, ComputeBufferType.Structured, ComputeBufferMode.Immutable);
+        sourceVertBuffer.SetData(vertices);
+        sourceTriBuffer = new ComputeBuffer(tris.Length, SOURCE_TRI_STRIDE, ComputeBufferType.Structured, ComputeBufferMode.Immutable);
+        sourceTriBuffer.SetData(tris);
+        drawBuffer = new ComputeBuffer(numSourceTriangles, DRAW_STRIDE, ComputeBufferType.Append);
+        drawBuffer.SetCounterValue(0);
+        argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
 
-        m_kernelId = m_compute.FindKernel("Main");
+        idGrassKernel = grassComputeShader.FindKernel("Main");
 
-        //  Set compute buffer contents.
-        m_compute.SetBuffer(m_kernelId, "_SourceVertices", m_sourceVertBuffer);
-        m_compute.SetBuffer(m_kernelId, "_SourceTrianges", m_sourceTriBuffer);
-        m_compute.SetBuffer(m_kernelId, "_DrawTrianges", m_drawBuffer);
-        m_compute.SetBuffer(m_kernelId, "_IndirectArgsBuffer", m_argsBuffer);
-        m_compute.SetInt("_SourceTriangleCount", sourceTriCount);
-        m_mat.SetBuffer("_DrawTrianges", m_drawBuffer);
+        grassComputeShader.SetBuffer(idGrassKernel, "_SourceVertices", sourceVertBuffer);
+        grassComputeShader.SetBuffer(idGrassKernel, "_SourceTriangles", sourceTriBuffer);
+        grassComputeShader.SetBuffer(idGrassKernel, "_DrawTriangles", drawBuffer);
+        grassComputeShader.SetBuffer(idGrassKernel, "_IndirectArgsBuffer", argsBuffer);
+        grassComputeShader.SetInt("_NumSourceTriangles", numSourceTriangles);
 
-        //  Calculate required threads.
-        m_compute.GetKernelThreadGroupSizes(m_kernelId, out uint threadGroupSize, out _, out _);
-        m_dispatchSize = Mathf.CeilToInt((float)sourceTriCount/threadGroupSize);
+        material.SetBuffer("_DrawTriangles", drawBuffer);
 
-        m_localBounds = m_mesh.bounds;
-        m_localBounds.Expand(1);
+        grassComputeShader.GetKernelThreadGroupSizes(idGrassKernel, out uint threadGroupSize, out _, out _);
+        dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
+
+        localBounds = sourceMesh.bounds;
+        localBounds.Expand(1);
     }
+
     private void OnDisable()
     {
-        if(m_computeInitialised)
+        if (initialized)
         {
-            m_sourceVertBuffer.Release();
-            m_sourceTriBuffer.Release();
-            m_drawBuffer.Release();
-            m_argsBuffer.Release();
+            sourceVertBuffer.Release();
+            sourceTriBuffer.Release();
+            drawBuffer.Release();
+            argsBuffer.Release();
         }
-        m_computeInitialised = false;
+        initialized = false;
     }
+    public Bounds TransformBounds(Bounds boundsOS)
+    {
+        var center = transform.TransformPoint(boundsOS.center);
+        var extents = boundsOS.extents;
+        var axisX = transform.TransformVector(extents.x, 0, 0);
+        var axisY = transform.TransformVector(0, extents.y, 0);
+        var axisZ = transform.TransformVector(0, 0, extents.z);
+        extents.x = Mathf.Abs(axisX.x) + Mathf.Abs(axisY.x) + Mathf.Abs(axisZ.x);
+        extents.y = Mathf.Abs(axisX.y) + Mathf.Abs(axisY.y) + Mathf.Abs(axisZ.y);
+        extents.z = Mathf.Abs(axisX.z) + Mathf.Abs(axisY.z) + Mathf.Abs(axisZ.z);
+        return new Bounds { center = center, extents = extents };
+    }
+
     private void LateUpdate()
     {
-        if(Application.isPlaying == false)
+        if (Application.isPlaying == false)
         {
             OnDisable();
             OnEnable();
         }
-        m_drawBuffer.SetCounterValue(0);
-        m_argsBuffer.SetData(m_argsBufferReset);
 
-        //  POSSIBLE ERROR
-        Bounds bounds = this.TransformBounds(m_localBounds);
+        drawBuffer.SetCounterValue(0);
+        argsBuffer.SetData(argsBufferReset);
 
-        m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
-        m_compute.Dispatch(m_kernelId, m_dispatchSize, 1,1);
-        Graphics.DrawProceduralIndirect(m_mat, bounds, MeshTopology.Triangles, m_argsBuffer,0,null,null,UnityEngine.Rendering.ShadowCastingMode.On, true, gameObject.layer);
+        Bounds bounds = TransformBounds(localBounds);
+
+        grassComputeShader.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
+
+        grassComputeShader.Dispatch(idGrassKernel, dispatchSize, 1, 1);
+
+        Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
+            null, null, ShadowCastingMode.Off, true, gameObject.layer);
     }
 }

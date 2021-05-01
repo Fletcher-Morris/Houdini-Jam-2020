@@ -96,10 +96,7 @@ public static class Extensions
         }
         return result;
     }
-    public static int ClosestPoint(this List<Vector3> _list, Vector3 _value)
-    {
-        return ClosestPoint(_value, _list);
-    }
+    public static int ClosestPoint(this List<Vector3> _list, Vector3 _value) => ClosestPoint(_value, _list);
     public static int RoundToInt(this float _value) => Mathf.RoundToInt(_value);
     public static int CeilToInt(this float _value) => Mathf.CeilToInt(_value);
     public static bool ToBool(this float _value) => _value != 0.0f;
@@ -128,10 +125,7 @@ public static class Extensions
         return te.text;
     }
     public static bool ToBool(this string str) => str == "true" || str == "1";
-    public static bool CoinFlip()
-    {
-        return (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f);
-    }
+    public static bool CoinFlip() => (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f);
     public static string Sanitize(this string _string)
     {
         if (string.IsNullOrEmpty(_string))
@@ -166,10 +160,7 @@ public static class Extensions
         }
         return builder.ToString();
     }
-    public static string ToTitleCase(this string _string)
-    {
-        return string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string[0]) + (_string.Substring(1).ToLower());
-    }
+    public static string ToTitleCase(this string _string) => string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string[0]) + (_string.Substring(1).ToLower());
     public static string RandomString(int _length, bool _alphanumeric)
     {
         string result = "";
@@ -204,21 +195,10 @@ public static class Extensions
         reversedList.Reverse();
         return reversedList;
     }
-    public static void Aphabetise(this List<string> _list)
-    {
-        _list.Sort((a, b) => string.Compare(a, b));
-    }
+    public static void Aphabetise(this List<string> _list) => _list.Sort((a, b) => string.Compare(a, b));
     public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
-    public static Color NumberToColor(this float _value, float _max)
-    {
-        float hue = Mathf.InverseLerp(0.0f, _max, _value);
-        return Color.HSVToRGB(hue, 1.0f, 1.0f);
-    }
-    public static Color NumberToColor(this int _value, int _max)
-    {
-        float hue = Mathf.InverseLerp(0.0f, _max, _value);
-        return Color.HSVToRGB(hue, 1.0f, 1.0f);
-    }
+    public static Color NumberToColor(this float _value, float _max) => Color.HSVToRGB(Mathf.InverseLerp(0.0f, _max, _value), 1.0f, 1.0f);
+    public static Color NumberToColor(this int _value, int _max) => Color.HSVToRGB(Mathf.InverseLerp(0.0f, _max, _value), 1.0f, 1.0f);
     public static List<Vector3> FibonacciPoints(int _samples)
     {
         List<Vector3> points = new List<Vector3>();
