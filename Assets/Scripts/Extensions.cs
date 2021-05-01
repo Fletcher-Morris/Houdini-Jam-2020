@@ -1,7 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+
+//  Fletcher's Useful Functions
 
 public static class Extensions
 {
@@ -34,6 +35,21 @@ public static class Extensions
     public static bool IsInRange(this int _value, int _min, int _max) => Mathf.Clamp(_value, _min, _max) == _value;
     public static bool IsInRange(this Vector2Int _value, Vector2Int _min, Vector2Int _max) => (_value.x.IsInRange(_min.x, _max.x) && _value.y.IsInRange(_min.y, _max.y));
     public static int Abs(this int _value) => Mathf.Abs(_value);
+    public static Vector2 Clamp(this Vector2 _value, Vector2 _min, Vector2 _max)
+    {
+        _value.x = _value.x.Clamp(_min.x, _max.x);
+        _value.y = _value.y.Clamp(_min.y, _max.y);
+        return _value;
+    }
+    public static Vector2 ToVector2(this float _value) => new Vector2(_value, _value);
+    public static Vector3 Clamp(this Vector3 _value, Vector3 _min, Vector3 _max)
+    {
+        _value.x = _value.x.Clamp(_min.x, _max.x);
+        _value.y = _value.y.Clamp(_min.y, _max.y);
+        _value.z = _value.z.Clamp(_min.z, _max.z);
+        return _value;
+    }
+    public static Vector3 ToVector3(this float _value) => new Vector3(_value, _value, _value);
     public static int ToInt(this bool _value) => _value ? 1 : 0;
     public static int ToInt(this string _value) => int.TryParse(_value, out int result) ? result : 0;
     public static float ToFloat(this string _value) => float.TryParse(_value, out float result) ? result : 0;
@@ -118,6 +134,10 @@ public static class Extensions
     }
     public static string Sanitize(this string _string)
     {
+        if (string.IsNullOrEmpty(_string))
+        {
+            return string.Empty;
+        }
         StringBuilder builder = new StringBuilder(_string);
         for (int i = 0; i < _string.Length; i++)
         {
@@ -128,6 +148,27 @@ public static class Extensions
             }
         }
         return builder.ToString();
+    }
+    public static string LettersOnly(this string _string)
+    {
+        if (string.IsNullOrEmpty(_string))
+        {
+            return string.Empty;
+        }
+        StringBuilder builder = new StringBuilder(_string);
+        for (int i = 0; i < _string.Length; i++)
+        {
+            if (!Alphabet.Contains(_string [i].ToString().ToLower()))
+            {
+                builder.Remove(i, 1);
+                builder.Insert(i, '_');
+            }
+        }
+        return builder.ToString();
+    }
+    public static string ToTitleCase(this string _string)
+    {
+        return string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string [0]) + (_string.Substring(1).ToLower());
     }
     public static string RandomString(int _length, bool _alphanumeric)
     {
@@ -162,6 +203,10 @@ public static class Extensions
         List<T> reversedList = new List<T>(_list);
         reversedList.Reverse();
         return reversedList;
+    }
+    public static void Aphabetise(this List<string> _list)
+    {
+        _list.Sort((a, b) => string.Compare(a, b));
     }
     public static string ToHex(this Color col) => ColorUtility.ToHtmlStringRGB(col);
     public static Color NumberToColor(this float _value, float _max)
