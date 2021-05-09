@@ -42,7 +42,7 @@ public class GrassDistortion : MonoBehaviour
             }
             else
             {
-                m_values [i] = sortedList [i].GetVector();
+                m_values [i] = sortedList [i].GetVector() * sortedList[i].gameObject.activeSelf.ToInt() * sortedList[i].enabled.ToInt();
             }
         }
     }

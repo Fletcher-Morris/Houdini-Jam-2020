@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: Compute Grass
   m_EditorClassIdentifier: 
   SettingsData:
-    grassHeight: 0.5
+    grassHeight: 1
     grassHeightRandom: 0
     grassWidth: 0.1
     grassWidthRandom: 0.1
     grassSegments: 1
-    grassPerVertex: 2
+    grassPerVertex: 4
     randomPosition: 0.33333334
-    maxCameraDist: 120
+    maxCameraDist: 50
     minAltitude: 48.2
+    maxAltitude: 55
+    altitudeFade: 0.5
     camDotCuttoff: 0.5
-    m_checksum: 623770
+    minCamDist: 1
+    m_checksum: 881452
