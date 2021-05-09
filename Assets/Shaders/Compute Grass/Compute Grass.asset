@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Compute Grass
   m_EditorClassIdentifier: 
   SettingsData:
-    grassHeight: 0.42
+    grassHeight: 1
     grassHeightRandom: 0
     grassWidth: 0.2
     grassWidthRandom: 0.1
-    grassSegments: 2
+    grassSegments: 4
     grassPerVertex: 1
     randomPosition: 0
+    maxCameraDist: 50

@@ -19,19 +19,21 @@ public struct ComputeGrassSettingsData
     [Range(1, 4)] public int grassSegments;
     [Range(1, 8)] public int grassPerVertex;
     [Min(0)] public float randomPosition;
+    [Min(0)] public float maxCameraDist;
 
     public int Checksum
     {
         get
         {
             int result = 0;
-            result += (grassHeight * 12345).RoundToInt();
-            result += (grassWidth * 12345).RoundToInt();
-            result += (grassHeightRandom * 12345).RoundToInt();
-            result += (grassWidthRandom * 112345).RoundToInt();
-            result += grassSegments;
-            result += grassPerVertex * 123;
-            result += (randomPosition * 1234).RoundToInt();
+            result += (grassHeight * 7550).RoundToInt();
+            result += (grassWidth * 3589).RoundToInt();
+            result += (grassHeightRandom * 2954).RoundToInt();
+            result += (grassWidthRandom * 1232).RoundToInt();
+            result += grassSegments * 242;
+            result += grassPerVertex * 2942;
+            result += (randomPosition * 846).RoundToInt();
+            result += (maxCameraDist * 3253).RoundToInt();
             return result;
         }
     }

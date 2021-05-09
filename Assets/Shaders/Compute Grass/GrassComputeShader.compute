@@ -33,15 +33,17 @@ RWStructuredBuffer<IndirectArgs> _IndirectArgsBuffer;
 
 int _NumSourceTriangles;
 float4x4 _LocalToWorld;
+float3 _WorldSpaceCameraPos;
 
 // GRASS PROPERTIES
-    float _GrassHeight;
-    float _GrassHeightRandom;
-    float _GrassWidth;
-    float _GrassWidthRandom;
-    int _GrassSegments;
-    int _GrassPerVertex;
-    float _RandomPosition;
+float _GrassHeight;
+float _GrassHeightRandom;
+float _GrassWidth;
+float _GrassWidthRandom;
+int _GrassSegments;
+int _GrassPerVertex;
+float _RandomPosition;
+float _MaxCameraDist;
 
 void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS, out float3x3 tsToWs)
 {
@@ -80,6 +82,10 @@ void Main(uint3 id : SV_DispatchThreadID)
     _SourceVertices[_SourceTriangles[triStart + 2]],
     positionWS, normalWS, tsToWs);
 
+    float distToCam = distance(_WorldSpaceCameraPos, positionWS);
+    if(distToCam > _MaxCameraDist) return;
+
+    uint threadTrisTotal = 0;
     for(int grassBlade = 0; grassBlade < _GrassPerVertex; grassBlade++)
     {
         uint bladeSegments = _GrassSegments;
@@ -90,46 +96,55 @@ void Main(uint3 id : SV_DispatchThreadID)
         float3 randomPosWS = positionWS + (_RandomPosition * rand(float4(positionWS,grassBlade)));
 
         float bladeHeight = (rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) * _GrassHeightRandom) + _GrassHeight;
-    
+        float bladeWidth = (rand(float4(randomPosWS.z,randomPosWS.y,randomPosWS.x,grassBlade)) * _GrassWidthRandom) + _GrassWidth;
+        
         DrawTriangle tri = (DrawTriangle)0;
 
+        //bladeSegments = 3;
+
+        float segmentLength = 1.0f/bladeSegments;
         for(uint segment = 0; segment < bladeSegments-1; segment++)
         {
-            float segmentLerp = segment / bladeSegments;
-            float lower = segmentLerp;
-            float upper = segmentLerp + (1.0f / bladeSegments);
+            float lower =  (float)segment * segmentLength;
+            float upper = (float)(segment+1) * segmentLength;
+            float segWidthAbs = 1.0f - (segment / bladeSegments);
+            float segWidth = segWidthAbs * bladeWidth;
 
 
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*bladeHeight,1*_GrassWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*bladeHeight,1*_GrassWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,1*_GrassWidth);
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*bladeHeight,segWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*bladeHeight,segWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,segWidth);
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
             tri.vertices[1] = vertices[1];
             tri.vertices[2] = vertices[2];
             _DrawTriangles.Append(tri);
 
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*bladeHeight,1*_GrassWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,1*_GrassWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),lower*bladeHeight,1*_GrassWidth);
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*bladeHeight,segWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,segWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),lower*bladeHeight,segWidth);
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
             tri.vertices[1] = vertices[1];
             tri.vertices[2] = vertices[2];
             _DrawTriangles.Append(tri);
+
+            threadTrisTotal += 2;
         }
 
-        float tipLower = 1.0f - (1.0f / bladeSegments);
-        vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower,1*_GrassWidth);
-        vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower,1*_GrassWidth);
-        vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),bladeHeight,1*_GrassWidth);
+        float tipLower = 1.0f - segmentLength;
+        vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower*bladeHeight,1*bladeWidth);
+        vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower*bladeHeight,1*bladeWidth);
+        vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),bladeHeight,1*bladeWidth);
         
         tri.lightingNormalWS = normalWS;
         tri.vertices[0] = vertices[0];
         tri.vertices[1] = vertices[1];
         tri.vertices[2] = vertices[2];
         _DrawTriangles.Append(tri);
+
+        threadTrisTotal += 1;
         
     }    
-        InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3);
+    InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3*threadTrisTotal);
 }

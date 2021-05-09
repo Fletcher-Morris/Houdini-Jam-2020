@@ -9,6 +9,8 @@ public class GrassComputeController : MonoBehaviour
     [SerializeField] private Mesh sourceMesh = default;
     [SerializeField] private ComputeShader m_compute = default;
     [SerializeField] private Material material = default;
+    [SerializeField] private Transform m_cameraTransform = default;
+
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     private struct SourceVertex
     {
@@ -112,7 +114,9 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer.SetCounterValue(0);
         argsBuffer.SetData(argsBufferReset);
 
-        if(m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
+        if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
+        if(m_cameraTransform != null) m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
+        else m_compute.SetVector("_WorldSpaceCameraPos", Vector4.zero);
 
         Bounds bounds = TransformBounds(localBounds);
 
@@ -132,8 +136,9 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetFloat("_GrassHeight", grassSettings.SettingsData.grassHeight);
         m_compute.SetFloat("_GrassHeightRanom", grassSettings.SettingsData.grassHeightRandom);
         m_compute.SetFloat("_GrassWidth", grassSettings.SettingsData.grassWidth);
-        m_compute.SetFloat("_GrassWdthRandom", grassSettings.SettingsData.grassWidthRandom);
+        m_compute.SetFloat("_GrassWidthRandom", grassSettings.SettingsData.grassWidthRandom);
         m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
         m_compute.SetInt("_GrassPerVertex", grassSettings.SettingsData.grassPerVertex);
+        m_compute.SetFloat("_MaxCameraDist", grassSettings.SettingsData.maxCameraDist);
     }
 }
