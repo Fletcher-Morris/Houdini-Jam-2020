@@ -147,11 +147,11 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
         m_compute.SetInt("_GrassPerVertex", grassSettings.SettingsData.grassPerVertex);
         m_compute.SetFloat("_RandomPosition", grassSettings.SettingsData.randomPosition);
-        m_compute.SetFloat("_MaxCameraDist", grassSettings.SettingsData.maxCameraDist);
+        m_compute.SetFloat("_MinCamDist", grassSettings.SettingsData.minCamDist);
+        m_compute.SetFloat("_MaxCameraDist", Mathf.Max(grassSettings.SettingsData.maxCameraDist, 0.1f));
         m_compute.SetFloat("_MinAltitude", grassSettings.SettingsData.minAltitude);
         m_compute.SetFloat("_MaxAltitude", grassSettings.SettingsData.maxAltitude);
         m_compute.SetFloat("_AltitudeHeightFade", grassSettings.SettingsData.altitudeFade);
         m_compute.SetFloat("_CameraDotCuttoff", grassSettings.SettingsData.camDotCuttoff);
-        m_compute.SetFloat("_MinCamDist", grassSettings.SettingsData.minCamDist);
     }
 }

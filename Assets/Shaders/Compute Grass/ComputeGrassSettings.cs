@@ -10,6 +10,7 @@ public class ComputeGrassSettings : ScriptableObject
 
     void OnValidate()
     {
+        SettingsData.maxCameraDist = SettingsData.maxCameraDist.Clamp(SettingsData.minCamDist, float.MaxValue);
         SettingsData.SetChecksum(SettingsData.Checksum);
     }
 }

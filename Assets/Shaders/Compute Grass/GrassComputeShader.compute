@@ -115,8 +115,6 @@ void Main(uint3 id : SV_DispatchThreadID)
     uint threadTrisTotal = 0;
     for(int grassBlade = 0; grassBlade < _GrassPerVertex; grassBlade++)
     {
-        uint bladeSegments = _GrassSegments;
-        uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
 
         DrawVertex vertices[3];
 
@@ -140,10 +138,12 @@ void Main(uint3 id : SV_DispatchThreadID)
         float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), bladeAltitude));
         heightFactor *= heightBlend;
 
+        float bladeLod = 1.0f - (bladeCamDist / _MaxCameraDist);
+        uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,bladeLod));
+        uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
         
         DrawTriangle tri = (DrawTriangle)0;
 
-        //bladeSegments = 3;
 
         float segmentLength = 1.0f/bladeSegments;
         for(uint segment = 0; segment < bladeSegments-1; segment++)
