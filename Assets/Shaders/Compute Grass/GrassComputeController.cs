@@ -115,15 +115,22 @@ public class GrassComputeController : MonoBehaviour
         argsBuffer.SetData(argsBufferReset);
 
         if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-        if(m_cameraTransform != null) m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
-        else m_compute.SetVector("_WorldSpaceCameraPos", Vector4.zero);
+        if(m_cameraTransform != null)
+        {
+            m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
+            m_compute.SetVector("_WorldSpaceCameraForward", m_cameraTransform.forward);
+        }
+        else
+        {
+            m_compute.SetVector("_WorldSpaceCameraPos", Vector4.zero);
+            m_compute.SetVector("_WorldSpaceCameraForward", Vector4.one);
+        }
 
         Bounds bounds = TransformBounds(localBounds);
 
         m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
 
         m_compute.Dispatch(idGrassKernel, dispatchSize, 1, 1);
-
         Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
             null, null, ShadowCastingMode.Off, true, gameObject.layer);
     }
@@ -139,6 +146,12 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetFloat("_GrassWidthRandom", grassSettings.SettingsData.grassWidthRandom);
         m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
         m_compute.SetInt("_GrassPerVertex", grassSettings.SettingsData.grassPerVertex);
+        m_compute.SetFloat("_RandomPosition", grassSettings.SettingsData.randomPosition);
         m_compute.SetFloat("_MaxCameraDist", grassSettings.SettingsData.maxCameraDist);
+        m_compute.SetFloat("_MinAltitude", grassSettings.SettingsData.minAltitude);
+        m_compute.SetFloat("_MaxAltitude", grassSettings.SettingsData.maxAltitude);
+        m_compute.SetFloat("_AltitudeHeightFade", grassSettings.SettingsData.altitudeFade);
+        m_compute.SetFloat("_CameraDotCuttoff", grassSettings.SettingsData.camDotCuttoff);
+        m_compute.SetFloat("_MinCamDist", grassSettings.SettingsData.minCamDist);
     }
 }

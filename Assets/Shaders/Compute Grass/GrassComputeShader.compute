@@ -34,6 +34,8 @@ RWStructuredBuffer<IndirectArgs> _IndirectArgsBuffer;
 int _NumSourceTriangles;
 float4x4 _LocalToWorld;
 float3 _WorldSpaceCameraPos;
+float3 _WorldSpaceCameraForward;
+float4 DistortionbObjects[32];
 
 // GRASS PROPERTIES
 float _GrassHeight;
@@ -44,6 +46,11 @@ int _GrassSegments;
 int _GrassPerVertex;
 float _RandomPosition;
 float _MaxCameraDist;
+float _MinAltitude;
+float _MaxAltitude;
+float _AltitudeHeightFade;
+float _CameraDotCuttoff;
+float _MinCameraDistance;
 
 void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS, out float3x3 tsToWs)
 {
@@ -65,6 +72,22 @@ DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bl
     return output;
 }
 
+float invLerp(float from, float to, float value)
+{
+    return (value - from) / (to - from);
+}
+
+float ObjectDistortion(float3 pos)
+{
+    float total = 0.1;
+    for (int i = 0; i < 32; i++)
+    {
+        float d = distance(pos, DistortionbObjects[i].xyz);
+        total += step(d,DistortionbObjects[i].w);
+    }
+    return clamp(1.0 - total,0.1,1.0);
+}
+
 [numthreads(128, 1, 1)]
 void Main(uint3 id : SV_DispatchThreadID)
 {
@@ -82,6 +105,10 @@ void Main(uint3 id : SV_DispatchThreadID)
     _SourceVertices[_SourceTriangles[triStart + 2]],
     positionWS, normalWS, tsToWs);
 
+    if(dot(normalize(positionWS - _WorldSpaceCameraPos), normalize(_WorldSpaceCameraForward)) < _CameraDotCuttoff) return;
+    float altitude = distance(positionWS, float3(0,0,0));
+    if(altitude < _MinAltitude) return;
+    if(altitude > _MaxAltitude) return;
     float distToCam = distance(_WorldSpaceCameraPos, positionWS);
     if(distToCam > _MaxCameraDist) return;
 
@@ -93,10 +120,26 @@ void Main(uint3 id : SV_DispatchThreadID)
 
         DrawVertex vertices[3];
 
-        float3 randomPosWS = positionWS + (_RandomPosition * rand(float4(positionWS,grassBlade)));
+        float3 randomPosWS = positionWS;
+        randomPosWS.x += (_RandomPosition * rand(float4(grassBlade,positionWS.y,positionWS.z,0))) - 0.5f;
+        randomPosWS.y += (_RandomPosition * rand(float4(positionWS.x,grassBlade,positionWS.z,0))) - 0.5f;
+        randomPosWS.z += (_RandomPosition * rand(float4(positionWS.x,positionWS.y,grassBlade,0))) - 0.5f;
 
-        float bladeHeight = (rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) * _GrassHeightRandom) + _GrassHeight;
-        float bladeWidth = (rand(float4(randomPosWS.z,randomPosWS.y,randomPosWS.x,grassBlade)) * _GrassWidthRandom) + _GrassWidth;
+        float bladeHeight = ((rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) - 0.5f) * _GrassHeightRandom) + _GrassHeight;
+        float bladeWidth = ((rand(float4(randomPosWS.z,randomPosWS.y,randomPosWS.x,grassBlade)) - 0.5f) * _GrassWidthRandom) + _GrassWidth;
+
+
+        float bladeAltitude = distance(positionWS, float3(0,0,0));
+        float bladeCamDist = distance(_WorldSpaceCameraPos, randomPosWS);
+        float tooCloseCamDist = clamp(pow(bladeCamDist/_MinCameraDistance,6),0.1,1.0);
+        float heightFactor = bladeHeight;
+        heightFactor *= ObjectDistortion(randomPosWS.xyz);
+        heightFactor *= tooCloseCamDist;
+        heightFactor *= step(_MinAltitude, bladeAltitude);
+        heightFactor *= step(bladeAltitude, _MaxAltitude);
+        float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), bladeAltitude));
+        heightFactor *= heightBlend;
+
         
         DrawTriangle tri = (DrawTriangle)0;
 
@@ -111,18 +154,18 @@ void Main(uint3 id : SV_DispatchThreadID)
             float segWidth = segWidthAbs * bladeWidth;
 
 
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*bladeHeight,segWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*bladeHeight,segWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,segWidth);
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*heightFactor,segWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*heightFactor,segWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*heightFactor,segWidth);
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
             tri.vertices[1] = vertices[1];
             tri.vertices[2] = vertices[2];
             _DrawTriangles.Append(tri);
 
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*bladeHeight,segWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*bladeHeight,segWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),lower*bladeHeight,segWidth);
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*heightFactor,segWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*heightFactor,segWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),lower*heightFactor,segWidth);
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
             tri.vertices[1] = vertices[1];
@@ -133,9 +176,9 @@ void Main(uint3 id : SV_DispatchThreadID)
         }
 
         float tipLower = 1.0f - segmentLength;
-        vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower*bladeHeight,1*bladeWidth);
-        vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower*bladeHeight,1*bladeWidth);
-        vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),bladeHeight,1*bladeWidth);
+        vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower*heightFactor,1*bladeWidth);
+        vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower*heightFactor,1*bladeWidth);
+        vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),heightFactor,1*bladeWidth);
         
         tri.lightingNormalWS = normalWS;
         tri.vertices[0] = vertices[0];
