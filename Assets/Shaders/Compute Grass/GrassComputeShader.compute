@@ -113,7 +113,11 @@ void Main(uint3 id : SV_DispatchThreadID)
     if(distToCam > _MaxCameraDist) return;
 
     uint threadTrisTotal = 0;
-    for(int grassBlade = 0; grassBlade < _GrassPerVertex; grassBlade++)
+
+    float grassVertexLod = 1.0f - (distToCam / _MaxCameraDist);
+    uint grassPerVertex = round(lerp(1.0f,(float)_GrassPerVertex,grassVertexLod));
+
+    for(int grassBlade = 0; grassBlade < grassPerVertex; grassBlade++)
     {
 
         DrawVertex vertices[3];
@@ -122,6 +126,8 @@ void Main(uint3 id : SV_DispatchThreadID)
         randomPosWS.x += (_RandomPosition * rand(float4(grassBlade,positionWS.y,positionWS.z,0))) - 0.5f;
         randomPosWS.y += (_RandomPosition * rand(float4(positionWS.x,grassBlade,positionWS.z,0))) - 0.5f;
         randomPosWS.z += (_RandomPosition * rand(float4(positionWS.x,positionWS.y,grassBlade,0))) - 0.5f;
+
+        randomPosWS = normalize(randomPosWS) * altitude;
 
         float bladeHeight = ((rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) - 0.5f) * _GrassHeightRandom) + _GrassHeight;
         float bladeWidth = ((rand(float4(randomPosWS.z,randomPosWS.y,randomPosWS.x,grassBlade)) - 0.5f) * _GrassWidthRandom) + _GrassWidth;
