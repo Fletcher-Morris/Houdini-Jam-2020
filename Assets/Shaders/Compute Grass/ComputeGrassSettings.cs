@@ -23,7 +23,7 @@ public struct ComputeGrassSettingsData
     [Min(0)] public float grassWidth;
     [Min(0)] public float grassWidthRandom;
     [Range(1, 4)] public int grassSegments;
-    [Range(1, 16)] public int grassPerVertex;
+    [Range(1, 32)] public int grassPerVertex;
     [Min(0)] public float randomPosition;
     [Min(0)] public float maxCameraDist;
     [Min(0)] public float minAltitude;

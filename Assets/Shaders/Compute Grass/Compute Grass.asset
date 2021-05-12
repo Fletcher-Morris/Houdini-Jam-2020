@@ -18,12 +18,12 @@ MonoBehaviour:
     grassWidth: 0.05
     grassWidthRandom: 0.025
     grassSegments: 1
-    grassPerVertex: 16
+    grassPerVertex: 32
     randomPosition: 0.33333334
-    maxCameraDist: 50
+    maxCameraDist: 25
     minAltitude: 48.2
     maxAltitude: 55
-    altitudeFade: 0.5
+    altitudeFade: 0.25
     camDotCuttoff: 0.5
     minCamDist: 1
-    m_checksum: 911451
+    m_checksum: 876487
