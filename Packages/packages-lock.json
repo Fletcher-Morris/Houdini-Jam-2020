@@ -1,14 +1,7 @@
 {
   "dependencies": {
-    "com.autodesk.fbx": {
-      "version": "4.0.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.cinemachine": {
-      "version": "2.7.2",
+      "version": "2.7.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -35,21 +28,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.formats.fbx": {
-      "version": "4.0.1",
+    "com.unity.ide.rider": {
+      "version": "3.0.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.timeline": "1.0.0",
-        "com.autodesk.fbx": "4.0.1"
+        "com.unity.ext.nunit": "1.0.6"
       },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.ide.rider": {
-      "version": "3.0.5",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
@@ -76,7 +61,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.polybrush": {
-      "version": "1.0.2",
+      "version": "1.1.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -85,7 +70,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.probuilder": {
-      "version": "5.0.1",
+      "version": "5.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -138,7 +123,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.22",
+      "version": "1.1.24",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -149,7 +134,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.4",
+      "version": "3.0.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -158,7 +143,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.5.2",
+      "version": "1.5.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
