@@ -22,7 +22,7 @@ public class LightProbeDistributer : MonoBehaviour
         distribute = false;
         m_probeGroup ??= GetComponent<LightProbeGroup>();
         List<Vector3> positions = Extensions.FibonacciPoints(m_probeCount);
-        m_probeGroup.probePositions = positions.ToArray();
+        //m_probeGroup.probePositions = positions.ToArray();
         LightProbes.Tetrahedralize();
     }
 }
