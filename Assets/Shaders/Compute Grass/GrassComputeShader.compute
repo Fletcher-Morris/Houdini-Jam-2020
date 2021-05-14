@@ -40,6 +40,7 @@ float4 DistortionbObjects[32];
 // GRASS PROPERTIES
 float _GrassHeight;
 float _GrassHeightRandom;
+float _GrassHeightCuttoff;
 float _GrassWidth;
 float _GrassWidthRandom;
 int _GrassSegments;
@@ -51,6 +52,7 @@ float _MaxAltitude;
 float _AltitudeHeightFade;
 float _CameraDotCuttoff;
 float _MinCameraDistance;
+float _AvPlanetRadius;
 
 void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS, out float3x3 tsToWs)
 {
@@ -105,6 +107,8 @@ void Main(uint3 id : SV_DispatchThreadID)
     _SourceVertices[_SourceTriangles[triStart + 2]],
     positionWS, normalWS, tsToWs);
 
+    float camAltitude = distance(_WorldSpaceCameraPos,float3(0,0,0));
+
     if(dot(normalize(positionWS - _WorldSpaceCameraPos), normalize(_WorldSpaceCameraForward)) < _CameraDotCuttoff) return;
     float altitude = distance(positionWS, float3(0,0,0));
     if(altitude < _MinAltitude) return;
@@ -112,12 +116,16 @@ void Main(uint3 id : SV_DispatchThreadID)
     float distToCam = distance(_WorldSpaceCameraPos, positionWS);
     if(distToCam > _MaxCameraDist) return;
 
+    float camAltAboveSurface = camAltitude - _AvPlanetRadius;
+    float distToHorizon = sqrt(2.0f * camAltAboveSurface * _AvPlanetRadius + camAltAboveSurface * camAltAboveSurface);
+    //if(distToCam > distToHorizon) return;
+
     uint threadTrisTotal = 0;
 
     float grassVertexLod = 1.0f - (distToCam / _MaxCameraDist);
     uint grassPerVertex = round(lerp(1.0f,(float)_GrassPerVertex,grassVertexLod));
 
-    for(int grassBlade = 0; grassBlade < grassPerVertex; grassBlade++)
+    for(uint grassBlade = 0; grassBlade < grassPerVertex; grassBlade++)
     {
 
         DrawVertex vertices[3];
@@ -143,6 +151,9 @@ void Main(uint3 id : SV_DispatchThreadID)
         heightFactor *= step(bladeAltitude, _MaxAltitude);
         float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), bladeAltitude));
         heightFactor *= heightBlend;
+
+        if(heightFactor >= _GrassHeightCuttoff)
+        {
 
         float bladeLod = 1.0f - (bladeCamDist / _MaxCameraDist);
         uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,bladeLod));
@@ -193,6 +204,7 @@ void Main(uint3 id : SV_DispatchThreadID)
         _DrawTriangles.Append(tri);
 
         threadTrisTotal += 1;
+        }
         
     }    
     InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3*threadTrisTotal);

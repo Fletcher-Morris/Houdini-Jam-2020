@@ -115,7 +115,7 @@ public class GrassComputeController : MonoBehaviour
         argsBuffer.SetData(argsBufferReset);
 
         if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-        if(m_cameraTransform != null)
+        if (m_cameraTransform != null)
         {
             m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
             m_compute.SetVector("_WorldSpaceCameraForward", m_cameraTransform.forward);
@@ -141,7 +141,8 @@ public class GrassComputeController : MonoBehaviour
         m_prevGrassSettings = grassSettings.SettingsData;
 
         m_compute.SetFloat("_GrassHeight", grassSettings.SettingsData.grassHeight);
-        m_compute.SetFloat("_GrassHeightRanom", grassSettings.SettingsData.grassHeightRandom);
+        m_compute.SetFloat("_GrassHeightRandom", grassSettings.SettingsData.grassHeightRandom);
+        m_compute.SetFloat("_GrassHeightCuttoff", grassSettings.SettingsData.grassHeightCuttoff);
         m_compute.SetFloat("_GrassWidth", grassSettings.SettingsData.grassWidth);
         m_compute.SetFloat("_GrassWidthRandom", grassSettings.SettingsData.grassWidthRandom);
         m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
@@ -153,5 +154,6 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetFloat("_MaxAltitude", grassSettings.SettingsData.maxAltitude);
         m_compute.SetFloat("_AltitudeHeightFade", grassSettings.SettingsData.altitudeFade);
         m_compute.SetFloat("_CameraDotCuttoff", grassSettings.SettingsData.camDotCuttoff);
+        m_compute.SetFloat("_AvPlanetRadius", grassSettings.SettingsData.averagePlanetRadius);
     }
 }
