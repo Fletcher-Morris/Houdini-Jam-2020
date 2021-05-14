@@ -21,11 +21,11 @@ MonoBehaviour:
     grassSegments: 1
     grassPerVertex: 32
     randomPosition: 0.33333334
-    maxCameraDist: 20
-    minAltitude: 48.2
+    maxCameraDist: 100
+    minAltitude: 48
     maxAltitude: 55
-    altitudeFade: 0.25
-    camDotCuttoff: 0.5
+    altitudeFade: 0.5
+    camDotCuttoff: 0.615
     minCamDist: 1
-    averagePlanetRadius: 55
-    m_checksum: 1322479
+    averagePlanetRadius: 50
+    m_checksum: 1541054
