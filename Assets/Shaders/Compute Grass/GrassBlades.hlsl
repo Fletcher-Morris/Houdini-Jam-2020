@@ -53,7 +53,7 @@ VertexOutput Vertex(uint vertexID: SV_VertexID) {
 
 // Fragment functions
 
-half4 Fragment(VertexOutput input) : SV_Target {
+half3 Fragment(VertexOutput input) : SV_Target {
     // Gather some data for the lighting algorithm
     InputData lightingInput = (InputData)0;
     lightingInput.positionWS = input.positionWS;
@@ -64,10 +64,11 @@ half4 Fragment(VertexOutput input) : SV_Target {
     // Lerp between the base and tip color based on the blade height
     float colorLerp = input.uv;
     float3 albedo = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv);
+	return albedo;
 
     // The URP simple lit algorithm
     // The arguments are lighting input data, albedo color, specular color, smoothness, emission color, and alpha
-    return UniversalFragmentBlinnPhong(lightingInput, albedo, 1, 0, 0, 1);
+	return (UniversalFragmentBlinnPhong(lightingInput, 0, 1, 0, 0, 1) + 1.0f) * 0.5f * albedo;
 }
 
 #endif
