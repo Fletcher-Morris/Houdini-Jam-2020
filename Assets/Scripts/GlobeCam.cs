@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GlobeCam : MonoBehaviour
 {
@@ -45,6 +46,9 @@ public class GlobeCam : MonoBehaviour
     [SerializeField] private float rotationDragLerp = 2.0f;
 
     private Vector2 m_targetCamRotation = new Vector2();
+
+    [SerializeField] private Joystick m_joystick = default;
+
     void Update()
     {
         SelectTargetSheep();
@@ -52,6 +56,13 @@ public class GlobeCam : MonoBehaviour
         if (!enableMovement) return;
 
         Vector2 inDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if(m_joystick != null)
+        {
+            Vector2 jDir = m_joystick.Direction;
+            if (jDir != Vector2.zero) inDir = jDir;
+        }
+
         if (inDir.magnitude >= 0.05f) m_followFocusTarget = false;
 
         m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
@@ -92,16 +103,25 @@ public class GlobeCam : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.RightBracket))
         {
-            m_selectedSheep++;
-            m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-            SetFocusTarget(GameManager.Instance.SheepList [m_selectedSheep].transform);
+            SelectNextSheep();
         }
         else if (Input.GetKeyDown(KeyCode.LeftBracket))
         {
-            m_selectedSheep--;
-            m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-            SetFocusTarget(GameManager.Instance.SheepList [m_selectedSheep].transform);
+            SelectPrevSheep();
         }
+    }
+
+    public void SelectNextSheep()
+    {
+        m_selectedSheep++;
+        m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
+        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
+    }
+    public void SelectPrevSheep()
+    {
+        m_selectedSheep--;
+        m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
+        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
     }
 
     public void SetFocusTarget(Transform targ)
@@ -112,6 +132,11 @@ public class GlobeCam : MonoBehaviour
         {
             m_followFocusTarget = true;
         }
+    }
+
+    public void SetZoomFromSlider(Slider _slider)
+    {
+        m_zoomValue = Mathf.Lerp(minZoom, maxZoom, _slider.value);
     }
 
     public Vector2 CalcAxisRotations(Vector3 pos) => new Vector2(Mathf.Asin(pos.normalized.y) * Mathf.Rad2Deg, 180 + pos.ToTopDownVec2().ToAngle());
