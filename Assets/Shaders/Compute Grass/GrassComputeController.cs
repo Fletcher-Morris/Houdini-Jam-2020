@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 [ExecuteInEditMode]
 public class GrassComputeController : MonoBehaviour
@@ -136,6 +137,12 @@ public class GrassComputeController : MonoBehaviour
     }
     public ComputeGrassSettings grassSettings = default;
     private ComputeGrassSettingsData m_prevGrassSettings = default;
+    private float m_grassFill = 1.0f;
+    public void SetGrassFill(Slider _slider)
+    {
+        m_grassFill = _slider.value;
+        SubmitGrassSettings();
+    }
     private void SubmitGrassSettings()
     {
         m_prevGrassSettings = grassSettings.SettingsData;
@@ -146,7 +153,7 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetFloat("_GrassWidth", grassSettings.SettingsData.grassWidth);
         m_compute.SetFloat("_GrassWidthRandom", grassSettings.SettingsData.grassWidthRandom);
         m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
-        m_compute.SetInt("_GrassPerVertex", grassSettings.SettingsData.grassPerVertex);
+        m_compute.SetInt("_GrassPerVertex", Mathf.RoundToInt(grassSettings.SettingsData.grassPerVertex * m_grassFill));
         m_compute.SetFloat("_RandomPosition", grassSettings.SettingsData.randomPosition);
         m_compute.SetFloat("_MinCamDist", grassSettings.SettingsData.minCamDist);
         m_compute.SetFloat("_MaxCameraDist", Mathf.Max(grassSettings.SettingsData.maxCameraDist, 0.1f));
