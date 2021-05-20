@@ -59,7 +59,7 @@ public class GrassComputeController : MonoBehaviour
         sourceVertBuffer.SetData(vertices);
         sourceTriBuffer = new ComputeBuffer(tris.Length, SOURCE_TRI_STRIDE, ComputeBufferType.Structured, ComputeBufferMode.Immutable);
         sourceTriBuffer.SetData(tris);
-        drawBuffer = new ComputeBuffer(numSourceTriangles, DRAW_STRIDE, ComputeBufferType.Append);
+        drawBuffer = new ComputeBuffer(numSourceTriangles * Mathf.CeilToInt(grassSettings.SettingsData.grassPerVertex * 0.25f), DRAW_STRIDE, ComputeBufferType.Append);
         drawBuffer.SetCounterValue(0);
         argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
         idGrassKernel = m_compute.FindKernel("Main");

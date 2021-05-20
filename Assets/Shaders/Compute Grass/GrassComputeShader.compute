@@ -109,7 +109,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 
     float camAltitude = distance(_WorldSpaceCameraPos,float3(0,0,0));
 
-    //if(dot(normalize(positionWS - _WorldSpaceCameraPos), normalize(_WorldSpaceCameraForward)) < _CameraDotCuttoff) return;
+    //if(dot(normalize(positionWS), normalize(_WorldSpaceCameraForward)) > _CameraDotCuttoff) return;
     float altitude = distance(positionWS, float3(0,0,0));
     if(altitude < _MinAltitude) return;
     if(altitude > _MaxAltitude) return;
@@ -117,7 +117,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 
     float camAltAboveSurface = (camAltitude * 1.2f) - _AvPlanetRadius;
     float distToHorizon = sqrt(2.0f * camAltAboveSurface * _AvPlanetRadius + camAltAboveSurface * camAltAboveSurface);
-    //if(distToCam > distToHorizon) return;
+    if(distToCam > distToHorizon) return;
 
 
     float maxCamDist = min(_MaxCameraDist, distToHorizon);
