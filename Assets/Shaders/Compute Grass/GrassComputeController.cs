@@ -22,7 +22,7 @@ public class GrassComputeController : MonoBehaviour
     private ComputeBuffer sourceTriBuffer;
     private ComputeBuffer drawBuffer;
     private ComputeBuffer argsBuffer;
-    private int idGrassKernel;
+    private int m_grassKernelId;
     private int dispatchSize;
     private Bounds localBounds;
 
@@ -32,16 +32,45 @@ public class GrassComputeController : MonoBehaviour
     private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
     private int[] argsBufferReset = new int[] { 0, 1, 0, 0 };
 
+    private void DebugHardware()
+    {
+        Debug.Log($"Max Compute Buffer Workgroup Size : {SystemInfo.maxComputeWorkGroupSize}");
+    }
+
+    private int m_sourceVerticesPropertyId;
+    private int m_sourceTrianglesPropertyId;
+    private int m_drawTrianglesPropertyId;
+    private int m_indirectArgsBufferPropertyId;
+    private int m_numSourceTrianglesPropertyId;
+    private int m_worldSpaceCameraPosPropertyId;
+    private int m_worldSpaceCameraForwardPropertyId;
+    private int m_localToWorldPropertyId;
+    private void GetShaderPropertyIds()
+    {
+        m_sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
+        m_sourceTrianglesPropertyId = Shader.PropertyToID("_SourceTriangles");
+        m_drawTrianglesPropertyId = Shader.PropertyToID("_DrawTriangles");
+        m_indirectArgsBufferPropertyId = Shader.PropertyToID("_IndirectArgsBuffer");
+        m_numSourceTrianglesPropertyId = Shader.PropertyToID("_NumTriangles");
+        m_worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
+        m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
+        m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
+    }
+
     private void OnEnable()
     {
         Debug.Assert(m_compute != null, "The grass compute shader is null", gameObject);
         Debug.Assert(material != null, "The material is null", gameObject);
+
+        DebugHardware();
 
         if (initialized)
         {
             OnDisable();
         }
         initialized = true;
+
+        GetShaderPropertyIds();
 
         Vector3[] positions = sourceMesh.vertices;
         int[] tris = sourceMesh.triangles;
@@ -63,17 +92,17 @@ public class GrassComputeController : MonoBehaviour
         drawBuffer = new ComputeBuffer(numSourceTriangles * Mathf.CeilToInt(grassSettings.SettingsData.grassPerVertex * 0.25f), DRAW_STRIDE, ComputeBufferType.Append);
         drawBuffer.SetCounterValue(0);
         argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
-        idGrassKernel = m_compute.FindKernel("Main");
+        m_grassKernelId = m_compute.FindKernel("Main");
 
-        m_compute.SetBuffer(idGrassKernel, "_SourceVertices", sourceVertBuffer);
-        m_compute.SetBuffer(idGrassKernel, "_SourceTriangles", sourceTriBuffer);
-        m_compute.SetBuffer(idGrassKernel, "_DrawTriangles", drawBuffer);
-        m_compute.SetBuffer(idGrassKernel, "_IndirectArgsBuffer", argsBuffer);
-        m_compute.SetInt("_NumSourceTriangles", numSourceTriangles);
+        m_compute.SetBuffer(m_grassKernelId, m_sourceVerticesPropertyId, sourceVertBuffer);
+        m_compute.SetBuffer(m_grassKernelId, m_sourceTrianglesPropertyId, sourceTriBuffer);
+        m_compute.SetBuffer(m_grassKernelId, m_drawTrianglesPropertyId, drawBuffer);
+        m_compute.SetBuffer(m_grassKernelId, m_indirectArgsBufferPropertyId, argsBuffer);
+        m_compute.SetInt(m_numSourceTrianglesPropertyId, numSourceTriangles);
 
-        material.SetBuffer("_DrawTriangles", drawBuffer);
+        material.SetBuffer(m_drawTrianglesPropertyId, drawBuffer);
 
-        m_compute.GetKernelThreadGroupSizes(idGrassKernel, out uint threadGroupSize, out _, out _);
+        m_compute.GetKernelThreadGroupSizes(m_grassKernelId, out uint threadGroupSize, out _, out _);
         dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
 
         localBounds = sourceMesh.bounds;
@@ -119,19 +148,19 @@ public class GrassComputeController : MonoBehaviour
         if (m_cameraTransform != null)
         {
             m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
-            m_compute.SetVector("_WorldSpaceCameraForward", m_cameraTransform.forward);
+            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
         }
         else
         {
             m_compute.SetVector("_WorldSpaceCameraPos", Vector4.zero);
-            m_compute.SetVector("_WorldSpaceCameraForward", Vector4.one);
+            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, Vector4.one);
         }
 
         Bounds bounds = TransformBounds(localBounds);
 
-        m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
+        m_compute.SetMatrix(m_localToWorldPropertyId, transform.localToWorldMatrix);
 
-        m_compute.Dispatch(idGrassKernel, dispatchSize, 1, 1);
+        m_compute.Dispatch(m_grassKernelId, dispatchSize, 1, 1);
         Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
             null, null, ShadowCastingMode.Off, true, gameObject.layer);
     }
@@ -162,5 +191,6 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetFloat("_AltitudeHeightFade", grassSettings.SettingsData.altitudeFade);
         m_compute.SetFloat("_CameraDotCuttoff", grassSettings.SettingsData.camDotCuttoff);
         m_compute.SetFloat("_AvPlanetRadius", grassSettings.SettingsData.averagePlanetRadius);
+        Debug.Log("Submitting Compute Grass Settings!");
     }
 }
