@@ -94,13 +94,13 @@ public class GrassComputeController : MonoBehaviour
         argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
         m_grassKernelId = m_compute.FindKernel("Main");
 
-        m_compute.SetBuffer(m_grassKernelId, m_sourceVerticesPropertyId, sourceVertBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_sourceTrianglesPropertyId, sourceTriBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_drawTrianglesPropertyId, drawBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_indirectArgsBufferPropertyId, argsBuffer);
-        m_compute.SetInt(m_numSourceTrianglesPropertyId, numSourceTriangles);
+        m_compute.SetBuffer(m_grassKernelId, "_SourceVertices", sourceVertBuffer);
+        m_compute.SetBuffer(m_grassKernelId, "_SourceTriangles", sourceTriBuffer);
+        m_compute.SetBuffer(m_grassKernelId, "_DrawTriangles", drawBuffer);
+        m_compute.SetBuffer(m_grassKernelId, "_IndirectArgsBuffer", argsBuffer);
+        m_compute.SetInt("_NumTriangles", numSourceTriangles);
 
-        material.SetBuffer(m_drawTrianglesPropertyId, drawBuffer);
+        material.SetBuffer("_DrawTriangles", drawBuffer);
 
         m_compute.GetKernelThreadGroupSizes(m_grassKernelId, out uint threadGroupSize, out _, out _);
         dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
@@ -148,17 +148,17 @@ public class GrassComputeController : MonoBehaviour
         if (m_cameraTransform != null)
         {
             m_compute.SetVector("_WorldSpaceCameraPos", m_cameraTransform.position);
-            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
+            m_compute.SetVector("_WorldSpaceCameraForward", m_cameraTransform.forward);
         }
         else
         {
             m_compute.SetVector("_WorldSpaceCameraPos", Vector4.zero);
-            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, Vector4.one);
+            m_compute.SetVector("_WorldSpaceCameraForward", Vector4.one);
         }
 
         Bounds bounds = TransformBounds(localBounds);
 
-        m_compute.SetMatrix(m_localToWorldPropertyId, transform.localToWorldMatrix);
+        m_compute.SetMatrix("_LocalToWorld", transform.localToWorldMatrix);
 
         m_compute.Dispatch(m_grassKernelId, dispatchSize, 1, 1);
         Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
