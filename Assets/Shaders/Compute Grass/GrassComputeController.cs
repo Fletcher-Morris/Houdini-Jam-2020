@@ -37,25 +37,14 @@ public class GrassComputeController : MonoBehaviour
         Debug.Log($"Max Compute Buffer Workgroup Size : {SystemInfo.maxComputeWorkGroupSize}");
     }
 
-    private int m_sourceVerticesPropertyId;
-    private int m_sourceTrianglesPropertyId;
-    private int m_drawTrianglesPropertyId;
-    private int m_indirectArgsBufferPropertyId;
-    private int m_numSourceTrianglesPropertyId;
-    private int m_worldSpaceCameraPosPropertyId;
-    private int m_worldSpaceCameraForwardPropertyId;
-    private int m_localToWorldPropertyId;
-    private void GetShaderPropertyIds()
-    {
-        m_sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
-        m_sourceTrianglesPropertyId = Shader.PropertyToID("_SourceTriangles");
-        m_drawTrianglesPropertyId = Shader.PropertyToID("_DrawTriangles");
-        m_indirectArgsBufferPropertyId = Shader.PropertyToID("_IndirectArgsBuffer");
-        m_numSourceTrianglesPropertyId = Shader.PropertyToID("_NumTriangles");
-        m_worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
-        m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
-        m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
-    }
+    static readonly int m_sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
+    static readonly int m_sourceTrianglesPropertyId = Shader.PropertyToID("_SourceTriangles");
+    static readonly int m_drawTrianglesPropertyId = Shader.PropertyToID("_DrawTriangles");
+    static readonly int m_indirectArgsBufferPropertyId = Shader.PropertyToID("_IndirectArgsBuffer");
+    static readonly int m_numSourceTrianglesPropertyId = Shader.PropertyToID("_NumSourceTriangles");
+    static readonly int m_worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
+    static readonly int m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
+    static readonly int m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
 
     private void OnEnable()
     {
@@ -70,8 +59,6 @@ public class GrassComputeController : MonoBehaviour
         }
         initialized = true;
 
-        GetShaderPropertyIds();
-
         Vector3[] positions = sourceMesh.vertices;
         int[] tris = sourceMesh.triangles;
 
@@ -80,7 +67,7 @@ public class GrassComputeController : MonoBehaviour
         {
             vertices[i] = new SourceVertex()
             {
-                position = positions[i],
+                position = positions[i]
             };
         }
         int numSourceTriangles = tris.Length / 3;
