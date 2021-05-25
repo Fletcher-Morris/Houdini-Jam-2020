@@ -90,6 +90,11 @@ float ObjectDistortion(float3 pos)
     return clamp(1.0 - total,0.1,1.0);
 }
 
+float BladeWidthAtPoint(float bladePoint)
+{
+    return 1.0f - pow(bladePoint, 3.0f);
+}
+
 [numthreads(128, 1, 1)]
 void Main(uint3 id : SV_DispatchThreadID)
 {
@@ -160,6 +165,7 @@ void Main(uint3 id : SV_DispatchThreadID)
 
             float bladeLod = 1.0f - (bladeCamDist / distToCam);
             uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,bladeLod));
+bladeSegments = 5;
             uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
             
             DrawTriangle tri = (DrawTriangle)0;
@@ -170,9 +176,8 @@ void Main(uint3 id : SV_DispatchThreadID)
             {
                 float lower =  (float)segment * segmentLength;
                 float upper = (float)(segment+1) * segmentLength;
-                float lowerWidth = 1.0f - lower;
-                float upperWidth = 1.0f - upper;
-
+                float lowerWidth = BladeWidthAtPoint(lower);
+                float upperWidth = BladeWidthAtPoint(upper);
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*heightFactor,lowerWidth*bladeWidth);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*heightFactor,lowerWidth*bladeWidth);
@@ -195,7 +200,7 @@ void Main(uint3 id : SV_DispatchThreadID)
                 threadTrisTotal += 2;
             }
 
-            float tipLower = 1.0f - segmentLength;
+            float tipLower = BladeWidthAtPoint(segmentLength);
             vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower*heightFactor,segmentLength*bladeWidth);
             vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower*heightFactor,segmentLength*bladeWidth);
             vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),heightFactor,1*bladeWidth);
