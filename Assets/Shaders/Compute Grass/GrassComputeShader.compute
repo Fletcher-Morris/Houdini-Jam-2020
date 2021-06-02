@@ -164,8 +164,8 @@ void Main(uint3 id : SV_DispatchThreadID)
         {
 
             float bladeLod = 1.0f - (bladeCamDist / distToCam);
-            uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,bladeLod));
-bladeSegments = 5;
+            uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,grassVertexLod));
+bladeSegments = 1;
             uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
             
             DrawTriangle tri = (DrawTriangle)0;
@@ -178,6 +178,7 @@ bladeSegments = 5;
                 float upper = (float)(segment+1) * segmentLength;
                 float lowerWidth = BladeWidthAtPoint(lower);
                 float upperWidth = BladeWidthAtPoint(upper);
+
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*heightFactor,lowerWidth*bladeWidth);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*heightFactor,lowerWidth*bladeWidth);
@@ -200,10 +201,11 @@ bladeSegments = 5;
                 threadTrisTotal += 2;
             }
 
-            float tipLower = BladeWidthAtPoint(segmentLength);
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower),tipLower*heightFactor,segmentLength*bladeWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower),tipLower*heightFactor,segmentLength*bladeWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),heightFactor,1*bladeWidth);
+            float tipLower = 1.0-segmentLength;
+            float tipWidth = BladeWidthAtPoint(tipLower);
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, segmentLength),tipLower*heightFactor,tipWidth*bladeWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, segmentLength),tipLower*heightFactor,tipWidth*bladeWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),heightFactor,0);
             
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
