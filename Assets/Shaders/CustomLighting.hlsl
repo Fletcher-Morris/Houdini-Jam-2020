@@ -12,17 +12,18 @@
 - (DistanceAtten is either 0 or 1 for directional light, depending if the light is in the culling mask or not)
 - If you want shadow attenutation, see MainLightShadows_float, or use MainLightFull_float instead
 */
-void MainLight_float (out float3 Direction, out float3 Color, out float DistanceAtten){
-	#ifdef SHADERGRAPH_PREVIEW
+void MainLight_float(out float3 Direction, out float3 Color, out float DistanceAtten)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		Direction = normalize(float3(1,1,-0.4));
 		Color = float4(1,1,1,1);
 		DistanceAtten = 1;
-	#else
-		Light mainLight = GetMainLight();
-		Direction = mainLight.direction;
-		Color = mainLight.color;
-		DistanceAtten = mainLight.distanceAttenuation;
-	#endif
+    #else
+    Light mainLight = GetMainLight();
+    Direction = mainLight.direction;
+    Color = mainLight.color;
+    DistanceAtten = mainLight.distanceAttenuation;
+    #endif
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -36,16 +37,16 @@ void MainLight_float (out float3 Direction, out float3 Color, out float Distance
   (But it would probably still remove the interpolator for other passes in the PBR/Lit graph and use a per-pixel version)
 */
 #ifndef SHADERGRAPH_PREVIEW
-	#if VERSION_GREATER_EQUAL(9, 0)
+#if VERSION_GREATER_EQUAL(9, 0)
 		#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
-		#if (SHADERPASS != SHADERPASS_FORWARD)
+#if (SHADERPASS != SHADERPASS_FORWARD)
 			#undef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-		#endif
-	#else
-		#ifndef SHADERPASS_FORWARD
-			#undef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
-		#endif
-	#endif
+#endif
+#else
+#ifndef SHADERPASS_FORWARD
+#undef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
+#endif
+#endif
 #endif
 
 /*
@@ -57,29 +58,30 @@ void MainLight_float (out float3 Direction, out float3 Color, out float Distance
 	- Boolean Keyword, Global Multi-Compile "_SHADOWS_SOFT"
 - For a PBR/Lit Graph, these keywords are already handled for you.
 */
-void MainLightShadows_float (float3 WorldPos, out float ShadowAtten){
-	#ifdef SHADERGRAPH_PREVIEW
+void MainLightShadows_float(float3 WorldPos, out float ShadowAtten)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		ShadowAtten = 1;
-	#else
-		float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
-		
-		#if VERSION_GREATER_EQUAL(10, 1)
+    #else
+    float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
+
+    #if VERSION_GREATER_EQUAL(10, 1)
 			ShadowAtten = MainLightShadow(shadowCoord, WorldPos, half4(1,1,1,1), _MainLightOcclusionProbes);
-		#else
-			ShadowAtten = MainLightRealtimeShadow(shadowCoord);
-		#endif
+    #else
+    ShadowAtten = MainLightRealtimeShadow(shadowCoord);
+    #endif
 
-		/*
-		- Used to use this, but while it works in editor it doesn't work in builds. :(
-		- Bypasses need for _MAIN_LIGHT_SHADOWS (/MAIN_LIGHT_CALCULATE_SHADOWS), so won't error in an Unlit Graph even at no/1 cascades.
-		- Note it can kinda break/glitch if no shadows are cast on the screen.
+    /*
+    - Used to use this, but while it works in editor it doesn't work in builds. :(
+    - Bypasses need for _MAIN_LIGHT_SHADOWS (/MAIN_LIGHT_CALCULATE_SHADOWS), so won't error in an Unlit Graph even at no/1 cascades.
+    - Note it can kinda break/glitch if no shadows are cast on the screen.
 
-		ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
-		half4 shadowParams = GetMainLightShadowParams();
-		ShadowAtten = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture),
-							shadowCoord, shadowSamplingData, shadowParams, false);
-		*/
-	#endif
+    ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
+    half4 shadowParams = GetMainLightShadowParams();
+    ShadowAtten = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture),
+                        shadowCoord, shadowSamplingData, shadowParams, false);
+    */
+    #endif
 }
 
 /*
@@ -105,12 +107,13 @@ To Do / Notes
 - Alternatively could use the Baked GI node, as it'll also handle this for you.
 - Could also use the Ambient node, would be cheaper but the result won't automatically adapt based on the Environmental Lighting Source (Lighting tab).
 */
-void AmbientSampleSH_float (float3 WorldNormal, out float3 Ambient){
-	#ifdef SHADERGRAPH_PREVIEW
+void AmbientSampleSH_float(float3 WorldNormal, out float3 Ambient)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		Ambient = float3(0.1, 0.1, 0.1); // Default ambient colour for previews
-	#else
-		Ambient = SampleSH(WorldNormal);
-	#endif
+    #else
+    Ambient = SampleSH(WorldNormal);
+    #endif
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -120,12 +123,13 @@ void AmbientSampleSH_float (float3 WorldNormal, out float3 Ambient){
 /*
 - Adds fog to the colour, based on the Fog settings in the Lighting tab.
 */
-void MixFog_float (float3 Colour, float Fog, out float3 Out){
-	#ifdef SHADERGRAPH_PREVIEW
+void MixFog_float(float3 Colour, float Fog, out float3 Out)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		Out = Colour;
-	#else
-		Out = MixFog(Colour, Fog);
-	#endif
+    #else
+    Out = MixFog(Colour, Fog);
+    #endif
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -140,18 +144,21 @@ void MixFog_float (float3 Colour, float Fog, out float3 Out){
 	- Boolean Keyword, Global Multi-Compile "_ADDITIONAL_LIGHTS" (required to prevent the one above from being stripped from builds)
 - For a PBR/Lit Graph, these keywords are already handled for you.
 */
-void AdditionalLights_float(float3 SpecColor, float Smoothness, float3 WorldPosition, float3 WorldNormal, float3 WorldView,
-							out float3 Diffuse, out float3 Specular) {
-   float3 diffuseColor = 0;
-   float3 specularColor = 0;
+void AdditionalLights_float(float3 SpecColor, float Smoothness, float3 WorldPosition, float3 WorldNormal,
+                            float3 WorldView,
+                            out float3 Diffuse, out float3 Specular)
+{
+    float3 diffuseColor = 0;
+    float3 specularColor = 0;
 
-#ifndef SHADERGRAPH_PREVIEW
-   Smoothness = exp2(10 * Smoothness + 1);
-   WorldNormal = normalize(WorldNormal);
-   WorldView = SafeNormalize(WorldView);
-   int pixelLightCount = GetAdditionalLightsCount();
-   for (int i = 0; i < pixelLightCount; ++i) {
-		#if VERSION_GREATER_EQUAL(10, 1)
+    #ifndef SHADERGRAPH_PREVIEW
+    Smoothness = exp2(10 * Smoothness + 1);
+    WorldNormal = normalize(WorldNormal);
+    WorldView = SafeNormalize(WorldView);
+    int pixelLightCount = GetAdditionalLightsCount();
+    for (int i = 0; i < pixelLightCount; ++i)
+    {
+        #if VERSION_GREATER_EQUAL(10, 1)
 			Light light = GetAdditionalLight(i, WorldPosition, half4(1,1,1,1));
 			/*
 			URP v10.1.0 introduced an additional shadowMask parameter, which is required for additional lights to do shadow calculations.
@@ -163,116 +170,126 @@ void AdditionalLights_float(float3 SpecColor, float Smoothness, float3 WorldPosi
 			Since this should only be sampled once, it should likely be a separate node and passed in.
 			For now, I'm ignoring support for ShadowMask, and just using half4(1,1,1,1)
 			*/
-		#else
-			Light light = GetAdditionalLight(i, WorldPosition);
-		#endif
+        #else
+        Light light = GetAdditionalLight(i, WorldPosition);
+        #endif
 
-       float3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
-       diffuseColor += LightingLambert(attenuatedLightColor, light.direction, WorldNormal);
-       specularColor += LightingSpecular(attenuatedLightColor, light.direction, WorldNormal, WorldView, float4(SpecColor, 0), Smoothness);
-   }
-#endif
+        float3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
+        diffuseColor += LightingLambert(attenuatedLightColor, light.direction, WorldNormal);
+        specularColor += LightingSpecular(attenuatedLightColor, light.direction, WorldNormal, WorldView,
+                                          float4(SpecColor, 0), Smoothness);
+    }
+    #endif
 
-   Diffuse = diffuseColor;
-   Specular = specularColor;
+    Diffuse = diffuseColor;
+    Specular = specularColor;
 }
 
 //------------------------------------------------------------------------------------------------------
 // Additional Lights Toon Example
 //------------------------------------------------------------------------------------------------------
 
-void AdditionalLightsToon_float(float3 SpecColor, float Smoothness, float3 WorldPosition, float3 WorldNormal, float3 WorldView,
-							out float3 Diffuse, out float3 Specular) {
-	float3 diffuseColor = 0;
-	float3 specularColor = 0;
-	
-#ifndef SHADERGRAPH_PREVIEW
-	Smoothness = exp2(10 * Smoothness + 1);
-	WorldNormal = normalize(WorldNormal);
-	WorldView = SafeNormalize(WorldView);
-	int pixelLightCount = GetAdditionalLightsCount();
-	for (int i = 0; i < pixelLightCount; ++i) {
-		#if VERSION_GREATER_EQUAL(10, 1)
+void AdditionalLightsToon_float(float3 SpecColor, float Smoothness, float3 WorldPosition, float3 WorldNormal,
+                                float3 WorldView,
+                                out float3 Diffuse, out float3 Specular)
+{
+    float3 diffuseColor = 0;
+    float3 specularColor = 0;
+
+    #ifndef SHADERGRAPH_PREVIEW
+    Smoothness = exp2(10 * Smoothness + 1);
+    WorldNormal = normalize(WorldNormal);
+    WorldView = SafeNormalize(WorldView);
+    int pixelLightCount = GetAdditionalLightsCount();
+    for (int i = 0; i < pixelLightCount; ++i)
+    {
+        #if VERSION_GREATER_EQUAL(10, 1)
 			Light light = GetAdditionalLight(i, WorldPosition, half4(1,1,1,1));
 			// see AdditionalLights_float for explanation of this
-		#else
-			Light light = GetAdditionalLight(i, WorldPosition);
-		#endif
+        #else
+        Light light = GetAdditionalLight(i, WorldPosition);
+        #endif
 
-		// DIFFUSE
-		diffuseColor += light.color * step(0.0001, light.distanceAttenuation * light.shadowAttenuation);
-		
-		/* (LightingLambert)
-		half NdotL = saturate(dot(normal, lightDir));
-		diffuseColor += lightColor * NdotL;
-		*/
+        // DIFFUSE
+        diffuseColor += light.color * step(0.0001, light.distanceAttenuation * light.shadowAttenuation);
 
-		// SPECULAR
-		// Didn't really like the look of specular lighting in the toon shader here, so just keeping it at 0 (black, no light).
-	   	/* (LightingSpecular)
-		float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
-		half NdotH = saturate(dot(normal, halfVec));
-		half modifier = pow(NdotH, smoothness);
-		half3 specularReflection = specular.rgb * modifier;
-		specularColor += lightColor * specularReflection;
-		*/
-   }
-#endif
+        /* (LightingLambert)
+        half NdotL = saturate(dot(normal, lightDir));
+        diffuseColor += lightColor * NdotL;
+        */
 
-   Diffuse = diffuseColor;
-   Specular = specularColor;
+        // SPECULAR
+        // Didn't really like the look of specular lighting in the toon shader here, so just keeping it at 0 (black, no light).
+        /* (LightingSpecular)
+        float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
+        half NdotH = saturate(dot(normal, halfVec));
+        half modifier = pow(NdotH, smoothness);
+        half3 specularReflection = specular.rgb * modifier;
+        specularColor += lightColor * specularReflection;
+        */
+    }
+    #endif
+
+    Diffuse = diffuseColor;
+    Specular = specularColor;
 }
 
 //------------------------------------------------------------------------------------------------------
 // Older functions below, I'd use the ones above instead! Have to keep these around since I still have some graphs using them! :D
 //------------------------------------------------------------------------------------------------------
 
-void MainLightFull_float (float3 WorldPos, out float3 Direction, out float3 Color, out float DistanceAtten, out float ShadowAtten){
-	#ifdef SHADERGRAPH_PREVIEW
+void MainLightFull_float(float3 WorldPos, out float3 Direction, out float3 Color, out float DistanceAtten,
+                         out float ShadowAtten)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		Direction = normalize(float3(1,1,-0.4));
 		Color = float4(1,1,1,1);
 		DistanceAtten = 1;
 		ShadowAtten = 1;
-	#else
-		float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
-		Light mainLight = GetMainLight(shadowCoord);
+    #else
+    float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
+    Light mainLight = GetMainLight(shadowCoord);
 
-		Direction = mainLight.direction;
-		Color = mainLight.color;
-		DistanceAtten = mainLight.distanceAttenuation;
-		ShadowAtten = mainLight.shadowAttenuation;
-	#endif
+    Direction = mainLight.direction;
+    Color = mainLight.color;
+    DistanceAtten = mainLight.distanceAttenuation;
+    ShadowAtten = mainLight.shadowAttenuation;
+    #endif
 }
 
-void MainLightFullAlternative_float (float3 WorldPos, out float3 Direction, out float3 Color, out float DistanceAtten, out float ShadowAtten){
-	#ifdef SHADERGRAPH_PREVIEW
+void MainLightFullAlternative_float(float3 WorldPos, out float3 Direction, out float3 Color, out float DistanceAtten,
+                                    out float ShadowAtten)
+{
+    #ifdef SHADERGRAPH_PREVIEW
 		Direction = normalize(float3(1,1,-0.4));
 		Color = float4(1,1,1,1);
 		DistanceAtten = 1;
 		ShadowAtten = 1;
-	#else
-		Light mainLight = GetMainLight();
-		Direction = mainLight.direction;
-		Color = mainLight.color;
-		DistanceAtten = mainLight.distanceAttenuation;
+    #else
+    Light mainLight = GetMainLight();
+    Direction = mainLight.direction;
+    Color = mainLight.color;
+    DistanceAtten = mainLight.distanceAttenuation;
 
-		float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
+    float4 shadowCoord = TransformWorldToShadowCoord(WorldPos);
 
-		// If cascades are needed for an Unlit Graph,
-		// define the _MAIN_LIGHT_SHADOWS_CASCADE global multi_compile keyword in the graph and TransformWorldToShadowCoord will take care of it.
-		// Could also hardcode as this, but not recommended :
-		// half cascadeIndex = ComputeCascadeIndex(WorldPos);
-		// float4 shadowCoord = mul(_MainLightWorldToShadow[cascadeIndex], float4(WorldPos, 1.0));
+    // If cascades are needed for an Unlit Graph,
+    // define the _MAIN_LIGHT_SHADOWS_CASCADE global multi_compile keyword in the graph and TransformWorldToShadowCoord will take care of it.
+    // Could also hardcode as this, but not recommended :
+    // half cascadeIndex = ComputeCascadeIndex(WorldPos);
+    // float4 shadowCoord = mul(_MainLightWorldToShadow[cascadeIndex], float4(WorldPos, 1.0));
 
-		ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
-		float shadowStrength = GetMainLightShadowStrength();
-		ShadowAtten = SampleShadowmap(shadowCoord, TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture), shadowSamplingData, shadowStrength, false);
-	
-		// If soft shadows are needed for Unlit,
-		// define the _SHADOWS_SOFT global multi_compile keyword and SampleShadowmap will take care of it.
-		// hardcoding that is again probably possible but less flexible so don't recommend,
-		// see the SampleShadowmap function in URP's ShaderLibrary, Shadows.hlsl though
-	#endif
+    ShadowSamplingData shadowSamplingData = GetMainLightShadowSamplingData();
+    float shadowStrength = GetMainLightShadowStrength();
+    ShadowAtten = SampleShadowmap(shadowCoord,
+                                  TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture),
+                                  shadowSamplingData, shadowStrength, false);
+
+    // If soft shadows are needed for Unlit,
+    // define the _SHADOWS_SOFT global multi_compile keyword and SampleShadowmap will take care of it.
+    // hardcoding that is again probably possible but less flexible so don't recommend,
+    // see the SampleShadowmap function in URP's ShaderLibrary, Shadows.hlsl though
+    #endif
 }
 
 #endif // CUSTOM_LIGHTING_INCLUDED

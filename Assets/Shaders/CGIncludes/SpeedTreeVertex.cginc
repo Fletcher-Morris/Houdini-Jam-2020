@@ -18,14 +18,14 @@
 
 struct SpeedTreeVB
 {
-    float4 vertex       : POSITION;
-    float4 tangent      : TANGENT;
-    float3 normal       : NORMAL;
-    float4 texcoord     : TEXCOORD0;
-    float4 texcoord1    : TEXCOORD1;
-    float4 texcoord2    : TEXCOORD2;
-    float2 texcoord3    : TEXCOORD3;
-    half4 color         : COLOR;
+    float4 vertex : POSITION;
+    float4 tangent : TANGENT;
+    float3 normal : NORMAL;
+    float4 texcoord : TEXCOORD0;
+    float4 texcoord1 : TEXCOORD1;
+    float4 texcoord2 : TEXCOORD2;
+    float2 texcoord3 : TEXCOORD3;
+    half4 color : COLOR;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -75,16 +75,16 @@ void OffsetSpeedTreeVertex(inout SpeedTreeVB data, float lodValue)
 
     #if defined(GEOM_TYPE_BRANCH) || defined(GEOM_TYPE_FROND)
 
-        // smooth LOD
-        #ifdef LOD_FADE_PERCENTAGE
+    // smooth LOD
+    #ifdef LOD_FADE_PERCENTAGE
             finalPosition = lerp(finalPosition, data.texcoord1.xyz, lodValue);
-        #endif
+    #endif
 
-        // frond wind, if needed
-        #if defined(ENABLE_WIND) && defined(GEOM_TYPE_FROND)
+    // frond wind, if needed
+    #if defined(ENABLE_WIND) && defined(GEOM_TYPE_FROND)
             if (windQuality == WIND_QUALITY_PALM)
                 finalPosition = RippleFrond(finalPosition, data.normal, data.texcoord.x, data.texcoord.y, data.texcoord2.x, data.texcoord2.y, data.texcoord2.z);
-        #endif
+    #endif
 
     #elif defined(GEOM_TYPE_LEAF)
 
@@ -94,9 +94,9 @@ void OffsetSpeedTreeVertex(inout SpeedTreeVB data, float lodValue)
         bool isFacingLeaf = data.color.a == 0;
         if (isFacingLeaf)
         {
-            #ifdef LOD_FADE_PERCENTAGE
+    #ifdef LOD_FADE_PERCENTAGE
                 finalPosition *= lerp(1.0, data.texcoord1.w, lodValue);
-            #endif
+    #endif
             // face camera-facing leaf to camera
             float offsetLen = length(finalPosition);
             finalPosition = mul(finalPosition.xyz, (float3x3)UNITY_MATRIX_IT_MV); // inv(MV) * finalPosition
@@ -104,20 +104,20 @@ void OffsetSpeedTreeVertex(inout SpeedTreeVB data, float lodValue)
         }
         else
         {
-            #ifdef LOD_FADE_PERCENTAGE
+    #ifdef LOD_FADE_PERCENTAGE
                 float3 lodPosition = float3(data.texcoord1.w, data.texcoord3.x, data.texcoord3.y);
                 finalPosition = lerp(finalPosition, lodPosition, lodValue);
-            #endif
+    #endif
         }
 
-        #ifdef ENABLE_WIND
+    #ifdef ENABLE_WIND
             // leaf wind
             if (windQuality > WIND_QUALITY_FASTEST && windQuality < WIND_QUALITY_PALM)
             {
                 float leafWindTrigOffset = data.texcoord1.x + data.texcoord1.y;
                 finalPosition = LeafWind(windQuality == WIND_QUALITY_BEST, data.texcoord2.w > 0.0, finalPosition, data.normal, data.texcoord2.x, float3(0,0,0), data.texcoord2.y, data.texcoord2.z, leafWindTrigOffset, rotatedWindVector);
             }
-        #endif
+    #endif
 
         // move back out to anchor
         finalPosition += data.texcoord1.xyz;
@@ -127,13 +127,13 @@ void OffsetSpeedTreeVertex(inout SpeedTreeVB data, float lodValue)
     #ifdef ENABLE_WIND
         float3 treePos = float3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
 
-        #ifndef GEOM_TYPE_MESH
+    #ifndef GEOM_TYPE_MESH
             if (windQuality >= WIND_QUALITY_BETTER)
             {
                 // branch wind (applies to all 3D geometry)
                 finalPosition = BranchWind(windQuality == WIND_QUALITY_PALM, finalPosition, treePos, float4(data.texcoord.zw, 0, 0), rotatedWindVector, rotatedBranchAnchor);
             }
-        #endif
+    #endif
 
         if (windQuality > WIND_QUALITY_NONE)
         {

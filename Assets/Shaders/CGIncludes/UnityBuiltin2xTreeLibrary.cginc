@@ -25,7 +25,8 @@ CBUFFER_END
 
 float _HalfOverCutoff;
 
-struct v2f {
+struct v2f
+{
     float4 pos : SV_POSITION;
     float4 uv : TEXCOORD0;
     half4 color : TEXCOORD1;
@@ -50,23 +51,24 @@ v2f leaves(appdata_tree v)
 
     float4 light = UNITY_LIGHTMODEL_AMBIENT;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         float atten = 1.0;
         #ifdef USE_CUSTOM_LIGHT_DIR
             lightDir.xyz = _TerrainTreeLightDirections[i];
             lightColor = _TerrainTreeLightColors[i];
         #else
-                float3 toLight = unity_LightPosition[i].xyz - viewpos.xyz * unity_LightPosition[i].w;
-                toLight.z *= -1.0;
-                lightDir.xyz = mul( (float3x3)unity_CameraToWorld, normalize(toLight) );
-                float lengthSq = dot(toLight, toLight);
-                atten = 1.0 / (1.0 + lengthSq * unity_LightAtten[i].z);
+        float3 toLight = unity_LightPosition[i].xyz - viewpos.xyz * unity_LightPosition[i].w;
+        toLight.z *= -1.0;
+        lightDir.xyz = mul((float3x3)unity_CameraToWorld, normalize(toLight));
+        float lengthSq = dot(toLight, toLight);
+        atten = 1.0 / (1.0 + lengthSq * unity_LightAtten[i].z);
 
-                lightColor.rgb = unity_LightColor[i].rgb;
+        lightColor.rgb = unity_LightColor[i].rgb;
         #endif
 
         lightDir.xyz *= _Occlusion;
-        float occ =  dot (v.tangent, lightDir);
+        float occ = dot(v.tangent, lightDir);
         occ = max(0, occ);
         occ += _BaseLight;
         light += lightColor * (occ * atten);
@@ -75,7 +77,7 @@ v2f leaves(appdata_tree v)
     o.color = light * _Color * _TreeInstanceColor;
     o.color.a = 0.5 * _HalfOverCutoff;
 
-    UNITY_TRANSFER_FOG(o,o.pos);
+    UNITY_TRANSFER_FOG(o, o.pos);
     return o;
 }
 
@@ -96,23 +98,24 @@ v2f bark(appdata_tree v)
 
     float4 light = UNITY_LIGHTMODEL_AMBIENT;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         float atten = 1.0;
         #ifdef USE_CUSTOM_LIGHT_DIR
             lightDir.xyz = _TerrainTreeLightDirections[i];
             lightColor = _TerrainTreeLightColors[i];
         #else
-                float3 toLight = unity_LightPosition[i].xyz - viewpos.xyz * unity_LightPosition[i].w;
-                toLight.z *= -1.0;
-                lightDir.xyz = mul( (float3x3)unity_CameraToWorld, normalize(toLight) );
-                float lengthSq = dot(toLight, toLight);
-                atten = 1.0 / (1.0 + lengthSq * unity_LightAtten[i].z);
+        float3 toLight = unity_LightPosition[i].xyz - viewpos.xyz * unity_LightPosition[i].w;
+        toLight.z *= -1.0;
+        lightDir.xyz = mul((float3x3)unity_CameraToWorld, normalize(toLight));
+        float lengthSq = dot(toLight, toLight);
+        atten = 1.0 / (1.0 + lengthSq * unity_LightAtten[i].z);
 
-                lightColor.rgb = unity_LightColor[i].rgb;
+        lightColor.rgb = unity_LightColor[i].rgb;
         #endif
 
 
-        float diffuse = dot (v.normal, lightDir.xyz);
+        float diffuse = dot(v.normal, lightDir.xyz);
         diffuse = max(0, diffuse);
         diffuse *= _AO * v.tangent.w + _BaseLight;
         light += lightColor * (diffuse * atten);
@@ -125,6 +128,6 @@ v2f bark(appdata_tree v)
     o.color.a = 1;
     #endif
 
-    UNITY_TRANSFER_FOG(o,o.pos);
+    UNITY_TRANSFER_FOG(o, o.pos);
     return o;
 }

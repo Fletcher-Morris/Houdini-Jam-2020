@@ -16,8 +16,8 @@
 #ifdef _ALPHATEST_ON
 half        _Cutoff;
 #endif
-sampler2D   _MainTex;
-float4      _MainTex_ST;
+sampler2D _MainTex;
+float4 _MainTex_ST;
 
 float _ObjectId;
 float _PassValue;
@@ -26,14 +26,14 @@ uniform float _SelectionAlphaCutoff;
 
 struct VertexInput
 {
-    float4 vertex   : POSITION;
-    float3 normal   : NORMAL;
-    fixed4 color    : COLOR;
+    float4 vertex : POSITION;
+    float3 normal : NORMAL;
+    fixed4 color : COLOR;
     #if defined(_FLIPBOOK_BLENDING) && !defined(UNITY_PARTICLE_INSTANCING_ENABLED)
         float4 texcoords : TEXCOORD0;
         float texcoordBlend : TEXCOORD1;
     #else
-        float2 texcoords : TEXCOORD0;
+    float2 texcoords : TEXCOORD0;
     #endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
@@ -54,20 +54,20 @@ void vertEditorPass(VertexInput v, out VertexOutput o, out float4 opos : SV_POSI
     opos = UnityObjectToClipPos(v.vertex);
 
     #ifdef _FLIPBOOK_BLENDING
-        #ifdef UNITY_PARTICLE_INSTANCING_ENABLED
+    #ifdef UNITY_PARTICLE_INSTANCING_ENABLED
             vertInstancingUVs(v.texcoords.xy, o.texcoord, o.texcoord2AndBlend);
-        #else
+    #else
             o.texcoord = v.texcoords.xy;
             o.texcoord2AndBlend.xy = v.texcoords.zw;
             o.texcoord2AndBlend.z = v.texcoordBlend;
-        #endif
+    #endif
     #else
-        #ifdef UNITY_PARTICLE_INSTANCING_ENABLED
+    #ifdef UNITY_PARTICLE_INSTANCING_ENABLED
             vertInstancingUVs(v.texcoords.xy, o.texcoord);
             o.texcoord = TRANSFORM_TEX(o.texcoord, _MainTex);
-        #else
-            o.texcoord = TRANSFORM_TEX(v.texcoords.xy, _MainTex);
-        #endif
+    #else
+    o.texcoord = TRANSFORM_TEX(v.texcoords.xy, _MainTex);
+    #endif
     #endif
     o.color = v.color;
 }
@@ -75,15 +75,15 @@ void vertEditorPass(VertexInput v, out VertexOutput o, out float4 opos : SV_POSI
 void fragSceneClip(VertexOutput i)
 {
     half alpha = tex2D(_MainTex, i.texcoord).a;
-#ifdef _FLIPBOOK_BLENDING
+    #ifdef _FLIPBOOK_BLENDING
     half alpha2 = tex2D(_MainTex, i.texcoord2AndBlend.xy);
     alpha = lerp(alpha, alpha2, i.texcoord2AndBlend.z);
-#endif
+    #endif
     alpha *= i.color.a;
 
-#ifdef _ALPHATEST_ON
+    #ifdef _ALPHATEST_ON
     clip(alpha - _Cutoff);
-#endif
+    #endif
 }
 
 half4 fragSceneHighlightPass(VertexOutput i) : SV_Target

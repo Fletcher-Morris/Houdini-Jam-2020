@@ -9,7 +9,8 @@
 #include "UnityStandardUtils.cginc"
 #include "UnityShadowLibrary.cginc"
 
-inline half3 DecodeDirectionalSpecularLightmap (half3 color, half4 dirTex, half3 normalWorld, bool isRealtimeLightmap, fixed4 realtimeNormalTex, out UnityLight o_light)
+inline half3 DecodeDirectionalSpecularLightmap(half3 color, half4 dirTex, half3 normalWorld, bool isRealtimeLightmap,
+                                               fixed4 realtimeNormalTex, out UnityLight o_light)
 {
     o_light.color = color;
     o_light.dir = dirTex.xyz * 2 - 1;
@@ -48,7 +49,8 @@ inline void ResetUnityLight(out UnityLight outLight)
     outLight.ndotl = 0; // Not used
 }
 
-inline half3 SubtractMainLightWithRealtimeAttenuationFromLightmap (half3 lightmap, half attenuation, half4 bakedColorTex, half3 normalWorld)
+inline half3 SubtractMainLightWithRealtimeAttenuationFromLightmap(half3 lightmap, half attenuation, half4 bakedColorTex,
+                                                                  half3 normalWorld)
 {
     // Let's try to make realtime shadows work on a surface, which already contains
     // baked lighting and shadowing from the main sun light.
@@ -66,8 +68,8 @@ inline half3 SubtractMainLightWithRealtimeAttenuationFromLightmap (half3 lightma
     // 1) Gives good estimate of illumination as if light would've been shadowed during the bake.
     //    Preserves bounce and other baked lights
     //    No shadows on the geometry facing away from the light
-    half ndotl = LambertTerm (normalWorld, _WorldSpaceLightPos0.xyz);
-    half3 estimatedLightContributionMaskedByInverseOfShadow = ndotl * (1- attenuation) * _LightColor0.rgb;
+    half ndotl = LambertTerm(normalWorld, _WorldSpaceLightPos0.xyz);
+    half3 estimatedLightContributionMaskedByInverseOfShadow = ndotl * (1 - attenuation) * _LightColor0.rgb;
     half3 subtractedLightmap = lightmap - estimatedLightContributionMaskedByInverseOfShadow;
 
     // 2) Allows user to define overall ambient of the scene and control situation when realtime shadow becomes too dark.
@@ -110,24 +112,24 @@ inline UnityGI UnityGI_Base(UnityGIInput data, half occlusion, half3 normalWorld
         half4 bakedColorTex = UNITY_SAMPLE_TEX2D(unity_Lightmap, data.lightmapUV.xy);
         half3 bakedColor = DecodeLightmap(bakedColorTex);
 
-        #ifdef DIRLIGHTMAP_COMBINED
+    #ifdef DIRLIGHTMAP_COMBINED
             fixed4 bakedDirTex = UNITY_SAMPLE_TEX2D_SAMPLER (unity_LightmapInd, unity_Lightmap, data.lightmapUV.xy);
             o_gi.indirect.diffuse += DecodeDirectionalLightmap (bakedColor, bakedDirTex, normalWorld);
 
-            #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+    #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
                 ResetUnityLight(o_gi.light);
                 o_gi.indirect.diffuse = SubtractMainLightWithRealtimeAttenuationFromLightmap (o_gi.indirect.diffuse, data.atten, bakedColorTex, normalWorld);
-            #endif
+    #endif
 
-        #else // not directional lightmap
+    #else // not directional lightmap
             o_gi.indirect.diffuse += bakedColor;
 
-            #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
+    #if defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK) && defined(SHADOWS_SCREEN)
                 ResetUnityLight(o_gi.light);
                 o_gi.indirect.diffuse = SubtractMainLightWithRealtimeAttenuationFromLightmap(o_gi.indirect.diffuse, data.atten, bakedColorTex, normalWorld);
-            #endif
+    #endif
 
-        #endif
+    #endif
     #endif
 
     #ifdef DYNAMICLIGHTMAP_ON
@@ -135,12 +137,12 @@ inline UnityGI UnityGI_Base(UnityGIInput data, half occlusion, half3 normalWorld
         fixed4 realtimeColorTex = UNITY_SAMPLE_TEX2D(unity_DynamicLightmap, data.lightmapUV.zw);
         half3 realtimeColor = DecodeRealtimeLightmap (realtimeColorTex);
 
-        #ifdef DIRLIGHTMAP_COMBINED
+    #ifdef DIRLIGHTMAP_COMBINED
             half4 realtimeDirTex = UNITY_SAMPLE_TEX2D_SAMPLER(unity_DynamicDirectionality, unity_DynamicLightmap, data.lightmapUV.zw);
             o_gi.indirect.diffuse += DecodeDirectionalLightmap (realtimeColor, realtimeDirTex, normalWorld);
-        #else
+    #else
             o_gi.indirect.diffuse += realtimeColor;
-        #endif
+    #endif
     #endif
 
     o_gi.indirect.diffuse *= occlusion;
@@ -161,16 +163,16 @@ inline half3 UnityGI_IndirectSpecular(UnityGIInput data, half occlusion, Unity_G
     #ifdef _GLOSSYREFLECTIONS_OFF
         specular = unity_IndirectSpecColor.rgb;
     #else
-        half3 env0 = Unity_GlossyEnvironment (UNITY_PASS_TEXCUBE(unity_SpecCube0), data.probeHDR[0], glossIn);
-        #ifdef UNITY_SPECCUBE_BLENDING
+    half3 env0 = Unity_GlossyEnvironment(UNITY_PASS_TEXCUBE(unity_SpecCube0), data.probeHDR[0], glossIn);
+    #ifdef UNITY_SPECCUBE_BLENDING
             const float kBlendFactor = 0.99999;
             float blendLerp = data.boxMin[0].w;
             UNITY_BRANCH
             if (blendLerp < kBlendFactor)
             {
-                #ifdef UNITY_SPECCUBE_BOX_PROJECTION
+    #ifdef UNITY_SPECCUBE_BOX_PROJECTION
                     glossIn.reflUVW = BoxProjectedCubemapDirection (originalReflUVW, data.worldPos, data.probePosition[1], data.boxMin[1], data.boxMax[1]);
-                #endif
+    #endif
 
                 half3 env1 = Unity_GlossyEnvironment (UNITY_PASS_TEXCUBE_SAMPLER(unity_SpecCube1,unity_SpecCube0), data.probeHDR[1], glossIn);
                 specular = lerp(env1, env0, blendLerp);
@@ -179,27 +181,29 @@ inline half3 UnityGI_IndirectSpecular(UnityGIInput data, half occlusion, Unity_G
             {
                 specular = env0;
             }
-        #else
-            specular = env0;
-        #endif
+    #else
+    specular = env0;
+    #endif
     #endif
 
     return specular * occlusion;
 }
 
 // Deprecated old prototype but can't be move to Deprecated.cginc file due to order dependency
-inline half3 UnityGI_IndirectSpecular(UnityGIInput data, half occlusion, half3 normalWorld, Unity_GlossyEnvironmentData glossIn)
+inline half3 UnityGI_IndirectSpecular(UnityGIInput data, half occlusion, half3 normalWorld,
+                                      Unity_GlossyEnvironmentData glossIn)
 {
     // normalWorld is not used
     return UnityGI_IndirectSpecular(data, occlusion, glossIn);
 }
 
-inline UnityGI UnityGlobalIllumination (UnityGIInput data, half occlusion, half3 normalWorld)
+inline UnityGI UnityGlobalIllumination(UnityGIInput data, half occlusion, half3 normalWorld)
 {
     return UnityGI_Base(data, occlusion, normalWorld);
 }
 
-inline UnityGI UnityGlobalIllumination (UnityGIInput data, half occlusion, half3 normalWorld, Unity_GlossyEnvironmentData glossIn)
+inline UnityGI UnityGlobalIllumination(UnityGIInput data, half occlusion, half3 normalWorld,
+                                       Unity_GlossyEnvironmentData glossIn)
 {
     UnityGI o_gi = UnityGI_Base(data, occlusion, normalWorld);
     o_gi.indirect.specular = UnityGI_IndirectSpecular(data, occlusion, glossIn);
@@ -210,27 +214,27 @@ inline UnityGI UnityGlobalIllumination (UnityGIInput data, half occlusion, half3
 // Old UnityGlobalIllumination signatures. Kept only for backward compatibility and will be removed soon
 //
 
-inline UnityGI UnityGlobalIllumination (UnityGIInput data, half occlusion, half smoothness, half3 normalWorld, bool reflections)
+inline UnityGI UnityGlobalIllumination(UnityGIInput data, half occlusion, half smoothness, half3 normalWorld,
+                                       bool reflections)
 {
-    if(reflections)
+    if (reflections)
     {
-        Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(smoothness, data.worldViewDir, normalWorld, float3(0, 0, 0));
+        Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(smoothness, data.worldViewDir, normalWorld,
+                                                                    float3(0, 0, 0));
         return UnityGlobalIllumination(data, occlusion, normalWorld, g);
     }
-    else
-    {
-        return UnityGlobalIllumination(data, occlusion, normalWorld);
-    }
+    return UnityGlobalIllumination(data, occlusion, normalWorld);
 }
-inline UnityGI UnityGlobalIllumination (UnityGIInput data, half occlusion, half smoothness, half3 normalWorld)
+
+inline UnityGI UnityGlobalIllumination(UnityGIInput data, half occlusion, half smoothness, half3 normalWorld)
 {
-#if defined(UNITY_PASS_DEFERRED) && UNITY_ENABLE_REFLECTION_BUFFERS
+    #if defined(UNITY_PASS_DEFERRED) && UNITY_ENABLE_REFLECTION_BUFFERS
     // No need to sample reflection probes during deferred G-buffer pass
     bool sampleReflections = false;
-#else
+    #else
     bool sampleReflections = true;
-#endif
-    return UnityGlobalIllumination (data, occlusion, smoothness, normalWorld, sampleReflections);
+    #endif
+    return UnityGlobalIllumination(data, occlusion, smoothness, normalWorld, sampleReflections);
 }
 
 

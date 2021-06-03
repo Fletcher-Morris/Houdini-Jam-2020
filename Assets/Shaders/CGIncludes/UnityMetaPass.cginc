@@ -5,17 +5,17 @@
 
 
 CBUFFER_START(UnityMetaPass)
-    // x = use uv1 as raster position
-    // y = use uv2 as raster position
-    bool4 unity_MetaVertexControl;
+// x = use uv1 as raster position
+// y = use uv2 as raster position
+bool4 unity_MetaVertexControl;
 
-    // x = return albedo
-    // y = return normal
-    bool4 unity_MetaFragmentControl;
+// x = return albedo
+// y = return normal
+bool4 unity_MetaFragmentControl;
 
-    // Control which VisualizationMode we will
-    // display in the editor
-    int unity_VisualizationMode;
+// Control which VisualizationMode we will
+// display in the editor
+int unity_VisualizationMode;
 CBUFFER_END
 
 
@@ -24,10 +24,10 @@ struct UnityMetaInput
     half3 Albedo;
     half3 Emission;
     half3 SpecularColor;
-#ifdef EDITOR_VISUALIZATION
+    #ifdef EDITOR_VISUALIZATION
     float2 VizUV;
     float4 LightCoord;
-#endif
+    #endif
 };
 
 #ifdef EDITOR_VISUALIZATION
@@ -252,15 +252,14 @@ float2 UnityMetaVizUV(int uvIndex, float2 uv0, float2 uv1, float2 uv2, float4 st
 {
     if (uvIndex == 0)
         return uv0 * st.xy + st.zw;
-    else if (uvIndex == 1)
+    if (uvIndex == 1)
         return uv1 * st.xy + st.zw;
-    else
-        return uv2 * st.xy + st.zw;
+    return uv2 * st.xy + st.zw;
 }
 
 float4 UnityMetaVertexPosition(float4 vertex, float2 uv1, float2 uv2, float4 lightmapST, float4 dynlightmapST)
 {
-#if !defined(EDITOR_VISUALIZATION)
+    #if !defined(EDITOR_VISUALIZATION)
     if (unity_MetaVertexControl.x)
     {
         vertex.xy = uv1 * lightmapST.xy + lightmapST.zw;
@@ -276,22 +275,22 @@ float4 UnityMetaVertexPosition(float4 vertex, float2 uv1, float2 uv2, float4 lig
         vertex.z = vertex.z > 0 ? 1.0e-4f : 0.0f;
     }
     return mul(UNITY_MATRIX_VP, float4(vertex.xyz, 1.0));
-#else
+    #else
     return UnityObjectToClipPos(vertex);
-#endif
+    #endif
 }
 
 float unity_OneOverOutputBoost;
 float unity_MaxOutputValue;
 float unity_UseLinearSpace;
 
-half4 UnityMetaFragment (UnityMetaInput IN)
+half4 UnityMetaFragment(UnityMetaInput IN)
 {
     half4 res = 0;
-#if !defined(EDITOR_VISUALIZATION)
+    #if !defined(EDITOR_VISUALIZATION)
     if (unity_MetaFragmentControl.x)
     {
-        res = half4(IN.Albedo,1);
+        res = half4(IN.Albedo, 1);
 
         // d3d9 shader compiler doesn't like NaNs and infinity.
         unity_OneOverOutputBoost = saturate(unity_OneOverOutputBoost);
@@ -309,7 +308,7 @@ half4 UnityMetaFragment (UnityMetaInput IN)
 
         res = half4(emission, 1.0);
     }
-#else
+    #else
     if ( unity_VisualizationMode == EDITORVIZ_PBR_VALIDATION_ALBEDO)
     {
         res = UnityMeta_pbrAlbedo(IN);
@@ -359,7 +358,7 @@ half4 UnityMetaFragment (UnityMetaInput IN)
 
         res = float4(unity_EditorViz_Color.xyz * result, unity_EditorViz_Color.w);
     }
-#endif // EDITOR_VISUALIZATION
+    #endif // EDITOR_VISUALIZATION
     return res;
 }
 

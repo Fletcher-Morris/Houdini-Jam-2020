@@ -1,217 +1,199 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class AiNavigator
 {
-    private bool initialized = false;
-    public Transform target;
-    [HideInInspector] public Transform self;
-    private Vector3 m_prevTargetPosition;
-    private Transform m_prevTarget;
-    public List<AiWaypoint> pathFound = new List<AiWaypoint>();
-    public int prevWaypoint;
-    public int nextWaypoint;
-    [SerializeField] private AiWaypoint m_closestWaypointToTarget;
-    public float waypointTollerance = 0.1f;
-    public float pathRefreshInterval = 3.0f;
-    private float m_pathRefreshTimer;
-    public NavPathUpdateMode updateMode = NavPathUpdateMode.Always;
+	public Transform target;
+	[HideInInspector] public Transform self;
+	public int prevWaypoint;
+	public int nextWaypoint;
+	public float waypointTollerance = 0.1f;
+	public float pathRefreshInterval = 3.0f;
+	public NavPathUpdateMode updateMode = NavPathUpdateMode.Always;
 
-    public bool sphereRaycastTarget = true;
-    public LayerMask raycastLayermask = default;
+	public bool sphereRaycastTarget = true;
+	public LayerMask raycastLayermask;
 
-    [HideInInspector] Vector3 targetPosition;
+	[SerializeField] private bool debugLines = true;
+	private bool initialized;
+	[SerializeField] private AiWaypoint m_closestWaypointToTarget;
+	private float m_pathRefreshTimer;
+	private Transform m_prevTarget;
+	private Vector3 m_prevTargetPosition;
+	public List<AiWaypoint> pathFound = new List<AiWaypoint>();
 
-    [SerializeField] private bool debugLines = true;
+	[HideInInspector] private Vector3 targetPosition;
 
-    public void Initialize(float offset, Transform setSelf)
-    {
-        if (!Application.isPlaying) return;
-        m_pathRefreshTimer = offset;
-        self = setSelf;
-        initialized = true;
-    }
+	public void Initialize(float offset, Transform setSelf)
+	{
+		if (!Application.isPlaying) return;
+		m_pathRefreshTimer = offset;
+		self               = setSelf;
+		initialized        = true;
+	}
 
-    public void SetTarget(Transform newTarget)
-    {
-        if (updateMode == NavPathUpdateMode.TargetChanged)
-        {
-            RecalculatePath();
-        }
-        target = newTarget;
-        if (pathFound == null) return;
-        prevWaypoint = -1;
-        nextWaypoint = 1;
-    }
-    public void SetSelfTransform(Transform newTransform)
-    {
-        self = newTransform;
-    }
+	public void SetTarget(Transform newTarget)
+	{
+		if (updateMode == NavPathUpdateMode.TargetChanged) RecalculatePath();
+		target = newTarget;
+		if (pathFound == null) return;
+		prevWaypoint = -1;
+		nextWaypoint = 1;
+	}
 
-    public void Update(float delta)
-    {
-        if (!initialized)
-        {
-            return;
-        }
-        m_pathRefreshTimer -= delta;
-        if (m_pathRefreshTimer <= 0.0f)
-        {
-            m_pathRefreshTimer = pathRefreshInterval;
-            RecalculateCheck(delta);
-        }
-    }
+	public void SetSelfTransform(Transform newTransform)
+	{
+		self = newTransform;
+	}
 
-    private void RecalculateCheck(float delta)
-    {
-        if (!initialized)
-        {
-            Debug.LogWarning("Not initialized!");
-            return;
-        }
-        switch (updateMode)
-        {
-            case NavPathUpdateMode.Manual:
-                break;
-            case NavPathUpdateMode.TargetChanged:
-                if (m_prevTarget != target && target != null)
-                {
-                    RecalculatePath(target.position);
-                }
-                break;
-            case NavPathUpdateMode.TargetPositionChanged:
-                if (target != null)
-                {
-                    if (m_prevTargetPosition != target.position)
-                    {
-                        RecalculatePath();
-                    }
-                }
-                break;
-            case NavPathUpdateMode.Always:
-                {
-                    if (target != null && self != null)
-                    {
-                        float distToTarget = self.Distance(target);
-                        if (distToTarget > waypointTollerance)
-                        {
-                            AiWaypoint newWaypoint = WaypointManager.Closest(target.position);
-                            if (newWaypoint != null)
-                            {
-                                if (m_closestWaypointToTarget == null)
-                                {
-                                    RecalculatePath();
-                                }
-                                else if (newWaypoint.id != m_closestWaypointToTarget.id)
-                                {
-                                    RecalculatePath();
-                                }
-                                m_closestWaypointToTarget = newWaypoint;
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-    }
+	public void Update(float delta)
+	{
+		if (!initialized) return;
+		m_pathRefreshTimer -= delta;
+		if (m_pathRefreshTimer <= 0.0f)
+		{
+			m_pathRefreshTimer = pathRefreshInterval;
+			RecalculateCheck(delta);
+		}
+	}
 
-    public void RecalculatePath()
-    {
-        if (target == null)
-        {
-            Debug.LogWarning("TARGET IS NULL!");
-            return;
-        }
-        m_prevTargetPosition = target.transform.position;
-        RecalculatePath(target.transform.position);
-    }
-    public void RecalculatePath(Vector3 end)
-    {
-        if (!initialized)
-        {
-            Debug.LogWarning("Not initialized!");
-            return;
-        }
-        if (self == null)
-        {
-            Debug.LogWarning("Self transform is NULL!");
-            return;
-        }
-        pathFound = null;
-        m_prevTarget = target;
+	private void RecalculateCheck(float delta)
+	{
+		if (!initialized)
+		{
+			Debug.LogWarning("Not initialized!");
+			return;
+		}
 
-        if (sphereRaycastTarget)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 1000, raycastLayermask))
-            {
-                if (debugLines && WaypointManager.Instance.lineDebugOpacity > 0.0f)
-                {
-                    Debug.DrawLine(end.normalized * 1000, hit.point, Color.yellow * WaypointManager.Instance.lineDebugOpacity, pathRefreshInterval);
-                }
-                end = hit.point;
-            }
-        }
+		switch (updateMode)
+		{
+			case NavPathUpdateMode.Manual:
+				break;
+			case NavPathUpdateMode.TargetChanged:
+				if (m_prevTarget != target && target != null) RecalculatePath(target.position);
+				break;
+			case NavPathUpdateMode.TargetPositionChanged:
+				if (target != null)
+					if (m_prevTargetPosition != target.position)
+						RecalculatePath();
+				break;
+			case NavPathUpdateMode.Always:
+			{
+				if (target != null && self != null)
+				{
+					var distToTarget = self.Distance(target);
+					if (distToTarget > waypointTollerance)
+					{
+						var newWaypoint = WaypointManager.Closest(target.position);
+						if (newWaypoint != null)
+						{
+							if (m_closestWaypointToTarget == null)
+								RecalculatePath();
+							else if (newWaypoint.id != m_closestWaypointToTarget.id) RecalculatePath();
+							m_closestWaypointToTarget = newWaypoint;
+						}
+					}
+				}
+			}
+				break;
+		}
+	}
 
-        if (target != null)
-        {
-            m_prevTargetPosition = end;
-            pathFound = WaypointManager.GetPath(self.position, end);
-            if (pathFound == null)
-            {
-                Debug.LogWarning($"Could not find path from '{self.position}' to '{end}'!");
-                return;
-            }
-            prevWaypoint = -1;
-            nextWaypoint = 1;
-        }
-    }
+	public void RecalculatePath()
+	{
+		if (target == null)
+		{
+			Debug.LogWarning("TARGET IS NULL!");
+			return;
+		}
 
-    public AiWaypoint GetWaypointFromIndex(int index)
-    {
-        if (index == -1 || index >= pathFound.Count || pathFound.Count == 0) return null;
-        return pathFound [index];
-    }
+		m_prevTargetPosition = target.transform.position;
+		RecalculatePath(target.transform.position);
+	}
 
-    public void DrawLines(Vector3 start, float delta)
-    {
-        if (!initialized)
-        {
-            return;
-        }
-        if (WaypointManager.Instance.lineDebugOpacity <= 0.0f)
-        {
-            return;
-        }
-        if (pathFound.Count > 0)
-        {
-            Color lineCol = Color.white;
-            lineCol.a = WaypointManager.Instance.lineDebugOpacity;
-            AiWaypoint n = GetWaypointFromIndex(nextWaypoint);
-            if (n != null && debugLines) Debug.DrawLine(start, n.position, lineCol);
-            for (int i = 0; i < pathFound.Count - 1; i++)
-            {
-                if (pathFound [i] != null)
-                    Debug.DrawLine(pathFound [i].position, pathFound [i + 1].position, lineCol);
-            }
-        }
-    }
+	public void RecalculatePath(Vector3 end)
+	{
+		if (!initialized)
+		{
+			Debug.LogWarning("Not initialized!");
+			return;
+		}
+
+		if (self == null)
+		{
+			Debug.LogWarning("Self transform is NULL!");
+			return;
+		}
+
+		pathFound    = null;
+		m_prevTarget = target;
+
+		if (sphereRaycastTarget)
+		{
+			RaycastHit hit;
+			if (Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 1000, raycastLayermask))
+			{
+				if (debugLines && WaypointManager.Instance.lineDebugOpacity > 0.0f)
+					Debug.DrawLine(end.normalized * 1000, hit.point,
+						Color.yellow * WaypointManager.Instance.lineDebugOpacity, pathRefreshInterval);
+				end = hit.point;
+			}
+		}
+
+		if (target != null)
+		{
+			m_prevTargetPosition = end;
+			pathFound            = WaypointManager.GetPath(self.position, end);
+			if (pathFound == null)
+			{
+				Debug.LogWarning($"Could not find path from '{self.position}' to '{end}'!");
+				return;
+			}
+
+			prevWaypoint = -1;
+			nextWaypoint = 1;
+		}
+	}
+
+	public AiWaypoint GetWaypointFromIndex(int index)
+	{
+		if (index == -1 || index >= pathFound.Count || pathFound.Count == 0) return null;
+		return pathFound[index];
+	}
+
+	public void DrawLines(Vector3 start, float delta)
+	{
+		if (!initialized) return;
+		if (WaypointManager.Instance.lineDebugOpacity <= 0.0f) return;
+		if (pathFound.Count > 0)
+		{
+			var lineCol = Color.white;
+			lineCol.a = WaypointManager.Instance.lineDebugOpacity;
+			var n = GetWaypointFromIndex(nextWaypoint);
+			if (n != null && debugLines) Debug.DrawLine(start, n.position, lineCol);
+			for (var i = 0; i < pathFound.Count - 1; i++)
+			{
+				if (pathFound[i] != null)
+					Debug.DrawLine(pathFound[i].position, pathFound[i + 1].position, lineCol);
+			}
+		}
+	}
 }
 
-[System.Serializable]
+[Serializable]
 public enum NavPathUpdateMode
 {
-    //  Recalculate is called manually.
-    Manual,
+	//  Recalculate is called manually.
+	Manual,
 
-    //  Recalculate when the target changes.
-    TargetChanged,
+	//  Recalculate when the target changes.
+	TargetChanged,
 
-    //  Recalculate when the target's position changes.
-    TargetPositionChanged,
+	//  Recalculate when the target's position changes.
+	TargetPositionChanged,
 
-    //  Recalculate every cycle.
-    Always
+	//  Recalculate every cycle.
+	Always
 }

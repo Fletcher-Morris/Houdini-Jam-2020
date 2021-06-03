@@ -15,52 +15,54 @@
 
 #ifdef INCLUDE_UNITY_STANDARD_BRDF_DEPRECATED
 
-inline half3 LazarovFresnelTerm (half3 F0, half roughness, half cosA)
+inline half3 LazarovFresnelTerm(half3 F0, half roughness, half cosA)
 {
-    half t = Pow5 (1 - cosA);   // ala Schlick interpoliation
+    half t = Pow5(1 - cosA); // ala Schlick interpoliation
     t /= 4 - 3 * roughness;
-    return F0 + (1-F0) * t;
+    return F0 + (1 - F0) * t;
 }
-inline half3 SebLagardeFresnelTerm (half3 F0, half roughness, half cosA)
+
+inline half3 SebLagardeFresnelTerm(half3 F0, half roughness, half cosA)
 {
-    half t = Pow5 (1 - cosA);   // ala Schlick interpoliation
-    return F0 + (max (F0, roughness) - F0) * t;
+    half t = Pow5(1 - cosA); // ala Schlick interpoliation
+    return F0 + (max(F0, roughness) - F0) * t;
 }
 
 // Cook-Torrance visibility term, doesn't take roughness into account
-inline half CookTorranceVisibilityTerm (half NdotL, half NdotV,  half NdotH, half VdotH)
+inline half CookTorranceVisibilityTerm(half NdotL, half NdotV, half NdotH, half VdotH)
 {
     VdotH += 1e-5f;
-    half G = min (1.0, min (
-        (2.0 * NdotH * NdotV) / VdotH,
-        (2.0 * NdotH * NdotL) / VdotH));
+    half G = min(1.0, min(
+                     (2.0 * NdotH * NdotV) / VdotH,
+                     (2.0 * NdotH * NdotL) / VdotH));
     return G / (NdotL * NdotV + 1e-4f);
 }
 
 // Kelemen-Szirmay-Kalos is an approximation to Cook-Torrance visibility term
 // http://sirkan.iit.bme.hu/~szirmay/scook.pdf
-inline half KelemenVisibilityTerm (half LdotH)
+inline half KelemenVisibilityTerm(half LdotH)
 {
     return 1.0 / (LdotH * LdotH);
 }
 
 // Modified Kelemen-Szirmay-Kalos which takes roughness into account, based on: http://www.filmicworlds.com/2014/04/21/optimizing-ggx-shaders-with-dotlh/
-inline half ModifiedKelemenVisibilityTerm (half LdotH, half perceptualRoughness)
+inline half ModifiedKelemenVisibilityTerm(half LdotH, half perceptualRoughness)
 {
     half c = 0.797884560802865h; // c = sqrt(2 / Pi)
     half k = PerceptualRoughnessToRoughness(perceptualRoughness) * c;
-    half gH = LdotH * (1-k) + k;
+    half gH = LdotH * (1 - k) + k;
     return 1.0 / (gH * gH);
 }
 
 // Smith-Schlick derived for GGX
-inline half SmithGGXVisibilityTerm (half NdotL, half NdotV, half perceptualRoughness)
+inline half SmithGGXVisibilityTerm(half NdotL, half NdotV, half perceptualRoughness)
 {
-    half k = (PerceptualRoughnessToRoughness(perceptualRoughness)) / 2; // derived by B. Karis, http://graphicrants.blogspot.se/2013/08/specular-brdf-reference.html
-    return SmithVisibilityTerm (NdotL, NdotV, k);
+    half k = (PerceptualRoughnessToRoughness(perceptualRoughness)) / 2;
+    // derived by B. Karis, http://graphicrants.blogspot.se/2013/08/specular-brdf-reference.html
+    return SmithVisibilityTerm(NdotL, NdotV, k);
 }
 
-inline half ImplicitVisibilityTerm ()
+inline half ImplicitVisibilityTerm()
 {
     return 1;
 }
@@ -68,49 +70,49 @@ inline half ImplicitVisibilityTerm ()
 // BlinnPhong normalized as reflection density­sity function (RDF)
 // ready for use directly as specular: spec=D
 // http://www.thetenthplanet.de/archives/255
-inline half RDFBlinnPhongNormalizedTerm (half NdotH, half n)
+inline half RDFBlinnPhongNormalizedTerm(half NdotH, half n)
 {
     half normTerm = (n + 2.0) / (8.0 * UNITY_PI);
-    half specTerm = pow (NdotH, n);
+    half specTerm = pow(NdotH, n);
     return specTerm * normTerm;
 }
 
 // Decodes HDR textures
 // sm 2.0 is no longer supported
-inline half3 DecodeHDR_NoLinearSupportInSM2 (half4 data, half4 decodeInstructions)
+inline half3 DecodeHDR_NoLinearSupportInSM2(half4 data, half4 decodeInstructions)
 {
     // If Linear mode is not supported we can skip exponent part
     // In Standard shader SM2.0 and SM3.0 paths are always using different shader variations
     // SM2.0: hardware does not support Linear, we can skip exponent part
-#if defined(UNITY_COLORSPACE_GAMMA) && (SHADER_TARGET < 30)
+    #if defined(UNITY_COLORSPACE_GAMMA) && (SHADER_TARGET < 30)
     return (data.a * decodeInstructions.x) * data.rgb;
-#else
+    #else
     return DecodeHDR(data, decodeInstructions);
-#endif
+    #endif
 }
 
-inline half DotClamped (half3 a, half3 b)
+inline half DotClamped(half3 a, half3 b)
 {
     #if (SHADER_TARGET < 30)
-        return saturate(dot(a, b));
+    return saturate(dot(a, b));
     #else
         return max(0.0h, dot(a, b));
     #endif
 }
 
-inline half LambertTerm (half3 normal, half3 lightDir)
+inline half LambertTerm(half3 normal, half3 lightDir)
 {
-    return DotClamped (normal, lightDir);
+    return DotClamped(normal, lightDir);
 }
 
-inline half BlinnTerm (half3 normal, half3 halfDir)
+inline half BlinnTerm(half3 normal, half3 halfDir)
 {
-    return DotClamped (normal, halfDir);
+    return DotClamped(normal, halfDir);
 }
 
-half RoughnessToSpecPower (half roughness)
+half RoughnessToSpecPower(half roughness)
 {
-    return PerceptualRoughnessToSpecPower (roughness);
+    return PerceptualRoughnessToSpecPower(roughness);
 }
 
 //-------------------------------------------------------------------------------------

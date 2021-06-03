@@ -84,8 +84,8 @@ void SpeedTreeVert(inout SpeedTreeVB IN, out Input OUT)
     #define SPEEDTREE_DATA_NORMAL           fixed3 Normal;
     #define SPEEDTREE_COPY_NORMAL(to, from) to.Normal = from.Normal;
 #else
-    #define SPEEDTREE_DATA_NORMAL
-    #define SPEEDTREE_COPY_NORMAL(to, from)
+#define SPEEDTREE_DATA_NORMAL
+#define SPEEDTREE_COPY_NORMAL(to, from)
 #endif
 
 #define SPEEDTREE_COPY_FRAG(to, from)   \
@@ -106,7 +106,7 @@ void SpeedTreeFrag(Input IN, out SpeedTreeFragOut OUT)
 
     OUT.Alpha = diffuseColor.a * _Color.a;
     #ifdef SPEEDTREE_ALPHATEST
-        clip(OUT.Alpha - _Cutoff);
+    clip(OUT.Alpha - _Cutoff);
     #endif
 
     #ifdef GEOM_TYPE_BRANCH_DETAIL
@@ -128,15 +128,15 @@ void SpeedTreeFrag(Input IN, out SpeedTreeFragOut OUT)
     OUT.Albedo = diffuseColor.rgb * IN.color.rgb;
 
     #if defined(EFFECT_BUMP)
-        #if defined(LIGHTMAP_ON)
+    #if defined(LIGHTMAP_ON)
             OUT.Normal = fixed3(0,0,1);
-        #else
+    #else
             OUT.Normal = UnpackNormal(tex2D(_BumpMap, IN.mainTexUV));
-            #ifdef GEOM_TYPE_BRANCH_DETAIL
+    #ifdef GEOM_TYPE_BRANCH_DETAIL
                 half3 detailNormal = UnpackNormal(tex2D(_BumpMap, IN.Detail.xy));
                 OUT.Normal = lerp(OUT.Normal, detailNormal, IN.Detail.z < 2.0f ? saturate(IN.Detail.z) : detailColor.a);
-            #endif
-        #endif
+    #endif
+    #endif
     #endif
 }
 

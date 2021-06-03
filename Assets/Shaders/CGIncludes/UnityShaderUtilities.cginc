@@ -22,7 +22,7 @@ float3 ODSOffset(float3 worldPos, float ipd)
         return float3(0, 0, 0);
     tangent = normalize(tangent);
 
-    float directionMinusIPD = max(EPSILON, direction.w*direction.w - ipd*ipd);
+    float directionMinusIPD = max(EPSILON, direction.w * direction.w - ipd * ipd);
     float a = ipd * ipd / direction.w;
     float b = ipd / direction.w * sqrt(directionMinusIPD);
     float3 offset = -a * direction + b * tangent;
@@ -33,26 +33,28 @@ inline float4 UnityObjectToClipPosODS(float3 inPos)
 {
     float4 clipPos;
     float3 posWorld = mul(unity_ObjectToWorld, float4(inPos, 1.0)).xyz;
-#if defined(STEREO_CUBEMAP_RENDER_ON)
+    #if defined(STEREO_CUBEMAP_RENDER_ON)
     float3 offset = ODSOffset(posWorld, unity_HalfStereoSeparation.x);
     clipPos = mul(UNITY_MATRIX_VP, float4(posWorld + offset, 1.0));
-#else
+    #else
     clipPos = mul(UNITY_MATRIX_VP, float4(posWorld, 1.0));
-#endif
+    #endif
     return clipPos;
 }
 
 // Tranforms position from object to homogenous space
 inline float4 UnityObjectToClipPos(in float3 pos)
 {
-#if defined(STEREO_CUBEMAP_RENDER_ON)
+    #if defined(STEREO_CUBEMAP_RENDER_ON)
     return UnityObjectToClipPosODS(pos);
-#else
+    #else
     // More efficient than computing M*VP matrix product
     return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, float4(pos, 1.0)));
-#endif
+    #endif
 }
-inline float4 UnityObjectToClipPos(float4 pos) // overload for float4; avoids "implicit truncation" warning for existing shaders
+
+inline float4 UnityObjectToClipPos(float4 pos)
+// overload for float4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToClipPos(pos.xyz);
 }

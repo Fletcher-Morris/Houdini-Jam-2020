@@ -11,20 +11,24 @@ struct DrawVertex
     float3 positionWS; // The position in world space
     float height; // The height of this vertex on the grass blade
 };
+
 // A triangle on the generated mesh
-struct DrawTriangle {
+struct DrawTriangle
+{
     float3 lightingNormalWS; // A normal, in world space, to use in the lighting algorithm
     DrawVertex vertices[3]; // The three points on the triangle
 };
+
 // A buffer containing the generated mesh
 StructuredBuffer<DrawTriangle> _DrawTriangles;
 
-struct VertexOutput {
-    float uv            : TEXCOORD0; // The height of this vertex on the grass blade
-    float3 positionWS   : TEXCOORD1; // Position in world space
-    float3 normalWS     : TEXCOORD2; // Normal vector in world space
+struct VertexOutput
+{
+    float uv : TEXCOORD0; // The height of this vertex on the grass blade
+    float3 positionWS : TEXCOORD1; // Position in world space
+    float3 normalWS : TEXCOORD2; // Normal vector in world space
 
-    float4 positionCS   : SV_POSITION; // Position in clip space
+    float4 positionCS : SV_POSITION; // Position in clip space
 };
 
 // Properties
@@ -33,7 +37,8 @@ float4 _TipColor;
 
 // Vertex functions
 
-VertexOutput Vertex(uint vertexID: SV_VertexID) {
+VertexOutput Vertex(uint vertexID: SV_VertexID)
+{
     // Initialize the output struct
     VertexOutput output = (VertexOutput)0;
 
@@ -53,7 +58,8 @@ VertexOutput Vertex(uint vertexID: SV_VertexID) {
 
 // Fragment functions
 
-half3 Fragment(VertexOutput input) : SV_Target {
+half3 Fragment(VertexOutput input) : SV_Target
+{
     // Gather some data for the lighting algorithm
     InputData lightingInput = (InputData)0;
     lightingInput.positionWS = input.positionWS;
@@ -64,11 +70,11 @@ half3 Fragment(VertexOutput input) : SV_Target {
     // Lerp between the base and tip color based on the blade height
     float colorLerp = input.uv;
     float3 albedo = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv);
-	return albedo;
+    return albedo;
 
     // The URP simple lit algorithm
     // The arguments are lighting input data, albedo color, specular color, smoothness, emission color, and alpha
-	return (UniversalFragmentBlinnPhong(lightingInput, 0, 1, 0, 0, 1) + 1.0f) * 0.5f * albedo;
+    return (UniversalFragmentBlinnPhong(lightingInput, 0, 1, 0, 0, 1) + 1.0f) * 0.5f * albedo;
 }
 
 #endif

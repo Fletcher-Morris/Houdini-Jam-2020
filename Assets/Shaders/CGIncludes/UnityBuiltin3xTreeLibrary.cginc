@@ -14,7 +14,8 @@ fixed3 _TranslucencyColor;
 fixed _TranslucencyViewDependency;
 half _ShadowStrength;
 
-struct LeafSurfaceOutput {
+struct LeafSurfaceOutput
+{
     fixed3 Albedo;
     fixed3 Normal;
     fixed3 Emission;
@@ -24,14 +25,14 @@ struct LeafSurfaceOutput {
     fixed Alpha;
 };
 
-inline half4 LightingTreeLeaf (LeafSurfaceOutput s, half3 lightDir, half3 viewDir, half atten)
+inline half4 LightingTreeLeaf(LeafSurfaceOutput s, half3 lightDir, half3 viewDir, half atten)
 {
-    half3 h = normalize (lightDir + viewDir);
+    half3 h = normalize(lightDir + viewDir);
 
-    half nl = dot (s.Normal, lightDir);
+    half nl = dot(s.Normal, lightDir);
 
-    half nh = max (0, dot (s.Normal, h));
-    half spec = pow (nh, s.Specular * 128.0) * s.Gloss;
+    half nh = max(0, dot(s.Normal, h));
+    half spec = pow(nh, s.Specular * 128.0) * s.Gloss;
 
     // view dependent back contribution for translucency
     fixed backContrib = saturate(dot(viewDir, -lightDir));
@@ -64,13 +65,13 @@ inline half4 LightingTreeLeaf (LeafSurfaceOutput s, half3 lightDir, half3 viewDi
 
 // -------- Per-vertex lighting functions for "Tree Creator Leaves Fast" shaders
 
-fixed3 ShadeTranslucentMainLight (float4 vertex, float3 normal)
+fixed3 ShadeTranslucentMainLight(float4 vertex, float3 normal)
 {
     float3 viewDir = normalize(WorldSpaceViewDir(vertex));
     float3 lightDir = normalize(WorldSpaceLightDir(vertex));
     fixed3 lightColor = _LightColor0.rgb;
 
-    float nl = dot (normal, lightDir);
+    float nl = dot(normal, lightDir);
 
     // view dependent back contribution for translucency
     fixed backContrib = saturate(dot(viewDir, -lightDir));
@@ -84,12 +85,12 @@ fixed3 ShadeTranslucentMainLight (float4 vertex, float3 normal)
     return lightColor.rgb * (diffuse + backContrib * _TranslucencyColor);
 }
 
-fixed3 ShadeTranslucentLights (float4 vertex, float3 normal)
+fixed3 ShadeTranslucentLights(float4 vertex, float3 normal)
 {
     float3 viewDir = normalize(WorldSpaceViewDir(vertex));
     float3 mainLightDir = normalize(WorldSpaceLightDir(vertex));
-    float3 frontlight = ShadeSH9 (float4(normal,1.0));
-    float3 backlight = ShadeSH9 (float4(-normal,1.0));
+    float3 frontlight = ShadeSH9(float4(normal, 1.0));
+    float3 backlight = ShadeSH9(float4(-normal, 1.0));
     #ifdef VERTEXLIGHT_ON
     float3 worldPos = mul(unity_ObjectToWorld, vertex).xyz;
     frontlight += Shade4PointLights (
@@ -111,7 +112,7 @@ fixed3 ShadeTranslucentLights (float4 vertex, float3 normal)
     return 0.5 * (frontlight + backlight * _TranslucencyColor);
 }
 
-void TreeVertBark (inout appdata_full v)
+void TreeVertBark(inout appdata_full v)
 {
     v.vertex.xyz *= _TreeInstanceScale.xyz;
     v.vertex = AnimateVertex(v.vertex, v.normal, float4(v.color.xy, v.texcoord1.xy));
@@ -123,11 +124,11 @@ void TreeVertBark (inout appdata_full v)
     v.tangent.xyz = normalize(v.tangent.xyz);
 }
 
-void TreeVertLeaf (inout appdata_full v)
+void TreeVertLeaf(inout appdata_full v)
 {
-    ExpandBillboard (UNITY_MATRIX_IT_MV, v.vertex, v.normal, v.tangent);
+    ExpandBillboard(UNITY_MATRIX_IT_MV, v.vertex, v.normal, v.tangent);
     v.vertex.xyz *= _TreeInstanceScale.xyz;
-    v.vertex = AnimateVertex (v.vertex,v.normal, float4(v.color.xy, v.texcoord1.xy));
+    v.vertex = AnimateVertex(v.vertex, v.normal, float4(v.color.xy, v.texcoord1.xy));
 
     v.vertex = Squash(v.vertex);
 
@@ -138,17 +139,18 @@ void TreeVertLeaf (inout appdata_full v)
 
 float ScreenDitherToAlpha(float x, float y, float c0)
 {
-#if (SHADER_TARGET > 30) || defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3)
+    #if (SHADER_TARGET > 30) || defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3)
     //dither matrix reference: https://en.wikipedia.org/wiki/Ordered_dithering
     const float dither[64] = {
         0, 32, 8, 40, 2, 34, 10, 42,
-        48, 16, 56, 24, 50, 18, 58, 26 ,
-        12, 44, 4, 36, 14, 46, 6, 38 ,
+        48, 16, 56, 24, 50, 18, 58, 26,
+        12, 44, 4, 36, 14, 46, 6, 38,
         60, 28, 52, 20, 62, 30, 54, 22,
         3, 35, 11, 43, 1, 33, 9, 41,
         51, 19, 59, 27, 49, 17, 57, 25,
         15, 47, 7, 39, 13, 45, 5, 37,
-        63, 31, 55, 23, 61, 29, 53, 21 };
+        63, 31, 55, 23, 61, 29, 53, 21
+    };
 
     int xMat = int(x) & 7;
     int yMat = int(y) & 7;
@@ -157,22 +159,22 @@ float ScreenDitherToAlpha(float x, float y, float c0)
     //could also use saturate(step(0.995, c0) + limit*(c0));
     //original step(limit, c0 + 0.01);
 
-    return lerp(limit*c0, 1.0, c0);
-#else
+    return lerp(limit * c0, 1.0, c0);
+    #else
     return 1.0;
-#endif
+    #endif
 }
 
 float ComputeAlphaCoverage(float4 screenPos, float fadeAmount)
 {
-#if (SHADER_TARGET > 30) || defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3)
+    #if (SHADER_TARGET > 30) || defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3)
     float2 pixelPosition = screenPos.xy / (screenPos.w + 0.00001);
     pixelPosition *= _ScreenParams;
     float coverage = ScreenDitherToAlpha(pixelPosition.x, pixelPosition.y, fadeAmount);
     return coverage;
-#else
+    #else
     return 1.0;
-#endif
+    #endif
 }
 
 #endif // UNITY_BUILTIN_3X_TREE_LIBRARY_INCLUDED

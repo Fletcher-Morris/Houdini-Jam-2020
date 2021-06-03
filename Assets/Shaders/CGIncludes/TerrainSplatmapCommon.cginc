@@ -15,7 +15,10 @@ struct Input
 {
     float4 tc;
     #ifndef TERRAIN_BASE_PASS
-        UNITY_FOG_COORDS(0) // needed because finalcolor oppresses fog code generation.
+    UNITY_FOG_COORDS (
+    
+    0
+    ) // needed because finalcolor oppresses fog code generation.
     #endif
 };
 
@@ -32,9 +35,10 @@ float4 _Splat0_ST, _Splat1_ST, _Splat2_ST, _Splat3_ST;
     float4    _TerrainHeightmapScale;       // float4(hmScale.x, hmScale.y / (float)(kMaxHeight), hmScale.z, 0.0f)
 #endif
 
-UNITY_INSTANCING_BUFFER_START(Terrain)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _TerrainPatchInstanceData) // float4(xBase, yBase, skipScale, ~)
-UNITY_INSTANCING_BUFFER_END(Terrain)
+UNITY_INSTANCING_BUFFER_START (Terrain)
+UNITY_DEFINE_INSTANCED_PROP(float4, _TerrainPatchInstanceData) // float4(xBase, yBase, skipScale, ~)
+UNITY_INSTANCING_BUFFER_END
+(Terrain)
 
 #ifdef _NORMALMAP
     sampler2D _Normal0, _Normal1, _Normal2, _Normal3;
@@ -60,7 +64,7 @@ void SplatmapVert(inout appdata_full v, out Input data)
 {
     UNITY_INITIALIZE_OUTPUT(Input, data);
 
-#if defined(UNITY_INSTANCING_ENABLED) && !defined(SHADER_API_D3D11_9X)
+    #if defined(UNITY_INSTANCING_ENABLED) && !defined(SHADER_API_D3D11_9X)
 
     float2 patchVertex = v.vertex.xy;
     float4 instanceData = UNITY_ACCESS_INSTANCED_PROP(Terrain, _TerrainPatchInstanceData);
@@ -85,20 +89,20 @@ void SplatmapVert(inout appdata_full v, out Input data)
         float3 nor = tex2Dlod(_TerrainNormalmapTexture, float4(sampleCoords, 0, 0)).xyz;
         v.normal = 2.0f * nor - 1.0f;
     #endif
-#endif
+    #endif
 
-    v.tangent.xyz = cross(v.normal, float3(0,0,1));
+    v.tangent.xyz = cross(v.normal, float3(0, 0, 1));
     v.tangent.w = -1;
 
     data.tc.xy = v.texcoord.xy;
-#ifdef TERRAIN_BASE_PASS
+    #ifdef TERRAIN_BASE_PASS
     #ifdef UNITY_PASS_META
         data.tc.xy = TRANSFORM_TEX(v.texcoord.xy, _MainTex);
     #endif
-#else
+    #else
     float4 pos = UnityObjectToClipPos(v.vertex);
     UNITY_TRANSFER_FOG(data, pos);
-#endif
+    #endif
 }
 
 #ifndef TERRAIN_BASE_PASS
@@ -116,7 +120,7 @@ void SplatmapMix(Input IN, out half4 splat_control, out half weight, out fixed4 
     // adjust splatUVs so the edges of the terrain tile lie on pixel centers
     float2 splatUV = (IN.tc.xy * (_Control_TexelSize.zw - 1.0f) + 0.5f) * _Control_TexelSize.xy;
     splat_control = tex2D(_Control, splatUV);
-    weight = dot(splat_control, half4(1,1,1,1));
+    weight = dot(splat_control, half4(1, 1, 1, 1));
 
     #if !defined(SHADER_API_MOBILE) && defined(TERRAIN_SPLAT_ADDPASS)
         clip(weight == 0.0f ? -1 : 1);
@@ -138,10 +142,10 @@ void SplatmapMix(Input IN, out half4 splat_control, out half weight, out fixed4 
         mixedDiffuse += splat_control.b * tex2D(_Splat2, uvSplat2) * half4(1.0, 1.0, 1.0, defaultAlpha.b);
         mixedDiffuse += splat_control.a * tex2D(_Splat3, uvSplat3) * half4(1.0, 1.0, 1.0, defaultAlpha.a);
     #else
-        mixedDiffuse += splat_control.r * tex2D(_Splat0, uvSplat0);
-        mixedDiffuse += splat_control.g * tex2D(_Splat1, uvSplat1);
-        mixedDiffuse += splat_control.b * tex2D(_Splat2, uvSplat2);
-        mixedDiffuse += splat_control.a * tex2D(_Splat3, uvSplat3);
+    mixedDiffuse += splat_control.r * tex2D(_Splat0, uvSplat0);
+    mixedDiffuse += splat_control.g * tex2D(_Splat1, uvSplat1);
+    mixedDiffuse += splat_control.b * tex2D(_Splat2, uvSplat2);
+    mixedDiffuse += splat_control.a * tex2D(_Splat3, uvSplat3);
     #endif
 
     #ifdef _NORMALMAP
@@ -158,21 +162,21 @@ void SplatmapMix(Input IN, out half4 splat_control, out half weight, out fixed4 
 
     #if defined(UNITY_INSTANCING_ENABLED) && !defined(SHADER_API_D3D11_9X) && defined(TERRAIN_INSTANCED_PERPIXEL_NORMAL)
         float3 geomNormal = normalize(tex2D(_TerrainNormalmapTexture, IN.tc.zw).xyz * 2 - 1);
-        #ifdef _NORMALMAP
+    #ifdef _NORMALMAP
             float3 geomTangent = normalize(cross(geomNormal, float3(0, 0, 1)));
             float3 geomBitangent = normalize(cross(geomTangent, geomNormal));
             mixedNormal = mixedNormal.x * geomTangent
                           + mixedNormal.y * geomBitangent
                           + mixedNormal.z * geomNormal;
-        #else
+    #else
             mixedNormal = geomNormal;
-        #endif
+    #endif
         mixedNormal = mixedNormal.xzy;
     #endif
 }
 
 #ifndef TERRAIN_SURFACE_OUTPUT
-    #define TERRAIN_SURFACE_OUTPUT SurfaceOutput
+#define TERRAIN_SURFACE_OUTPUT SurfaceOutput
 #endif
 
 void SplatmapFinalColor(Input IN, TERRAIN_SURFACE_OUTPUT o, inout fixed4 color)
@@ -181,7 +185,7 @@ void SplatmapFinalColor(Input IN, TERRAIN_SURFACE_OUTPUT o, inout fixed4 color)
     #ifdef TERRAIN_SPLAT_ADDPASS
         UNITY_APPLY_FOG_COLOR(IN.fogCoord, color, fixed4(0,0,0,0));
     #else
-        UNITY_APPLY_FOG(IN.fogCoord, color);
+    UNITY_APPLY_FOG(IN.fogCoord, color);
     #endif
 }
 
@@ -190,7 +194,8 @@ void SplatmapFinalPrepass(Input IN, TERRAIN_SURFACE_OUTPUT o, inout fixed4 norma
     normalSpec *= o.Alpha;
 }
 
-void SplatmapFinalGBuffer(Input IN, TERRAIN_SURFACE_OUTPUT o, inout half4 outGBuffer0, inout half4 outGBuffer1, inout half4 outGBuffer2, inout half4 emission)
+void SplatmapFinalGBuffer(Input IN, TERRAIN_SURFACE_OUTPUT o, inout half4 outGBuffer0, inout half4 outGBuffer1,
+                          inout half4 outGBuffer2, inout half4 emission)
 {
     UnityStandardDataApplyWeightToGbuffer(outGBuffer0, outGBuffer1, outGBuffer2, o.Alpha);
     emission *= o.Alpha;

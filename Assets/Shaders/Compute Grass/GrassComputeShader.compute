@@ -10,19 +10,22 @@ struct SourceVertex
 StructuredBuffer<SourceVertex> _SourceVertices;
 StructuredBuffer<int> _SourceTriangles;
 
-struct DrawVertex {
+struct DrawVertex
+{
     float3 positionWS;
     float height;
 };
 
-struct DrawTriangle {
+struct DrawTriangle
+{
     float3 lightingNormalWS;
     DrawVertex vertices[3];
 };
 
 AppendStructuredBuffer<DrawTriangle> _DrawTriangles;
 
-struct IndirectArgs {
+struct IndirectArgs
+{
     uint numVerticesPerInstance;
     uint numInstances;
     uint startVertexIndex;
@@ -54,7 +57,8 @@ float _CameraDotCuttoff;
 float _MinCameraDistance;
 float _AvPlanetRadius;
 
-void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS, out float3x3 tsToWs)
+void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS,
+                       out float3x3 tsToWs)
 {
     float3 positionA_WS = mul(_LocalToWorld, float4(a.positionOS, 1)).xyz;
     float3 positionB_WS = mul(_LocalToWorld, float4(b.positionOS, 1)).xyz;
@@ -65,7 +69,7 @@ void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float
 
 DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
 {
-    float3 offsetTS = float3((uv.x - 0.5f)*bladeWidth, 0, bladeHeight);
+    float3 offsetTS = float3((uv.x - 0.5f) * bladeWidth, 0, bladeHeight);
     float3 offsetWS = mul(tsToWs, offsetTS);
     float3 positionWS = anchorWS + offsetWS;
     DrawVertex output = (DrawVertex)0;
@@ -85,9 +89,9 @@ float ObjectDistortion(float3 pos)
     for (int i = 0; i < 32; i++)
     {
         float d = distance(pos, DistortionbObjects[i].xyz);
-        total += step(d,DistortionbObjects[i].w);
+        total += step(d, DistortionbObjects[i].w);
     }
-    return clamp(1.0 - total,0.1,1.0);
+    return clamp(1.0 - total, 0.1, 1.0);
 }
 
 float BladeWidthAtPoint(float bladePoint)
@@ -102,96 +106,102 @@ void Main(uint3 id : SV_DispatchThreadID)
     {
         return;
     }
-    
+
     int triStart = id.x * 3;
     float3 positionWS, normalWS;
     float3x3 tsToWs;
     GetCenterAndBasis(
-    _SourceVertices[_SourceTriangles[triStart]],
-    _SourceVertices[_SourceTriangles[triStart + 1]],
-    _SourceVertices[_SourceTriangles[triStart + 2]],
-    positionWS, normalWS, tsToWs);
+        _SourceVertices[_SourceTriangles[triStart]],
+        _SourceVertices[_SourceTriangles[triStart + 1]],
+        _SourceVertices[_SourceTriangles[triStart + 2]],
+        positionWS, normalWS, tsToWs);
 
-    float camAltitude = distance(_WorldSpaceCameraPos,float3(0,0,0));
+    float camAltitude = distance(_WorldSpaceCameraPos, float3(0, 0, 0));
 
     //if(dot(normalize(positionWS), normalize(_WorldSpaceCameraForward)) > _CameraDotCuttoff) return;
-    float altitude = distance(positionWS, float3(0,0,0));
-    if(altitude < _MinAltitude) return;
-    if(altitude > _MaxAltitude) return;
+    float altitude = distance(positionWS, float3(0, 0, 0));
+    if (altitude < _MinAltitude) return;
+    if (altitude > _MaxAltitude) return;
     float distToCam = distance(_WorldSpaceCameraPos, positionWS);
 
     float camAltAboveSurface = (camAltitude * 1.2f) - _AvPlanetRadius;
     float distToHorizon = sqrt(2.0f * camAltAboveSurface * _AvPlanetRadius + camAltAboveSurface * camAltAboveSurface);
-    if(distToCam > distToHorizon) return;
+    if (distToCam > distToHorizon) return;
 
 
     float maxCamDist = min(_MaxCameraDist, distToHorizon);
-    if(distToCam > maxCamDist) return;
+    if (distToCam > maxCamDist) return;
 
     uint threadTrisTotal = 0;
 
     float grassVertexLod = 1.0f - (distToCam / maxCamDist);
-    uint grassPerVertex = round(lerp(1.0f,(float)_GrassPerVertex,grassVertexLod));
+    uint grassPerVertex = round(lerp(1.0f, (float)_GrassPerVertex, grassVertexLod));
 
-    for(uint grassBlade = 0; grassBlade < grassPerVertex; grassBlade++)
+    for (uint grassBlade = 0; grassBlade < grassPerVertex; grassBlade++)
     {
-
         DrawVertex vertices[3];
 
         float3 randomPosWS = positionWS;
-        randomPosWS.x += (_RandomPosition * rand(float4(grassBlade,positionWS.y,positionWS.z,0))) - 0.5f;
-        randomPosWS.y += (_RandomPosition * rand(float4(positionWS.x,grassBlade,positionWS.z,0))) - 0.5f;
-        randomPosWS.z += (_RandomPosition * rand(float4(positionWS.x,positionWS.y,grassBlade,0))) - 0.5f;
+        randomPosWS.x += (_RandomPosition * rand(float4(grassBlade, positionWS.y, positionWS.z, 0))) - 0.5f;
+        randomPosWS.y += (_RandomPosition * rand(float4(positionWS.x, grassBlade, positionWS.z, 0))) - 0.5f;
+        randomPosWS.z += (_RandomPosition * rand(float4(positionWS.x, positionWS.y, grassBlade, 0))) - 0.5f;
 
         randomPosWS = normalize(randomPosWS) * altitude;
 
-        float bladeHeight = ((rand(float4(randomPosWS.x,randomPosWS.y,randomPosWS.z,grassBlade)) - 0.5f) * _GrassHeightRandom) + _GrassHeight;
-        float bladeWidth = ((rand(float4(randomPosWS.z,randomPosWS.y,randomPosWS.x,grassBlade)) - 0.5f) * _GrassWidthRandom) + _GrassWidth;
+        float bladeHeight = ((rand(float4(randomPosWS.x, randomPosWS.y, randomPosWS.z, grassBlade)) - 0.5f) *
+            _GrassHeightRandom) + _GrassHeight;
+        float bladeWidth = ((rand(float4(randomPosWS.z, randomPosWS.y, randomPosWS.x, grassBlade)) - 0.5f) *
+            _GrassWidthRandom) + _GrassWidth;
 
 
-        float bladeAltitude = distance(positionWS, float3(0,0,0));
+        float bladeAltitude = distance(positionWS, float3(0, 0, 0));
         float bladeCamDist = distance(_WorldSpaceCameraPos, randomPosWS);
-        float tooCloseCamDist = clamp(pow(bladeCamDist/_MinCameraDistance,6),0.1,1.0);
+        float tooCloseCamDist = clamp(pow(bladeCamDist / _MinCameraDistance, 6), 0.1, 1.0);
         float heightFactor = bladeHeight;
         heightFactor *= ObjectDistortion(randomPosWS.xyz);
         heightFactor *= tooCloseCamDist;
         heightFactor *= step(_MinAltitude, bladeAltitude);
         heightFactor *= step(bladeAltitude, _MaxAltitude);
-        float heightBlend = clamp(0,1,invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), bladeAltitude));
+        float heightBlend = clamp(0, 1, invLerp(_MinAltitude, _MinAltitude + abs(_AltitudeHeightFade), bladeAltitude));
         heightFactor *= heightBlend;
 
-        if(heightFactor >= _GrassHeightCuttoff)
+        if (heightFactor >= _GrassHeightCuttoff)
         {
-
             float bladeLod = 1.0f - (bladeCamDist / distToCam);
-            uint bladeSegments = round(lerp(1.0f,(float)_GrassSegments,grassVertexLod));
-bladeSegments = 1;
-            uint bladeVertexCount = (3 + ((bladeSegments-1)*4));
-            
+            uint bladeSegments = round(lerp(1.0f, (float)_GrassSegments, grassVertexLod));
+            bladeSegments = 1;
+            uint bladeVertexCount = (3 + ((bladeSegments - 1) * 4));
+
             DrawTriangle tri = (DrawTriangle)0;
 
 
-            float segmentLength = 1.0f/bladeSegments;
-            for(uint segment = 0; segment < bladeSegments-1; segment++)
+            float segmentLength = 1.0f / bladeSegments;
+            for (uint segment = 0; segment < bladeSegments - 1; segment++)
             {
-                float lower =  (float)segment * segmentLength;
-                float upper = (float)(segment+1) * segmentLength;
+                float lower = (float)segment * segmentLength;
+                float upper = (float)(segment + 1) * segmentLength;
                 float lowerWidth = BladeWidthAtPoint(lower);
                 float upperWidth = BladeWidthAtPoint(upper);
 
 
-                vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*heightFactor,lowerWidth*bladeWidth);
-                vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,lower),lower*heightFactor,lowerWidth*bladeWidth);
-                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*heightFactor,upperWidth*bladeWidth);
+                vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
+                                              lowerWidth * bladeWidth);
+                vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, lower), lower * heightFactor,
+                                              lowerWidth * bladeWidth);
+                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
+                                              upperWidth * bladeWidth);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
                 tri.vertices[2] = vertices[2];
                 _DrawTriangles.Append(tri);
 
-                vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0,upper),upper*heightFactor,upperWidth*bladeWidth);
-                vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1,upper),upper*heightFactor,upperWidth*bladeWidth);
-                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0,lower),lower*heightFactor,lowerWidth*bladeWidth);
+                vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, upper), upper * heightFactor,
+                                              upperWidth * bladeWidth);
+                vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
+                                              upperWidth * bladeWidth);
+                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
+                                              lowerWidth * bladeWidth);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
@@ -201,12 +211,14 @@ bladeSegments = 1;
                 threadTrisTotal += 2;
             }
 
-            float tipLower = 1.0-segmentLength;
+            float tipLower = 1.0 - segmentLength;
             float tipWidth = BladeWidthAtPoint(tipLower);
-            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, segmentLength),tipLower*heightFactor,tipWidth*bladeWidth);
-            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, segmentLength),tipLower*heightFactor,tipWidth*bladeWidth);
-            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1),heightFactor,0);
-            
+            vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, segmentLength), tipLower * heightFactor,
+                                          tipWidth * bladeWidth);
+            vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, segmentLength), tipLower * heightFactor,
+                                          tipWidth * bladeWidth);
+            vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1), heightFactor, 0);
+
             tri.lightingNormalWS = normalWS;
             tri.vertices[0] = vertices[0];
             tri.vertices[1] = vertices[1];
@@ -215,7 +227,6 @@ bladeSegments = 1;
 
             threadTrisTotal += 1;
         }
-        
-    }    
-    InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3*threadTrisTotal);
+    }
+    InterlockedAdd(_IndirectArgsBuffer[0].numVerticesPerInstance, 3 * threadTrisTotal);
 }

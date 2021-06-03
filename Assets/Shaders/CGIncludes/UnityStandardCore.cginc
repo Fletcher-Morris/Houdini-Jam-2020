@@ -16,26 +16,26 @@
 //-------------------------------------------------------------------------------------
 // counterpart for NormalizePerPixelNormal
 // skips normalization per-vertex and expects normalization to happen per-pixel
-half3 NormalizePerVertexNormal (float3 n) // takes float to avoid overflow
+half3 NormalizePerVertexNormal(float3 n) // takes float to avoid overflow
 {
     #if (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
-        return normalize(n);
+    return normalize(n);
     #else
         return n; // will normalize per-pixel instead
     #endif
 }
 
-float3 NormalizePerPixelNormal (float3 n)
+float3 NormalizePerPixelNormal(float3 n)
 {
     #if (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
-        return n;
+    return n;
     #else
         return normalize((float3)n); // takes float to avoid overflow
     #endif
 }
 
 //-------------------------------------------------------------------------------------
-UnityLight MainLight ()
+UnityLight MainLight()
 {
     UnityLight l;
 
@@ -44,14 +44,14 @@ UnityLight MainLight ()
     return l;
 }
 
-UnityLight AdditiveLight (half3 lightDir, half atten)
+UnityLight AdditiveLight(half3 lightDir, half atten)
 {
     UnityLight l;
 
     l.color = _LightColor0.rgb;
     l.dir = lightDir;
     #ifndef USING_DIRECTIONAL_LIGHT
-        l.dir = NormalizePerPixelNormal(l.dir);
+    l.dir = NormalizePerPixelNormal(l.dir);
     #endif
 
     // shadow the light
@@ -59,15 +59,15 @@ UnityLight AdditiveLight (half3 lightDir, half atten)
     return l;
 }
 
-UnityLight DummyLight ()
+UnityLight DummyLight()
 {
     UnityLight l;
     l.color = 0;
-    l.dir = half3 (0,1,0);
+    l.dir = half3(0, 1, 0);
     return l;
 }
 
-UnityIndirect ZeroIndirect ()
+UnityIndirect ZeroIndirect()
 {
     UnityIndirect ind;
     ind.diffuse = 0;
@@ -92,7 +92,7 @@ half3 WorldNormal(half4 tan2world[3])
         half3 b = tan2world[1].xyz;
         half3 n = tan2world[2].xyz;
 
-    #if UNITY_TANGENT_ORTHONORMALIZE
+#if UNITY_TANGENT_ORTHONORMALIZE
         n = NormalizePerPixelNormal(n);
 
         // ortho-normalize Tangent
@@ -101,20 +101,20 @@ half3 WorldNormal(half4 tan2world[3])
         // recalculate Binormal
         half3 newB = cross(n, t);
         b = newB * sign (dot (newB, b));
-    #endif
+#endif
 
         return half3x3(t, b, n);
     }
 #else
-    half3x3 ExtractTangentToWorldPerPixel(half4 tan2world[3])
-    {
-        return half3x3(0,0,0,0,0,0,0,0,0);
-    }
+half3x3 ExtractTangentToWorldPerPixel(half4 tan2world[3])
+{
+    return half3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+}
 #endif
 
 float3 PerPixelWorldNormal(float4 i_tex, float4 tangentToWorld[3])
 {
-#ifdef _NORMALMAP
+    #ifdef _NORMALMAP
     half3 tangent = tangentToWorld[0].xyz;
     half3 binormal = tangentToWorld[1].xyz;
     half3 normal = tangentToWorld[2].xyz;
@@ -132,9 +132,9 @@ float3 PerPixelWorldNormal(float4 i_tex, float4 tangentToWorld[3])
 
     half3 normalTangent = NormalInTangentSpace(i_tex);
     float3 normalWorld = NormalizePerPixelNormal(tangent * normalTangent.x + binormal * normalTangent.y + normal * normalTangent.z); // @TODO: see if we can squeeze this normalize on SM2.0 as well
-#else
+    #else
     float3 normalWorld = normalize(tangentToWorld[2].xyz);
-#endif
+    #endif
     return normalWorld;
 }
 
@@ -142,17 +142,17 @@ float3 PerPixelWorldNormal(float4 i_tex, float4 tangentToWorld[3])
     #define IN_VIEWDIR4PARALLAX(i) NormalizePerPixelNormal(half3(i.tangentToWorldAndPackedData[0].w,i.tangentToWorldAndPackedData[1].w,i.tangentToWorldAndPackedData[2].w))
     #define IN_VIEWDIR4PARALLAX_FWDADD(i) NormalizePerPixelNormal(i.viewDirForParallax.xyz)
 #else
-    #define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
-    #define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
+#define IN_VIEWDIR4PARALLAX(i) half3(0,0,0)
+#define IN_VIEWDIR4PARALLAX_FWDADD(i) half3(0,0,0)
 #endif
 
 #if UNITY_REQUIRE_FRAG_WORLDPOS
-    #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-        #define IN_WORLDPOS(i) half3(i.tangentToWorldAndPackedData[0].w,i.tangentToWorldAndPackedData[1].w,i.tangentToWorldAndPackedData[2].w)
-    #else
+#if UNITY_PACK_WORLDPOS_WITH_TANGENT
+#define IN_WORLDPOS(i) half3(i.tangentToWorldAndPackedData[0].w,i.tangentToWorldAndPackedData[1].w,i.tangentToWorldAndPackedData[2].w)
+#else
         #define IN_WORLDPOS(i) i.posWorld
-    #endif
-    #define IN_WORLDPOS_FWDADD(i) i.posWorld
+#endif
+#define IN_WORLDPOS_FWDADD(i) i.posWorld
 #else
     #define IN_WORLDPOS(i) half3(0,0,0)
     #define IN_WORLDPOS_FWDADD(i) half3(0,0,0)
@@ -177,27 +177,28 @@ struct FragmentCommonData
     half alpha;
     float3 posWorld;
 
-#if UNITY_STANDARD_SIMPLE
+    #if UNITY_STANDARD_SIMPLE
     half3 reflUVW;
-#endif
+    #endif
 
-#if UNITY_STANDARD_SIMPLE
+    #if UNITY_STANDARD_SIMPLE
     half3 tangentSpaceNormal;
-#endif
+    #endif
 };
 
 #ifndef UNITY_SETUP_BRDF_INPUT
-    #define UNITY_SETUP_BRDF_INPUT SpecularSetup
+#define UNITY_SETUP_BRDF_INPUT SpecularSetup
 #endif
 
-inline FragmentCommonData SpecularSetup (float4 i_tex)
+inline FragmentCommonData SpecularSetup(float4 i_tex)
 {
     half4 specGloss = SpecularGloss(i_tex.xy);
     half3 specColor = specGloss.rgb;
     half smoothness = specGloss.a;
 
     half oneMinusReflectivity;
-    half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular (Albedo(i_tex), specColor, /*out*/ oneMinusReflectivity);
+    half3 diffColor = EnergyConservationBetweenDiffuseAndSpecular(Albedo(i_tex), specColor, /*out*/
+                                                                  oneMinusReflectivity);
 
     FragmentCommonData o = (FragmentCommonData)0;
     o.diffColor = diffColor;
@@ -215,7 +216,8 @@ inline FragmentCommonData RoughnessSetup(float4 i_tex)
 
     half oneMinusReflectivity;
     half3 specColor;
-    half3 diffColor = DiffuseAndSpecularFromMetallic(Albedo(i_tex), metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+    half3 diffColor = DiffuseAndSpecularFromMetallic(Albedo(i_tex), metallic, /*out*/ specColor, /*out*/
+                                                     oneMinusReflectivity);
 
     FragmentCommonData o = (FragmentCommonData)0;
     o.diffColor = diffColor;
@@ -225,7 +227,7 @@ inline FragmentCommonData RoughnessSetup(float4 i_tex)
     return o;
 }
 
-inline FragmentCommonData MetallicSetup (float4 i_tex)
+inline FragmentCommonData MetallicSetup(float4 i_tex)
 {
     half2 metallicGloss = MetallicGloss(i_tex.xy);
     half metallic = metallicGloss.x;
@@ -233,7 +235,8 @@ inline FragmentCommonData MetallicSetup (float4 i_tex)
 
     half oneMinusReflectivity;
     half3 specColor;
-    half3 diffColor = DiffuseAndSpecularFromMetallic (Albedo(i_tex), metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+    half3 diffColor = DiffuseAndSpecularFromMetallic(Albedo(i_tex), metallic, /*out*/ specColor, /*out*/
+                                                     oneMinusReflectivity);
 
     FragmentCommonData o = (FragmentCommonData)0;
     o.diffColor = diffColor;
@@ -244,7 +247,8 @@ inline FragmentCommonData MetallicSetup (float4 i_tex)
 }
 
 // parallax transformed texcoord is used to sample occlusion
-inline FragmentCommonData FragmentSetup (inout float4 i_tex, float3 i_eyeVec, half3 i_viewDirForParallax, float4 tangentToWorld[3], float3 i_posWorld)
+inline FragmentCommonData FragmentSetup(inout float4 i_tex, float3 i_eyeVec, half3 i_viewDirForParallax,
+                                        float4 tangentToWorld[3], float3 i_posWorld)
 {
     i_tex = Parallax(i_tex, i_viewDirForParallax);
 
@@ -253,17 +257,18 @@ inline FragmentCommonData FragmentSetup (inout float4 i_tex, float3 i_eyeVec, ha
         clip (alpha - _Cutoff);
     #endif
 
-    FragmentCommonData o = UNITY_SETUP_BRDF_INPUT (i_tex);
+    FragmentCommonData o = UNITY_SETUP_BRDF_INPUT(i_tex);
     o.normalWorld = PerPixelWorldNormal(i_tex, tangentToWorld);
     o.eyeVec = NormalizePerPixelNormal(i_eyeVec);
     o.posWorld = i_posWorld;
 
     // NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-    o.diffColor = PreMultiplyAlpha (o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
+    o.diffColor = PreMultiplyAlpha(o.diffColor, alpha, o.oneMinusReflectivity, /*out*/ o.alpha);
     return o;
 }
 
-inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light, bool reflections)
+inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten,
+                          UnityLight light, bool reflections)
 {
     UnityGIInput d;
     d.light = light;
@@ -274,8 +279,8 @@ inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambient
         d.ambient = 0;
         d.lightmapUV = i_ambientOrLightmapUV;
     #else
-        d.ambient = i_ambientOrLightmapUV.rgb;
-        d.lightmapUV = 0;
+    d.ambient = i_ambientOrLightmapUV.rgb;
+    d.lightmapUV = 0;
     #endif
 
     d.probeHDR[0] = unity_SpecCube0_HDR;
@@ -291,35 +296,34 @@ inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambient
       d.probePosition[1] = unity_SpecCube1_ProbePosition;
     #endif
 
-    if(reflections)
+    if (reflections)
     {
-        Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(s.smoothness, -s.eyeVec, s.normalWorld, s.specColor);
+        Unity_GlossyEnvironmentData g =
+            UnityGlossyEnvironmentSetup(s.smoothness, -s.eyeVec, s.normalWorld, s.specColor);
         // Replace the reflUVW if it has been compute in Vertex shader. Note: the compiler will optimize the calcul in UnityGlossyEnvironmentSetup itself
         #if UNITY_STANDARD_SIMPLE
             g.reflUVW = s.reflUVW;
         #endif
 
-        return UnityGlobalIllumination (d, occlusion, s.normalWorld, g);
+        return UnityGlobalIllumination(d, occlusion, s.normalWorld, g);
     }
-    else
-    {
-        return UnityGlobalIllumination (d, occlusion, s.normalWorld);
-    }
+    return UnityGlobalIllumination(d, occlusion, s.normalWorld);
 }
 
-inline UnityGI FragmentGI (FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten, UnityLight light)
+inline UnityGI FragmentGI(FragmentCommonData s, half occlusion, half4 i_ambientOrLightmapUV, half atten,
+                          UnityLight light)
 {
     return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, true);
 }
 
 
 //-------------------------------------------------------------------------------------
-half4 OutputForward (half4 output, half alphaFromSurface)
+half4 OutputForward(half4 output, half alphaFromSurface)
 {
     #if defined(_ALPHABLEND_ON) || defined(_ALPHAPREMULTIPLY_ON)
         output.a = alphaFromSurface;
     #else
-        UNITY_OPAQUE_ALPHA(output.a);
+    UNITY_OPAQUE_ALPHA(output.a);
     #endif
     return output;
 }
@@ -333,13 +337,13 @@ inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
         ambientOrLightmapUV.zw = 0;
     // Sample light probe for Dynamic objects only (no static or dynamic lightmaps)
     #elif UNITY_SHOULD_SAMPLE_SH
-        #ifdef VERTEXLIGHT_ON
+    #ifdef VERTEXLIGHT_ON
             // Approximated illumination from non-important point lights
             ambientOrLightmapUV.rgb = Shade4PointLights (
                 unity_4LightPosX0, unity_4LightPosY0, unity_4LightPosZ0,
                 unity_LightColor[0].rgb, unity_LightColor[1].rgb, unity_LightColor[2].rgb, unity_LightColor[3].rgb,
                 unity_4LightAtten0, posWorld, normalWorld);
-        #endif
+    #endif
 
         ambientOrLightmapUV.rgb = ShadeSHPerVertex (normalWorld, ambientOrLightmapUV.rgb);
     #endif
@@ -357,22 +361,22 @@ inline half4 VertexGIForward(VertexInput v, float3 posWorld, half3 normalWorld)
 struct VertexOutputForwardBase
 {
     UNITY_POSITION(pos);
-    float4 tex                            : TEXCOORD0;
-    float4 eyeVec                         : TEXCOORD1;    // eyeVec.xyz | fogCoord
-    float4 tangentToWorldAndPackedData[3] : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
-    half4 ambientOrLightmapUV             : TEXCOORD5;    // SH or Lightmap UV
-    UNITY_LIGHTING_COORDS(6,7)
+    float4 tex : TEXCOORD0;
+    float4 eyeVec : TEXCOORD1; // eyeVec.xyz | fogCoord
+    float4 tangentToWorldAndPackedData[3] : TEXCOORD2; // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
+    half4 ambientOrLightmapUV : TEXCOORD5; // SH or Lightmap UV
+    UNITY_LIGHTING_COORDS(6, 7)
 
     // next ones would not fit into SM2.0 limits, but they are always for SM3.0+
-#if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
+    #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
     float3 posWorld                     : TEXCOORD8;
-#endif
+    #endif
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-VertexOutputForwardBase vertForwardBase (VertexInput v)
+VertexOutputForwardBase vertForwardBase(VertexInput v)
 {
     UNITY_SETUP_INSTANCE_ID(v);
     VertexOutputForwardBase o;
@@ -382,13 +386,13 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
 
     float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
     #if UNITY_REQUIRE_FRAG_WORLDPOS
-        #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-            o.tangentToWorldAndPackedData[0].w = posWorld.x;
-            o.tangentToWorldAndPackedData[1].w = posWorld.y;
-            o.tangentToWorldAndPackedData[2].w = posWorld.z;
-        #else
+    #if UNITY_PACK_WORLDPOS_WITH_TANGENT
+    o.tangentToWorldAndPackedData[0].w = posWorld.x;
+    o.tangentToWorldAndPackedData[1].w = posWorld.y;
+    o.tangentToWorldAndPackedData[2].w = posWorld.z;
+    #else
             o.posWorld = posWorld.xyz;
-        #endif
+    #endif
     #endif
     o.pos = UnityObjectToClipPos(v.vertex);
 
@@ -403,9 +407,9 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
         o.tangentToWorldAndPackedData[1].xyz = tangentToWorld[1];
         o.tangentToWorldAndPackedData[2].xyz = tangentToWorld[2];
     #else
-        o.tangentToWorldAndPackedData[0].xyz = 0;
-        o.tangentToWorldAndPackedData[1].xyz = 0;
-        o.tangentToWorldAndPackedData[2].xyz = normalWorld;
+    o.tangentToWorldAndPackedData[0].xyz = 0;
+    o.tangentToWorldAndPackedData[1].xyz = 0;
+    o.tangentToWorldAndPackedData[2].xyz = normalWorld;
     #endif
 
     //We need this for shadow receving
@@ -421,11 +425,11 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
         o.tangentToWorldAndPackedData[2].w = viewDirForParallax.z;
     #endif
 
-    UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o,o.pos);
+    UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o, o.pos);
     return o;
 }
 
-half4 fragForwardBaseInternal (VertexOutputForwardBase i)
+half4 fragForwardBaseInternal(VertexOutputForwardBase i)
 {
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
 
@@ -434,21 +438,23 @@ half4 fragForwardBaseInternal (VertexOutputForwardBase i)
     UNITY_SETUP_INSTANCE_ID(i);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
 
-    UnityLight mainLight = MainLight ();
+    UnityLight mainLight = MainLight();
     UNITY_LIGHT_ATTENUATION(atten, i, s.posWorld);
 
     half occlusion = Occlusion(i.tex.xy);
-    UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+    UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
 
-    half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
+    half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec,
+                             gi.light, gi.indirect);
     c.rgb += Emission(i.tex.xy);
 
     UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
     UNITY_APPLY_FOG(_unity_fogCoord, c.rgb);
-    return OutputForward (c, s.alpha);
+    return OutputForward(c, s.alpha);
 }
 
-half4 fragForwardBase (VertexOutputForwardBase i) : SV_Target   // backward compatibility (this used to be the fragment entry function)
+half4 fragForwardBase(VertexOutputForwardBase i) : SV_Target
+// backward compatibility (this used to be the fragment entry function)
 {
     return fragForwardBaseInternal(i);
 }
@@ -459,21 +465,21 @@ half4 fragForwardBase (VertexOutputForwardBase i) : SV_Target   // backward comp
 struct VertexOutputForwardAdd
 {
     UNITY_POSITION(pos);
-    float4 tex                          : TEXCOORD0;
-    float4 eyeVec                       : TEXCOORD1;    // eyeVec.xyz | fogCoord
-    float4 tangentToWorldAndLightDir[3] : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:lightDir]
-    float3 posWorld                     : TEXCOORD5;
+    float4 tex : TEXCOORD0;
+    float4 eyeVec : TEXCOORD1; // eyeVec.xyz | fogCoord
+    float4 tangentToWorldAndLightDir[3] : TEXCOORD2; // [3x3:tangentToWorld | 1x3:lightDir]
+    float3 posWorld : TEXCOORD5;
     UNITY_LIGHTING_COORDS(6, 7)
 
     // next ones would not fit into SM2.0 limits, but they are always for SM3.0+
-#if defined(_PARALLAXMAP)
+    #if defined(_PARALLAXMAP)
     half3 viewDirForParallax            : TEXCOORD8;
-#endif
+    #endif
 
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-VertexOutputForwardAdd vertForwardAdd (VertexInput v)
+VertexOutputForwardAdd vertForwardAdd(VertexInput v)
 {
     UNITY_SETUP_INSTANCE_ID(v);
     VertexOutputForwardAdd o;
@@ -495,16 +501,16 @@ VertexOutputForwardAdd vertForwardAdd (VertexInput v)
         o.tangentToWorldAndLightDir[1].xyz = tangentToWorld[1];
         o.tangentToWorldAndLightDir[2].xyz = tangentToWorld[2];
     #else
-        o.tangentToWorldAndLightDir[0].xyz = 0;
-        o.tangentToWorldAndLightDir[1].xyz = 0;
-        o.tangentToWorldAndLightDir[2].xyz = normalWorld;
+    o.tangentToWorldAndLightDir[0].xyz = 0;
+    o.tangentToWorldAndLightDir[1].xyz = 0;
+    o.tangentToWorldAndLightDir[2].xyz = normalWorld;
     #endif
     //We need this for shadow receiving and lighting
     UNITY_TRANSFER_LIGHTING(o, v.uv1);
 
     float3 lightDir = _WorldSpaceLightPos0.xyz - posWorld.xyz * _WorldSpaceLightPos0.w;
     #ifndef USING_DIRECTIONAL_LIGHT
-        lightDir = NormalizePerVertexNormal(lightDir);
+    lightDir = NormalizePerVertexNormal(lightDir);
     #endif
     o.tangentToWorldAndLightDir[0].w = lightDir.x;
     o.tangentToWorldAndLightDir[1].w = lightDir.y;
@@ -519,7 +525,7 @@ VertexOutputForwardAdd vertForwardAdd (VertexInput v)
     return o;
 }
 
-half4 fragForwardAddInternal (VertexOutputForwardAdd i)
+half4 fragForwardAddInternal(VertexOutputForwardAdd i)
 {
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
 
@@ -528,17 +534,19 @@ half4 fragForwardAddInternal (VertexOutputForwardAdd i)
     FRAGMENT_SETUP_FWDADD(s)
 
     UNITY_LIGHT_ATTENUATION(atten, i, s.posWorld)
-    UnityLight light = AdditiveLight (IN_LIGHTDIR_FWDADD(i), atten);
-    UnityIndirect noIndirect = ZeroIndirect ();
+    UnityLight light = AdditiveLight(IN_LIGHTDIR_FWDADD(i), atten);
+    UnityIndirect noIndirect = ZeroIndirect();
 
-    half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, light, noIndirect);
+    half4 c = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec,
+                             light, noIndirect);
 
     UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
     UNITY_APPLY_FOG_COLOR(_unity_fogCoord, c.rgb, half4(0,0,0,0)); // fog towards black in additive pass
-    return OutputForward (c, s.alpha);
+    return OutputForward(c, s.alpha);
 }
 
-half4 fragForwardAdd (VertexOutputForwardAdd i) : SV_Target     // backward compatibility (this used to be the fragment entry function)
+half4 fragForwardAdd(VertexOutputForwardAdd i) : SV_Target
+// backward compatibility (this used to be the fragment entry function)
 {
     return fragForwardAddInternal(i);
 }
@@ -549,10 +557,10 @@ half4 fragForwardAdd (VertexOutputForwardAdd i) : SV_Target     // backward comp
 struct VertexOutputDeferred
 {
     UNITY_POSITION(pos);
-    float4 tex                            : TEXCOORD0;
-    float3 eyeVec                         : TEXCOORD1;
-    float4 tangentToWorldAndPackedData[3] : TEXCOORD2;    // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
-    half4 ambientOrLightmapUV             : TEXCOORD5;    // SH or Lightmap UVs
+    float4 tex : TEXCOORD0;
+    float3 eyeVec : TEXCOORD1;
+    float4 tangentToWorldAndPackedData[3] : TEXCOORD2; // [3x3:tangentToWorld | 1x3:viewDirForParallax or worldPos]
+    half4 ambientOrLightmapUV : TEXCOORD5; // SH or Lightmap UVs
 
     #if UNITY_REQUIRE_FRAG_WORLDPOS && !UNITY_PACK_WORLDPOS_WITH_TANGENT
         float3 posWorld                     : TEXCOORD6;
@@ -563,7 +571,7 @@ struct VertexOutputDeferred
 };
 
 
-VertexOutputDeferred vertDeferred (VertexInput v)
+VertexOutputDeferred vertDeferred(VertexInput v)
 {
     UNITY_SETUP_INSTANCE_ID(v);
     VertexOutputDeferred o;
@@ -573,13 +581,13 @@ VertexOutputDeferred vertDeferred (VertexInput v)
 
     float4 posWorld = mul(unity_ObjectToWorld, v.vertex);
     #if UNITY_REQUIRE_FRAG_WORLDPOS
-        #if UNITY_PACK_WORLDPOS_WITH_TANGENT
-            o.tangentToWorldAndPackedData[0].w = posWorld.x;
-            o.tangentToWorldAndPackedData[1].w = posWorld.y;
-            o.tangentToWorldAndPackedData[2].w = posWorld.z;
-        #else
+    #if UNITY_PACK_WORLDPOS_WITH_TANGENT
+    o.tangentToWorldAndPackedData[0].w = posWorld.x;
+    o.tangentToWorldAndPackedData[1].w = posWorld.y;
+    o.tangentToWorldAndPackedData[2].w = posWorld.z;
+    #else
             o.posWorld = posWorld.xyz;
-        #endif
+    #endif
     #endif
     o.pos = UnityObjectToClipPos(v.vertex);
 
@@ -594,9 +602,9 @@ VertexOutputDeferred vertDeferred (VertexInput v)
         o.tangentToWorldAndPackedData[1].xyz = tangentToWorld[1];
         o.tangentToWorldAndPackedData[2].xyz = tangentToWorld[2];
     #else
-        o.tangentToWorldAndPackedData[0].xyz = 0;
-        o.tangentToWorldAndPackedData[1].xyz = 0;
-        o.tangentToWorldAndPackedData[2].xyz = normalWorld;
+    o.tangentToWorldAndPackedData[0].xyz = 0;
+    o.tangentToWorldAndPackedData[1].xyz = 0;
+    o.tangentToWorldAndPackedData[2].xyz = normalWorld;
     #endif
 
     o.ambientOrLightmapUV = 0;
@@ -620,26 +628,26 @@ VertexOutputDeferred vertDeferred (VertexInput v)
     return o;
 }
 
-void fragDeferred (
+void fragDeferred(
     VertexOutputDeferred i,
     out half4 outGBuffer0 : SV_Target0,
     out half4 outGBuffer1 : SV_Target1,
     out half4 outGBuffer2 : SV_Target2,
-    out half4 outEmission : SV_Target3          // RT3: emission (rgb), --unused-- (a)
-#if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
+    out half4 outEmission : SV_Target3 // RT3: emission (rgb), --unused-- (a)
+    #if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
     ,out half4 outShadowMask : SV_Target4       // RT4: shadowmask (rgba)
-#endif
+    #endif
 )
 {
     #if (SHADER_TARGET < 30)
-        outGBuffer0 = 1;
-        outGBuffer1 = 1;
-        outGBuffer2 = 0;
-        outEmission = 0;
-        #if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
+    outGBuffer0 = 1;
+    outGBuffer1 = 1;
+    outGBuffer2 = 0;
+    outEmission = 0;
+    #if defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
             outShadowMask = 1;
-        #endif
-        return;
+    #endif
+    return;
     #endif
 
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
@@ -648,35 +656,36 @@ void fragDeferred (
     UNITY_SETUP_INSTANCE_ID(i);
 
     // no analytic lights in this pass
-    UnityLight dummyLight = DummyLight ();
+    UnityLight dummyLight = DummyLight();
     half atten = 1;
 
     // only GI
     half occlusion = Occlusion(i.tex.xy);
-#if UNITY_ENABLE_REFLECTION_BUFFERS
+    #if UNITY_ENABLE_REFLECTION_BUFFERS
     bool sampleReflectionsInDeferred = false;
-#else
+    #else
     bool sampleReflectionsInDeferred = true;
-#endif
+    #endif
 
-    UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, dummyLight, sampleReflectionsInDeferred);
+    UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, dummyLight, sampleReflectionsInDeferred);
 
-    half3 emissiveColor = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect).rgb;
+    half3 emissiveColor = UNITY_BRDF_PBS(s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld,
+                                         -s.eyeVec, gi.light, gi.indirect).rgb;
 
     #ifdef _EMISSION
         emissiveColor += Emission (i.tex.xy);
     #endif
 
     #ifndef UNITY_HDR_ON
-        emissiveColor.rgb = exp2(-emissiveColor.rgb);
+    emissiveColor.rgb = exp2(-emissiveColor.rgb);
     #endif
 
     UnityStandardData data;
-    data.diffuseColor   = s.diffColor;
-    data.occlusion      = occlusion;
-    data.specularColor  = s.specColor;
-    data.smoothness     = s.smoothness;
-    data.normalWorld    = s.normalWorld;
+    data.diffuseColor = s.diffColor;
+    data.occlusion = occlusion;
+    data.specularColor = s.specColor;
+    data.smoothness = s.smoothness;
+    data.normalWorld = s.normalWorld;
 
     UnityStandardDataToGbuffer(data, outGBuffer0, outGBuffer1, outGBuffer2);
 
@@ -708,12 +717,13 @@ inline UnityGI FragmentGI(
     s.posWorld = posWorld;
     return FragmentGI(s, occlusion, i_ambientOrLightmapUV, atten, light, reflections);
 }
-inline UnityGI FragmentGI (
+
+inline UnityGI FragmentGI(
     float3 posWorld,
     half occlusion, half4 i_ambientOrLightmapUV, half atten, half smoothness, half3 normalWorld, half3 eyeVec,
     UnityLight light)
 {
-    return FragmentGI (posWorld, occlusion, i_ambientOrLightmapUV, atten, smoothness, normalWorld, eyeVec, light, true);
+    return FragmentGI(posWorld, occlusion, i_ambientOrLightmapUV, atten, smoothness, normalWorld, eyeVec, light, true);
 }
 
 #endif // UNITY_STANDARD_CORE_INCLUDED

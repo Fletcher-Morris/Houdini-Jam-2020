@@ -235,32 +235,32 @@
 #ifdef GRA_NO_UNORM
     #define GRA_UNORM
 #else
-    #define GRA_UNORM unorm
+#define GRA_UNORM unorm
 #endif
 
 #ifndef GRA_TEXTURE_ARRAY_SUPPORT
-    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1)
+#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1)
         #define GRA_TEXTURE_ARRAY_SUPPORT 1
-    #else
+#else
         #define GRA_TEXTURE_ARRAY_SUPPORT 0
-    #endif
+#endif
 #endif
 
 #define GRA_HLSL_FAMILY ((GRA_HLSL_3 == 1) || (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1))
 #define GRA_GLSL_FAMILY ((GRA_GLSL_120 == 1) || (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1))
 
 #if GRA_HLSL_FAMILY
-    #define gra_Float2 float2
-    #define gra_Float3 float3
-    #define gra_Float4 float4
-    #define gra_Int3 int3
-    #define gra_Float4x4 float4x4
-    #define gra_Unroll [unroll]
-    #define gra_Branch [branch]
+#define gra_Float2 float2
+#define gra_Float3 float3
+#define gra_Float4 float4
+#define gra_Int3 int3
+#define gra_Float4x4 float4x4
+#define gra_Unroll [unroll]
+#define gra_Branch [branch]
 #elif GRA_GLSL_FAMILY
-    #if (GRA_VERTEX_SHADER == 0) && (GRA_PIXEL_SHADER ==0)
+#if (GRA_VERTEX_SHADER == 0) && (GRA_PIXEL_SHADER ==0)
         #error GLSL requires knowledge of the shader stage! Neither GRA_VERTEX_SHADER or GRA_PIXEL_SHADER are defined!
-    #else
+#else
         #define gra_Float2 vec2
         #define gra_Float3 vec3
         #define gra_Float4 vec4
@@ -268,28 +268,28 @@
         #define gra_Float4x4 mat4
         #define gra_Unroll
         #define gra_Branch
-        #if (GRA_VERTEX_SHADER == 1)
+#if (GRA_VERTEX_SHADER == 1)
             #define ddx
             #define ddy
-        #elif (GRA_PIXEL_SHADER == 1)
+#elif (GRA_PIXEL_SHADER == 1)
             #define ddx dFdx
             #define ddy dFdy
-        #endif
+#endif
         #define frac fract
         #define lerp mix
         /** This is not correct (http://stackoverflow.com/questions/7610631/glsl-mod-vs-hlsl-fmod) but it is for our case */
         #define fmod mod
-    #endif
+#endif
 #else
     #error unknown shader architecture
 #endif
 
 #if (GRA_DISABLE_TEX_LOAD!=1)
-    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
-        #define GRA_LOAD_INSTR 1
-    #else
+#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
+#define GRA_LOAD_INSTR 1
+#else
         #define GRA_LOAD_INSTR 0
-    #endif
+#endif
 #else
     #define GRA_LOAD_INSTR 0
 #endif
@@ -504,29 +504,30 @@
     a cross API texture handle
 */
 #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
-    struct GraniteTranslationTexture
-    {
-        SamplerState Sampler;
-        Texture2D Texture;
-    };
-    struct GraniteCacheTexture
-    {
-        SamplerState Sampler;
+struct GraniteTranslationTexture
+{
+    SamplerState Sampler;
+    Texture2D Texture;
+};
 
-        #if GRA_TEXTURE_ARRAY_SUPPORT
-            Texture2DArray TextureArray;
-        #else
+struct GraniteCacheTexture
+{
+    SamplerState Sampler;
+
+    #if GRA_TEXTURE_ARRAY_SUPPORT
+    Texture2DArray TextureArray;
+    #else
             Texture2D Texture;
-        #endif
-    };
+    #endif
+};
 #elif (GRA_HLSL_3 == 1) || (GRA_GLSL_120 == 1) || (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
     #define GraniteTranslationTexture sampler2D
 
-    #if GRA_TEXTURE_ARRAY_SUPPORT
+#if GRA_TEXTURE_ARRAY_SUPPORT
         #define GraniteCacheTexture sampler2DArray
-    #else
+#else
         #define GraniteCacheTexture sampler2D
-    #endif
+#endif
 
 #else
     #error unknow shader archtecture
@@ -567,8 +568,8 @@ struct GraniteTilesetConstantBuffer
     */
 struct GraniteConstantBuffers
 {
-    GraniteTilesetConstantBuffer                        tilesetBuffer;
-    GraniteStreamingTextureConstantBuffer   streamingTextureBuffer;
+    GraniteTilesetConstantBuffer tilesetBuffer;
+    GraniteStreamingTextureConstantBuffer streamingTextureBuffer;
 };
 
 /**
@@ -576,8 +577,8 @@ struct GraniteConstantBuffers
     */
 struct GraniteCubeConstantBuffers
 {
-    GraniteTilesetConstantBuffer                                tilesetBuffer;
-    GraniteStreamingTextureCubeConstantBuffer   streamingTextureCubeBuffer;
+    GraniteTilesetConstantBuffer tilesetBuffer;
+    GraniteStreamingTextureCubeConstantBuffer streamingTextureCubeBuffer;
 };
 
 /**
@@ -600,6 +601,7 @@ struct GraniteLODLookupData
     gra_Float2 textureCoordinates;
     float cacheLevel;
 };
+
 //@IGNORE_END
 
 // public interface
@@ -659,7 +661,8 @@ gra_Float3 Granite_UnpackNormal(in gra_Float4 packedNormal, float scale);
     @param resolutionOffsetPow2 The additional resolution offset calculated as follows: resolutionOffsetPow2 = 2^resolutionOffset.
     @return The Granite Shader Runtime tile set parameter block transformed with the additional resolution offset.
 */
-GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetConstantBuffer INtsCB, in float resolutionOffsetPow2);
+GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetConstantBuffer INtsCB,
+                                                           in float resolutionOffsetPow2);
 
 /**
     Applies an user provided maximum anisotropy to the parameter block.
@@ -667,7 +670,8 @@ GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetCons
     @param resolutionOffsetPow2 The new anisotropy calculated as follows: maxAnisotropyLog2 = log2(maxAnisotropy).
     @return The Granite Shader Runtime tile set parameter block transformed with the new maximum anisotropy.
 */
-GraniteTilesetConstantBuffer Granite_SetMaxAnisotropy(in GraniteTilesetConstantBuffer INtsCB, in float maxAnisotropyLog2);
+GraniteTilesetConstantBuffer Granite_SetMaxAnisotropy(in GraniteTilesetConstantBuffer INtsCB,
+                                                      in float maxAnisotropyLog2);
 #else
 /**
     Applies an additional resolution offset to the parameter block.
@@ -705,7 +709,8 @@ gra_Float4 Granite_PackTileId(in gra_Float4 unpackedTileID);
     @param resolveTexture RWTexture2D resource where the resolve output is written to
     @param screenPos The pixel coordinates of the pixel on the screen (SV_Position)
 */
-void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM gra_Float4> resolveTexture, in gra_Float2 screenPos, in float alpha /*= 1.0f*/);
+void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM gra_Float4> resolveTexture,
+                                 in gra_Float2 screenPos, in float alpha /*= 1.0f*/);
 #endif
 
 /**
@@ -732,9 +737,9 @@ gra_Float2 Granite_GetTextureDimensions(in GraniteStreamingTextureConstantBuffer
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Linear(in GraniteConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a tile set using wrapped texture addressing (tiling)
@@ -747,9 +752,9 @@ int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Linear(in GraniteConstantBuffers grCB,
+                          in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed tile set with explicit derivatives
@@ -765,9 +770,10 @@ int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Linear(in GraniteConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                         in gra_Float2 ddX, in gra_Float2 ddY,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 /**
@@ -783,9 +789,10 @@ int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Linear(in GraniteConstantBuffers grCB,
+                          in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                          in gra_Float2 ddY,
+                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a tile set
@@ -798,9 +805,9 @@ int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Linear(in GraniteCubeConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a tile set with explicit derivatives
@@ -815,10 +822,10 @@ int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Linear(in GraniteCubeConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                               in gra_Float3 ddX, in gra_Float3 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -836,9 +843,10 @@ int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a UDIM tile set using wrapped texture addressing (tiling)
@@ -851,9 +859,9 @@ int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_UDIM_Linear(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed UDIM tile set with explicit derivatives
@@ -869,9 +877,10 @@ int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 /**
@@ -887,9 +896,10 @@ int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_UDIM_Linear(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               in gra_Float2 ddX, in gra_Float2 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a UDIM tile set
@@ -902,9 +912,9 @@ int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a UDIM tile set with explicit derivatives
@@ -919,10 +929,10 @@ int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    in gra_Float3 ddX, in gra_Float3 ddY,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -940,9 +950,10 @@ int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                               in GraniteTranslationTexture translationTable,
+                                               in gra_Float2 inputTexCoord,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a Clamped tile set using wrapped texture addressing (tiling)
@@ -955,9 +966,9 @@ int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed Clamped tile set with explicit derivatives
@@ -973,9 +984,10 @@ int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                               in GraniteTranslationTexture translationTable,
+                                               in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 /**
@@ -991,9 +1003,10 @@ int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                in gra_Float2 ddX, in gra_Float2 ddY,
+                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a Clamped tile set
@@ -1006,9 +1019,9 @@ int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a Clamped tile set with explicit derivatives
@@ -1023,10 +1036,10 @@ int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                     in gra_Float3 ddX, in gra_Float3 ddY,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -1044,9 +1057,10 @@ int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a tile set using wrapped texture addressing (tiling)
@@ -1059,9 +1073,9 @@ int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Anisotropic(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed tile set with explicit derivatives
@@ -1077,9 +1091,10 @@ int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 /**
@@ -1095,9 +1110,10 @@ int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Anisotropic(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               in gra_Float2 ddX, in gra_Float2 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a tile set
@@ -1110,9 +1126,9 @@ int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a tile set with explicit derivatives
@@ -1127,10 +1143,10 @@ int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    in gra_Float3 ddX, in gra_Float3 ddY,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -1148,9 +1164,11 @@ int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                   in GraniteTranslationTexture translationTable,
+                                                   in gra_Float2 inputTexCoord,
+                                                   out GraniteLookupData graniteLookupData,
+                                                   out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a UDIM tile set using wrapped texture addressing (tiling)
@@ -1163,9 +1181,9 @@ int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers gr
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed UDIM tile set with explicit derivatives
@@ -1181,9 +1199,11 @@ int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                   in GraniteTranslationTexture translationTable,
+                                                   in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                                   out GraniteLookupData graniteLookupData,
+                                                   out gra_Float4 resolveResult);
 
 
 /**
@@ -1199,9 +1219,10 @@ int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers gr
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                    in gra_Float2 ddX, in gra_Float2 ddY,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a UDIM tile set
@@ -1214,9 +1235,9 @@ int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a UDIM tile set with explicit derivatives
@@ -1231,10 +1252,10 @@ int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                         in gra_Float3 ddX, in gra_Float3 ddY,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -1252,9 +1273,11 @@ int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    in gra_Float2 inputTexCoord,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a Clamped tile set using wrapped texture addressing (tiling)
@@ -1267,9 +1290,9 @@ int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffer
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a pretransformed Clamped tile set with explicit derivatives
@@ -1285,9 +1308,11 @@ int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult);
 
 
 /**
@@ -1303,9 +1328,10 @@ int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffer
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
-                                                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                     in gra_Float2 ddX, in gra_Float2 ddY,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a Clamped tile set
@@ -1318,9 +1344,9 @@ int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                          in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a Clamped tile set with explicit derivatives
@@ -1335,10 +1361,10 @@ int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
-                                                                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                                                        in gra_Float3 ddX, in gra_Float3 ddY,
-                                                                        out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                          in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                          in gra_Float3 ddX, in gra_Float3 ddY,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 
 //@IGNORE_END
@@ -1356,9 +1382,10 @@ int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed(  in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in float LOD,
+                                  out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a tile set with explicit level-of-detail using wrapped texture addressing (tiling)
@@ -1373,9 +1400,9 @@ int Granite_Lookup_PreTransformed(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup( in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup(in GraniteConstantBuffers grCB,
+                   in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                   out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a tile set with explicit level-of-detail
@@ -1389,9 +1416,9 @@ int Granite_Lookup( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube(    in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube(in GraniteCubeConstantBuffers grCB,
+                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1408,9 +1435,10 @@ int Granite_Lookup_Cube(    in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_UDIM( in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_UDIM(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in float LOD,
+                                       out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a UDIM tile set with explicit level-of-detail using wrapped texture addressing (tiling)
@@ -1425,9 +1453,9 @@ int Granite_Lookup_PreTransformed_UDIM( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_UDIM(    in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_UDIM(in GraniteConstantBuffers grCB,
+                        in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a UDIM tile set with explicit level-of-detail
@@ -1441,9 +1469,9 @@ int Granite_Lookup_UDIM(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_UDIM(   in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_UDIM(in GraniteCubeConstantBuffers grCB,
+                             in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                             out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1460,9 +1488,10 @@ int Granite_Lookup_Cube_UDIM(   in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_PreTransformed_Clamp(    in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_PreTransformed_Clamp(in GraniteConstantBuffers grCB,
+                                        in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                        in float LOD,
+                                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a Clamped tile set with explicit level-of-detail using wrapped texture addressing (tiling)
@@ -1477,9 +1506,9 @@ int Granite_Lookup_PreTransformed_Clamp(    in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Clamp(   in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Clamp(in GraniteConstantBuffers grCB,
+                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                         out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup of a cubemap in a Clamped tile set with explicit level-of-detail
@@ -1493,9 +1522,9 @@ int Granite_Lookup_Clamp(   in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Cube_Clamp(  in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Cube_Clamp(in GraniteCubeConstantBuffers grCB,
+                              in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                              out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1512,10 +1541,10 @@ int Granite_Lookup_Cube_Clamp(  in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Dynamic_Linear(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in bool asUDIM,
+                                  out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup using wrapped texture addressing (tiling) and dynamic udim selection
@@ -1531,10 +1560,10 @@ int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
 *   @return 1 in case sampling was successful.
 */
 
-int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM, in float LOD,
-                                    out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Dynamic_Linear(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in bool asUDIM, in float LOD,
+                                  out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1551,10 +1580,10 @@ int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Dynamic_Anisotropic(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in bool asUDIM,
+                                       out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 /**
 *   Virtual texture lookup using wrapped texture addressing (tiling) and dynamic udim selection
@@ -1570,10 +1599,10 @@ int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
 *   @return 1 in case sampling was successful.
 */
 
-int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM, in float LOD,
-                                    out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
+int Granite_Lookup_Dynamic_Anisotropic(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in bool asUDIM, in float LOD,
+                                       out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1589,10 +1618,10 @@ int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample( in GraniteConstantBuffers grCB,
-                                        in GraniteLookupData graniteLookupData,
-                                        in GraniteCacheTexture cacheTexture, in int layer,
-                                        out gra_Float4 result);
+int Granite_Sample(in GraniteConstantBuffers grCB,
+                   in GraniteLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer,
+                   out gra_Float4 result);
 
 /**
 *   Samples a single layer of a cube tile set.
@@ -1605,10 +1634,10 @@ int Granite_Sample( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample( in GraniteCubeConstantBuffers grCB,
-                                        in GraniteLookupData graniteLookupData,
-                                        in GraniteCacheTexture cacheTexture, in int layer,
-                                        out gra_Float4 result);
+int Granite_Sample(in GraniteCubeConstantBuffers grCB,
+                   in GraniteLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer,
+                   out gra_Float4 result);
 
 /**
 *   Samples a single layer of a tile set with high quality filtering
@@ -1621,10 +1650,10 @@ int Granite_Sample( in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample_HQ(  in GraniteConstantBuffers grCB,
-                                                in GraniteLookupData graniteLookupData,
-                                                in GraniteCacheTexture cacheTexture, in int layer,
-                                                out gra_Float4 result);
+int Granite_Sample_HQ(in GraniteConstantBuffers grCB,
+                      in GraniteLookupData graniteLookupData,
+                      in GraniteCacheTexture cacheTexture, in int layer,
+                      out gra_Float4 result);
 
 /**
 *   Samples a single layer of a cube tile set with high quality filtering
@@ -1637,10 +1666,10 @@ int Granite_Sample_HQ(  in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample_HQ(  in GraniteCubeConstantBuffers grCB,
-                                                in GraniteLookupData graniteLookupData,
-                                                in GraniteCacheTexture cacheTexture, in int layer,
-                                                out gra_Float4 result);
+int Granite_Sample_HQ(in GraniteCubeConstantBuffers grCB,
+                      in GraniteLookupData graniteLookupData,
+                      in GraniteCacheTexture cacheTexture, in int layer,
+                      out gra_Float4 result);
 
 /**
 *   Samples a single layer of a tile set with explicit level-of-detail.
@@ -1653,10 +1682,10 @@ int Granite_Sample_HQ(  in GraniteCubeConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample( in GraniteConstantBuffers grCB,
-                                        in GraniteLODLookupData graniteLookupData,
-                                        in GraniteCacheTexture cacheTexture, in int layer,
-                                        out gra_Float4 result);
+int Granite_Sample(in GraniteConstantBuffers grCB,
+                   in GraniteLODLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer,
+                   out gra_Float4 result);
 
 /**
 *   Samples a single layer of a cube tile set with explicit level-of-detail.
@@ -1669,10 +1698,10 @@ int Granite_Sample( in GraniteConstantBuffers grCB,
 *
 *   @return 1 in case sampling was successful.
 */
-int Granite_Sample( in GraniteCubeConstantBuffers grCB,
-                                        in GraniteLODLookupData graniteLookupData,
-                                        in GraniteCacheTexture cacheTexture, in int layer,
-                                        out gra_Float4 result);
+int Granite_Sample(in GraniteCubeConstantBuffers grCB,
+                   in GraniteLODLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer,
+                   out gra_Float4 result);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -1697,7 +1726,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                       in gra_Float2 ddX, in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -1717,7 +1747,8 @@ gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_F
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                        in gra_Float2 ddY);
 
 
 /**
@@ -1738,7 +1769,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB,
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                             in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -1752,7 +1784,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB,
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return The packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                                            in gra_Float2 inputTexCoord);
 
 /**
 *   Calculate the pretransformed resolver output with explicit derivatives
@@ -1764,7 +1797,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBu
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                            in gra_Float2 ddX, in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -1784,7 +1818,8 @@ gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in 
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                             in gra_Float2 ddX, in gra_Float2 ddY);
 
 
 /**
@@ -1805,7 +1840,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers 
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                  in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -1819,7 +1855,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers 
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return The packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                             in gra_Float2 inputTexCoord);
 
 /**
 *   Calculate the pretransformed resolver output with explicit derivatives
@@ -1831,7 +1868,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantB
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                             in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                             in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -1851,7 +1890,8 @@ gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                              in gra_Float2 ddX, in gra_Float2 ddY);
 
 
 /**
@@ -1872,7 +1912,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                   in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -1886,7 +1927,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return The packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB,
+                                                            in gra_Float2 inputTexCoord);
 
 /**
 *   Calculate the pretransformed resolver output with explicit derivatives
@@ -1898,7 +1940,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBu
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                            in gra_Float2 ddX, in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -1918,7 +1961,8 @@ gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in 
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                             in gra_Float2 ddX, in gra_Float2 ddY);
 
 
 /**
@@ -1939,7 +1983,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers 
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                  in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -1953,7 +1998,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers 
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return The packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                 in gra_Float2 inputTexCoord);
 
 /**
 *   Calculate the pretransformed resolver output with explicit derivatives
@@ -1965,7 +2011,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConst
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                 in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                 in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -1985,7 +2033,8 @@ gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                  in gra_Float2 ddX, in gra_Float2 ddY);
 
 
 /**
@@ -2006,7 +2055,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuf
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                       in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -2020,7 +2070,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuf
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return The packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                  in gra_Float2 inputTexCoord);
 
 /**
 *   Calculate the pretransformed resolver output with explicit derivatives
@@ -2032,7 +2083,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteCons
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                  in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                  in gra_Float2 ddY);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing
@@ -2052,7 +2105,8 @@ gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grC
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY);
+gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                   in gra_Float2 ddX, in gra_Float2 ddY);
 
 
 /**
@@ -2062,7 +2116,8 @@ gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grC
 *   @param inputTexCoord The texture coordinate that will be used to sample the texture
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord);
+gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                                        in gra_Float3 inputTexCoord);
 
 /**
 *   Calculate the resolver output of a cubemap with explicit derivatives
@@ -2073,7 +2128,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBu
 *   @param ddY Specifies the explicit partial derivative with respect to Y
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY);
+gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                        in gra_Float3 ddX, in gra_Float3 ddY);
 
 
 //@IGNORE_END
@@ -2088,7 +2144,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBu
 *   @param LOD Specifies the explicit level-of-detail
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD);
+gra_Float4 Granite_ResolverPixel_PreTransformed(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in float LOD);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing with explicit level-of-detail
@@ -2123,7 +2180,8 @@ gra_Float4 Granite_ResolverPixel_Cube(in GraniteCubeConstantBuffers grCB, in gra
 *   @param LOD Specifies the explicit level-of-detail
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD);
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in float LOD);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing with explicit level-of-detail
@@ -2144,7 +2202,8 @@ gra_Float4 Granite_ResolverPixel_UDIM(in GraniteConstantBuffers grCB, in gra_Flo
 *   @param LOD Specifies the explicit level-of-detail
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in float LOD);
+gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                           in float LOD);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -2158,7 +2217,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, i
 *   @param LOD Specifies the explicit level-of-detail
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD);
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                      in float LOD);
 
 /**
 *   Calculate the resolver output using wrapping texture addressing with explicit level-of-detail
@@ -2179,7 +2239,8 @@ gra_Float4 Granite_ResolverPixel_Clamp(in GraniteConstantBuffers grCB, in gra_Fl
 *   @param LOD Specifies the explicit level-of-detail
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in float LOD);
+gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                            in float LOD);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -2192,7 +2253,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, 
 *   @param asUDIM Should we sample using UDIM or regular (tiled) adressing
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in bool asUDIM);
+gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in bool asUDIM);
 
 //@IGNORE_END
 //@IGNORE_BEGIN
@@ -2205,7 +2267,8 @@ gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, 
 *   @param asUDIM Should we sample using UDIM or regular (tiled) adressing
 *   @return a gra_Float4 containing the packed tile id
 */
-gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in bool asUDIM);
+gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in bool asUDIM);
 
 //@IGNORE_END
 
@@ -2235,20 +2298,20 @@ gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers g
 
 #if GRA_ROW_MAJOR == 1
 
-    #define gra_TranslationTableBias            gra_TilesetBufferInternal[0][0]
-    #define gra_MaxAnisotropyLog2               gra_TilesetBufferInternal[1][0]
-    #define gra_CalcMiplevelDeltaScale      gra_Float2(gra_TilesetBufferInternal[2][0], gra_TilesetBufferInternal[3][0])
-    #define gra_CalcMiplevelDeltaScaleX     gra_TilesetBufferInternal[2][0]
-    #define gra_CalcMiplevelDeltaScaleY     gra_TilesetBufferInternal[3][0]
-    #define gra_LodBiasPow2                             gra_TilesetBufferInternal[0][1]
-    #define gra_TileContentInTiles              gra_Float2(gra_TilesetBufferInternal[0][2], gra_TilesetBufferInternal[1][2])
-    #define gra_Level0NumTilesX                     gra_TilesetBufferInternal[0][3]
-    #define gra_NumTilesYScale                      gra_TilesetBufferInternal[1][3]
-    #define gra_TextureMagic                            gra_TilesetBufferInternal[2][3]
-    #define gra_TextureId                               gra_TilesetBufferInternal[3][3]
+#define gra_TranslationTableBias            gra_TilesetBufferInternal[0][0]
+#define gra_MaxAnisotropyLog2               gra_TilesetBufferInternal[1][0]
+#define gra_CalcMiplevelDeltaScale      gra_Float2(gra_TilesetBufferInternal[2][0], gra_TilesetBufferInternal[3][0])
+#define gra_CalcMiplevelDeltaScaleX     gra_TilesetBufferInternal[2][0]
+#define gra_CalcMiplevelDeltaScaleY     gra_TilesetBufferInternal[3][0]
+#define gra_LodBiasPow2                             gra_TilesetBufferInternal[0][1]
+#define gra_TileContentInTiles              gra_Float2(gra_TilesetBufferInternal[0][2], gra_TilesetBufferInternal[1][2])
+#define gra_Level0NumTilesX                     gra_TilesetBufferInternal[0][3]
+#define gra_NumTilesYScale                      gra_TilesetBufferInternal[1][3]
+#define gra_TextureMagic                            gra_TilesetBufferInternal[2][3]
+#define gra_TextureId                               gra_TilesetBufferInternal[3][3]
 
-    #define gra_RcpCacheInTiles(l)              gra_Float2(gra_TilesetCacheBuffer[0][l], gra_TilesetCacheBuffer[1][l])
-    #define gra_BorderPixelsRcpCache(l)     gra_Float2(gra_TilesetCacheBuffer[2][l], gra_TilesetCacheBuffer[3][l])
+#define gra_RcpCacheInTiles(l)              gra_Float2(gra_TilesetCacheBuffer[0][l], gra_TilesetCacheBuffer[1][l])
+#define gra_BorderPixelsRcpCache(l)     gra_Float2(gra_TilesetCacheBuffer[2][l], gra_TilesetCacheBuffer[3][l])
 
 #else
 
@@ -2280,89 +2343,90 @@ gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers g
 
 
 #if (GRA_TEXTURE_ARRAY_SUPPORT==1)
-    gra_Float4 GranitePrivate_SampleArray(in GraniteCacheTexture tex, in gra_Float3 texCoord)
-    {
+gra_Float4 GranitePrivate_SampleArray(in GraniteCacheTexture tex, in gra_Float3 texCoord)
+{
     #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
-        return tex.TextureArray.Sample(tex.Sampler, texCoord);
+    return tex.TextureArray.Sample(tex.Sampler, texCoord);
     #elif (GRA_GLSL_330 == 1)
         return texture(tex, texCoord);
     #else
         #error using unsupported function
     #endif
-    }
+}
 
-    gra_Float4 GranitePrivate_SampleGradArray(in GraniteCacheTexture tex, in gra_Float3 texCoord, in gra_Float2 dX, in gra_Float2 dY)
-    {
+gra_Float4 GranitePrivate_SampleGradArray(in GraniteCacheTexture tex, in gra_Float3 texCoord, in gra_Float2 dX,
+                                          in gra_Float2 dY)
+{
     #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
-        return tex.TextureArray.SampleGrad(tex.Sampler,texCoord,dX,dY);
+    return tex.TextureArray.SampleGrad(tex.Sampler, texCoord, dX, dY);
     #elif (GRA_GLSL_330 == 1)
         return textureGrad(tex, texCoord, dX, dY);
     #else
         #error using unsupported function
     #endif
-    }
+}
 
-    gra_Float4 GranitePrivate_SampleLevelArray(in GraniteCacheTexture tex, in gra_Float3 texCoord, in float level)
-    {
+gra_Float4 GranitePrivate_SampleLevelArray(in GraniteCacheTexture tex, in gra_Float3 texCoord, in float level)
+{
     #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
-        return tex.TextureArray.SampleLevel(tex.Sampler, texCoord, level);
+    return tex.TextureArray.SampleLevel(tex.Sampler, texCoord, level);
     #elif (GRA_GLSL_330 == 1)
         return textureLod(tex, texCoord, level);
     #else
         #error using unsupported function
     #endif
-    }
+}
 #else
     gra_Float4 GranitePrivate_Sample(in GraniteCacheTexture tex, in gra_Float2 texCoord)
     {
-    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
         return tex.Texture.Sample(tex.Sampler,texCoord);
-    #elif (GRA_HLSL_3 == 1)
+#elif (GRA_HLSL_3 == 1)
         return tex2D(tex,texCoord);
-    #elif (GRA_GLSL_120 == 1) || (GRA_GLSL_130 == 1)
+#elif (GRA_GLSL_120 == 1) || (GRA_GLSL_130 == 1)
         return texture2D(tex, texCoord);
-    #elif (GRA_GLSL_330 == 1)
+#elif (GRA_GLSL_330 == 1)
         return texture(tex, texCoord);
-    #endif
+#endif
     }
 
     gra_Float4 GranitePrivate_SampleLevel(in GraniteCacheTexture tex, in gra_Float2 texCoord, in float level)
     {
-    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
         return tex.Texture.SampleLevel(tex.Sampler, texCoord, level);
-    #elif (GRA_HLSL_3 == 1)
+#elif (GRA_HLSL_3 == 1)
         return tex2Dlod(tex,gra_Float4(texCoord,0.0,level));
-    #elif (GRA_GLSL_120 == 1)
+#elif (GRA_GLSL_120 == 1)
         return texture2DLod(tex, texCoord, level);
-    #elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
+#elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
         return textureLod(tex, texCoord, level);
-    #endif
+#endif
     }
 
     gra_Float4 GranitePrivate_SampleGrad(in GraniteCacheTexture tex, in gra_Float2 texCoord, in gra_Float2 dX, in gra_Float2 dY)
     {
-    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
         return tex.Texture.SampleGrad(tex.Sampler,texCoord,dX,dY);
-    #elif (GRA_HLSL_3 == 1)
+#elif (GRA_HLSL_3 == 1)
         return tex2D(tex,texCoord,dX,dY);
-    #elif (GRA_GLSL_120 == 1)
+#elif (GRA_GLSL_120 == 1)
         return texture2DGrad(tex, texCoord, dX, dY);
-    #elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
+#elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
         return textureGrad(tex, texCoord, dX, dY);
-    #endif
+#endif
     }
 #endif //#if (GRA_TEXTURE_ARRAY_SUPPORT==1)
 
 #if (GRA_LOAD_INSTR==1)
 gra_Float4 GranitePrivate_Load(in GraniteTranslationTexture tex, in gra_Int3 location)
 {
-#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
     return tex.Texture.Load(location);
-#elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
+    #elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
     return texelFetch(tex, location.xy, location.z);
-#elif (GRA_HLSL_3 == 1) || (GRA_GLSL_120 == 1)
+    #elif (GRA_HLSL_3 == 1) || (GRA_GLSL_120 == 1)
     #error using unsupported function
-#endif
+    #endif
 }
 #endif
 
@@ -2370,36 +2434,37 @@ gra_Float4 GranitePrivate_Load(in GraniteTranslationTexture tex, in gra_Int3 loc
 //compiler gets confused with GranitePrivate_SampleLevel taking a GraniteCacheTexture as argument when array support is disabled
 //Without array support, GraniteCacheTexture and GraniteTranslationTexture are the same (but still different types!)
 //compiler is confused (ERR_AMBIGUOUS_FUNCTION_CALL). Looks like somebody is over enthusiastic optimizing...
-gra_Float4 GranitePrivate_SampleLevel_Translation(in GraniteTranslationTexture tex, in gra_Float2 texCoord, in float level)
+gra_Float4 GranitePrivate_SampleLevel_Translation(in GraniteTranslationTexture tex, in gra_Float2 texCoord,
+                                                  in float level)
 {
-#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
     return tex.Texture.SampleLevel(tex.Sampler, texCoord, level);
-#elif (GRA_HLSL_3 == 1)
+    #elif (GRA_HLSL_3 == 1)
     return tex2Dlod(tex,gra_Float4(texCoord,0.0,level));
-#elif (GRA_GLSL_120 == 1)
+    #elif (GRA_GLSL_120 == 1)
     return texture2DLod(tex, texCoord, level);
-#elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
+    #elif (GRA_GLSL_130 == 1) || (GRA_GLSL_330 == 1)
     return textureLod(tex, texCoord, level);
-#endif
+    #endif
 }
 
 float GranitePrivate_Saturate(in float value)
 {
-#if GRA_HLSL_FAMILY
+    #if GRA_HLSL_FAMILY
     return saturate(value);
-#elif GRA_GLSL_FAMILY
+    #elif GRA_GLSL_FAMILY
     return clamp(value, 0.0f, 1.0f);
-#endif
+    #endif
 }
 
 #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1)
 uint GranitePrivate_FloatAsUint(float value)
 {
-#if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
+    #if (GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1)
     return asuint(value);
-#elif (GRA_GLSL_330 == 1)
+    #elif (GRA_GLSL_330 == 1)
     return floatBitsToUint(value);
-#endif
+    #endif
 }
 #endif
 
@@ -2409,11 +2474,11 @@ uint GranitePrivate_FloatAsUint(float value)
 #if (GRA_FORCE_SM3 == 0) && ((GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1))
 float GranitePrivate_Pow2(uint exponent)
 {
-#if GRA_HLSL_FAMILY
+    #if GRA_HLSL_FAMILY
     return pow(2.0, exponent);
-#else
+    #else
     return pow(2.0, float(exponent));
-#endif
+    #endif
 }
 #else
 float GranitePrivate_Pow2(int exponent)
@@ -2438,15 +2503,15 @@ gra_Float2 GranitePrivate_UdimUV(in gra_Float2 uv, in GraniteStreamingTextureCon
 
 gra_Float2 GranitePrivate_ClampUV(in gra_Float2 uv, in GraniteStreamingTextureConstantBuffer grSTCB)
 {
-  gra_Float2 epsilon2 = gra_Float2(gra_AssetWidthRcp, gra_AssetHeightRcp);
-  return clamp(uv, epsilon2, gra_Float2(1,1) - epsilon2);
+    gra_Float2 epsilon2 = gra_Float2(gra_AssetWidthRcp, gra_AssetHeightRcp);
+    return clamp(uv, epsilon2, gra_Float2(1, 1) - epsilon2);
 }
 
 gra_Float2 GranitePrivate_MirrorUV(in gra_Float2 uv, in GraniteStreamingTextureConstantBuffer grSTCB)
 {
-    gra_Float2 t = frac(uv*0.5)*2.0;
-    gra_Float2 l = gra_Float2(1.0,1.0);
-    return l-abs(t-l);
+    gra_Float2 t = frac(uv * 0.5) * 2.0;
+    gra_Float2 l = gra_Float2(1.0, 1.0);
+    return l - abs(t - l);
 }
 
 // function definitons for private functions
@@ -2454,7 +2519,7 @@ gra_Float4 GranitePrivate_PackTileId(in gra_Float2 tileXY, in float level, in fl
 
 gra_Float4 Granite_DebugPackedTileId64(in gra_Float4 PackedTile)
 {
-#if GRA_64BIT_RESOLVER
+    #if GRA_64BIT_RESOLVER
     gra_Float4 output;
 
     const float scale = 1.0f / 65535.0f;
@@ -2472,9 +2537,9 @@ gra_Float4 Granite_DebugPackedTileId64(in gra_Float4 PackedTile)
         (float)output.z / 255.0f,
         (float)output.w / 255.0f
     );
-#else
+    #else
     return PackedTile;
-#endif
+    #endif
 }
 
 gra_Float3 Granite_UnpackNormal(in gra_Float4 PackedNormal, float scale)
@@ -2491,7 +2556,8 @@ gra_Float3 Granite_UnpackNormal(in gra_Float4 PackedNormal)
 }
 
 #if GRA_HLSL_FAMILY
-GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetConstantBuffer INtsCB, in float resolutionOffsetPow2)
+GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetConstantBuffer INtsCB,
+                                                           in float resolutionOffsetPow2)
 {
     GraniteTilesetConstantBuffer tsCB = INtsCB;
     gra_LodBiasPow2 *= resolutionOffsetPow2;
@@ -2501,7 +2567,8 @@ GraniteTilesetConstantBuffer Granite_ApplyResolutionOffset(in GraniteTilesetCons
     return tsCB;
 }
 
-GraniteTilesetConstantBuffer Granite_SetMaxAnisotropy(in GraniteTilesetConstantBuffer INtsCB, in float maxAnisotropyLog2)
+GraniteTilesetConstantBuffer Granite_SetMaxAnisotropy(in GraniteTilesetConstantBuffer INtsCB,
+                                                      in float maxAnisotropyLog2)
 {
     GraniteTilesetConstantBuffer tsCB = INtsCB;
     gra_MaxAnisotropyLog2 = min(gra_MaxAnisotropyLog2, maxAnisotropyLog2);
@@ -2524,7 +2591,7 @@ void Granite_SetMaxAnisotropy(inout GraniteTilesetConstantBuffer tsCB, in float 
 
 gra_Float2 Granite_Transform(in GraniteStreamingTextureConstantBuffer grSTCB, in gra_Float2 textureCoord)
 {
-    return textureCoord * gra_StreamingTextureTransform.zw  + gra_StreamingTextureTransform.xy;
+    return textureCoord * gra_StreamingTextureTransform.zw + gra_StreamingTextureTransform.xy;
 }
 
 gra_Float4 Granite_MergeResolveOutputs(in gra_Float4 resolve0, in gra_Float4 resolve1, in gra_Float2 pixelLocation)
@@ -2540,21 +2607,23 @@ gra_Float4 Granite_PackTileId(in gra_Float4 unpackedTileID)
 }
 
 #if (GRA_HLSL_5 == 1)
-void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM gra_Float4> resolveTexture, in gra_Float2 screenPos, in float alpha)
+void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM gra_Float4> resolveTexture,
+                                 in gra_Float2 screenPos, in float alpha)
 {
     const uint2 pixelPos = int2(screenPos);
     const uint2 pixelLocation = pixelPos % GRA_RWTEXTURE2D_SCALE;
-    bool dither = (pixelLocation.x  == 0) && (pixelLocation.y  == 0);
+    bool dither = (pixelLocation.x == 0) && (pixelLocation.y == 0);
     uint2 writePos = pixelPos / GRA_RWTEXTURE2D_SCALE;
 
-    if ( alpha == 0 )
+    if (alpha == 0)
     {
         dither = false;
     }
     else if (alpha != 1.0)
     {
         // Do a 4x4 dither patern so alternating pixels resolve to the first or the second texture
-        gra_Float2 pixelLocationAlpha = frac(screenPos * 0.25f); // We don't scale after the frac so this will give coords 0, 0.25, 0.5, 0.75
+        gra_Float2 pixelLocationAlpha = frac(screenPos * 0.25f);
+        // We don't scale after the frac so this will give coords 0, 0.25, 0.5, 0.75
         int pixelId = (int)(pixelLocationAlpha.y * 16 + pixelLocationAlpha.x * 4); //faster as a dot2 ?
 
         // Clamp
@@ -2564,10 +2633,12 @@ void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM
 
         // Modern hardware supports array indexing with per pixel varying indexes
         // on old hardware this will be expanded to a conditional tree by the compiler
-        const float thresholdMaxtrix[16] = {    1.0f / 17.0f, 9.0f / 17.0f, 3.0f / 17.0f, 11.0f / 17.0f,
-                                                    13.0f / 17.0f,  5.0f / 17.0f, 15.0f / 17.0f, 7.0f / 17.0f,
-                                                    4.0f / 17.0f, 12.0f / 17.0f, 2.0f / 17.0f, 10.0f / 17.0f,
-                                                    16.0f / 17.0f, 8.0f / 17.0f, 14.0f / 17.0f, 6.0f / 17.0f};
+        const float thresholdMaxtrix[16] = {
+            1.0f / 17.0f, 9.0f / 17.0f, 3.0f / 17.0f, 11.0f / 17.0f,
+            13.0f / 17.0f, 5.0f / 17.0f, 15.0f / 17.0f, 7.0f / 17.0f,
+            4.0f / 17.0f, 12.0f / 17.0f, 2.0f / 17.0f, 10.0f / 17.0f,
+            16.0f / 17.0f, 8.0f / 17.0f, 14.0f / 17.0f, 6.0f / 17.0f
+        };
         float threshold = thresholdMaxtrix[pixelId];
 
         if (alpha < threshold)
@@ -2578,37 +2649,39 @@ void Granite_DitherResolveOutput(in gra_Float4 resolve, in RWTexture2D<GRA_UNORM
 
     gra_Branch if (dither)
     {
-#if (GRA_PACK_RESOLVE_OUTPUT==0)
+        #if (GRA_PACK_RESOLVE_OUTPUT==0)
         resolveTexture[writePos] = Granite_PackTileId(resolve);
-#else
+        #else
         resolveTexture[writePos] = resolve;
-#endif
+        #endif
     }
 }
 #endif
 
-float GranitePrivate_CalcMiplevelAnisotropic(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB, in gra_Float2 ddxTc, in gra_Float2 ddyTc)
+float GranitePrivate_CalcMiplevelAnisotropic(in GraniteTilesetConstantBuffer tsCB,
+                                             in GraniteStreamingTextureConstantBuffer grSTCB, in gra_Float2 ddxTc,
+                                             in gra_Float2 ddyTc)
 {
     // Calculate the required mipmap level, this uses a similar
     // formula as the GL spec.
     // To reduce sqrt's and log2's we do some stuff in squared space here and further below in log space
     // i.e. we wait with the sqrt untill we can do it for 'free' later during the log2
 
-  ddxTc *= gra_CalcMiplevelDeltaScale;
-  ddyTc *= gra_CalcMiplevelDeltaScale;
+    ddxTc *= gra_CalcMiplevelDeltaScale;
+    ddyTc *= gra_CalcMiplevelDeltaScale;
 
-  float lenDxSqr = dot(ddxTc, ddxTc);
+    float lenDxSqr = dot(ddxTc, ddxTc);
     float lenDySqr = dot(ddyTc, ddyTc);
     float dMaxSqr = max(lenDxSqr, lenDySqr);
     float dMinSqr = min(lenDxSqr, lenDySqr);
 
     // Calculate mipmap levels directly from sqared distances. This uses log2(sqrt(x)) = 0.5 * log2(x) to save some sqrt's
-    float maxLevel = 0.5 * log2( dMaxSqr );
-    float minLevel = 0.5 * log2( dMinSqr );
+    float maxLevel = 0.5 * log2(dMaxSqr);
+    float minLevel = 0.5 * log2(dMinSqr);
 
     // Calculate the log2 of the anisotropy and clamp it by the max supported. This uses log2(a/b) = log2(a)-log2(b) and min(log(a),log(b)) = log(min(a,b))
     float anisoLog2 = maxLevel - minLevel;
-    anisoLog2 = min( anisoLog2, gra_MaxAnisotropyLog2 );
+    anisoLog2 = min(anisoLog2, gra_MaxAnisotropyLog2);
 
     // Adjust for anisotropy & clamp to level 0
     float result = max(maxLevel - anisoLog2 - 0.5f, 0.0f); //Subtract 0.5 to compensate for trilinear mipmapping
@@ -2618,29 +2691,31 @@ float GranitePrivate_CalcMiplevelAnisotropic(in GraniteTilesetConstantBuffer tsC
     return min(result, gra_NumLevels);
 }
 
-float GranitePrivate_CalcMiplevelLinear(in  GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB, in gra_Float2 ddxTc, in gra_Float2 ddyTc)
+float GranitePrivate_CalcMiplevelLinear(in GraniteTilesetConstantBuffer tsCB,
+                                        in GraniteStreamingTextureConstantBuffer grSTCB, in gra_Float2 ddxTc,
+                                        in gra_Float2 ddyTc)
 {
     // Calculate the required mipmap level, this uses a similar
     // formula as the GL spec.
     // To reduce sqrt's and log2's we do some stuff in squared space here and further below in log space
     // i.e. we wait with the sqrt untill we can do it for 'free' later during the log2
 
-  ddxTc *= gra_CalcMiplevelDeltaScale;
-  ddyTc *= gra_CalcMiplevelDeltaScale;
+    ddxTc *= gra_CalcMiplevelDeltaScale;
+    ddyTc *= gra_CalcMiplevelDeltaScale;
 
     float lenDxSqr = dot(ddxTc, ddxTc);
     float lenDySqr = dot(ddyTc, ddyTc);
     float dMaxSqr = max(lenDxSqr, lenDySqr);
 
     // Calculate mipmap levels directly from squared distances. This uses log2(sqrt(x)) = 0.5 * log2(x) to save some sqrt's
-    float maxLevel = 0.5 * log2(dMaxSqr) - 0.5f;  //Subtract 0.5 to compensate for trilinear mipmapping
+    float maxLevel = 0.5 * log2(dMaxSqr) - 0.5f; //Subtract 0.5 to compensate for trilinear mipmapping
 
     return clamp(maxLevel, 0.0f, gra_NumLevels);
 }
 
 gra_Float4 GranitePrivate_PackTileId(in gra_Float2 tileXY, in float level, in float textureID)
 {
-#if GRA_64BIT_RESOLVER == 0
+    #if GRA_64BIT_RESOLVER == 0
     gra_Float4 resultBits;
 
     resultBits.x = fmod(tileXY.x, 256.0f);
@@ -2650,7 +2725,7 @@ gra_Float4 GranitePrivate_PackTileId(in gra_Float2 tileXY, in float level, in fl
 
     const float scale = 1.0f / 255.0f;
 
-#if GRA_BGRA == 0
+    #if GRA_BGRA == 0
     return scale * gra_Float4
     (
         float(resultBits.x),
@@ -2658,7 +2733,7 @@ gra_Float4 GranitePrivate_PackTileId(in gra_Float2 tileXY, in float level, in fl
         float(resultBits.z),
         float(resultBits.w)
     );
-#else
+    #else
     return scale * gra_Float4
     (
         float(resultBits.z),
@@ -2666,44 +2741,44 @@ gra_Float4 GranitePrivate_PackTileId(in gra_Float2 tileXY, in float level, in fl
         float(resultBits.x),
         float(resultBits.w)
     );
-#endif
-#else
+    #endif
+    #else
     const float scale = 1.0f / 65535.0f;
     return gra_Float4(tileXY.x, tileXY.y, level, textureID) * scale;
-#endif
-
+    #endif
 }
 
 gra_Float4 GranitePrivate_UnpackTileId(in gra_Float4 packedTile)
 {
     gra_Float4 swiz;
-#if GRA_BGRA == 0
+    #if GRA_BGRA == 0
     swiz = packedTile;
-#else
+    #else
     swiz = packedTile.zyxw;
-#endif
+    #endif
     swiz *= 255.0f;
 
     float tileX = swiz.x + fmod(swiz.y, 16.0f) * 256.0f;
     float tileY = floor(swiz.y / 16.0f) + swiz.z * 16.0f;
     float level = fmod(swiz.w, 16.0f);
-    float tex   = floor(swiz.w /  16.0f);
+    float tex = floor(swiz.w / 16.0f);
 
     return gra_Float4(tileX, tileY, level, tex);
 }
 
-gra_Float3 GranitePrivate_TranslateCoord(in GraniteTilesetConstantBuffer tsCB, in gra_Float2 inputTexCoord, in gra_Float4 translationData, in int layer, out gra_Float2 numPagesOnLevel)
+gra_Float3 GranitePrivate_TranslateCoord(in GraniteTilesetConstantBuffer tsCB, in gra_Float2 inputTexCoord,
+                                         in gra_Float4 translationData, in int layer, out gra_Float2 numPagesOnLevel)
 {
-#if (GRA_FORCE_SM3 == 0) && ((GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1))
+    #if (GRA_FORCE_SM3 == 0) && ((GRA_HLSL_5 == 1) || (GRA_HLSL_4 == 1) || (GRA_GLSL_330 == 1))
     // The translation table contains uint32_t values so we have to get to the individual bits of the float data
     uint data = GranitePrivate_FloatAsUint(translationData[layer]);
 
     // Slice Index: 7 bits, Cache X: 10 bits, Cache Y: 10 bits, Tile Level: 4 bits
-    uint slice  = (data >> 24u) & 0x7Fu;
+    uint slice = (data >> 24u) & 0x7Fu;
     uint cacheX = (data >> 14u) & 0x3FFu;
     uint cacheY = (data >> 4u) & 0x3FFu;
     uint revLevel = data & 0xFu;
-#else
+    #else
     // The translation table contains integer float values so we have to cast the float value to an int (which works up to 24-bit integer values)
     int data = int(translationData[layer]);
 
@@ -2711,7 +2786,7 @@ gra_Float3 GranitePrivate_TranslateCoord(in GraniteTilesetConstantBuffer tsCB, i
     int cacheX = (data / 16384);
     int cacheY = (data % 16384) / 16;
     int revLevel = (data % 16);
-#endif
+    #endif
 
     gra_Float2 numTilesOnLevel;
     numTilesOnLevel.x = GranitePrivate_Pow2(revLevel);
@@ -2720,23 +2795,25 @@ gra_Float3 GranitePrivate_TranslateCoord(in GraniteTilesetConstantBuffer tsCB, i
     gra_Float2 tileTexCoord = frac(inputTexCoord * numTilesOnLevel);
 
     gra_Float2 tileTexCoordCache = tileTexCoord * gra_TileContentInTiles + gra_Float2(cacheX, cacheY);
-    gra_Float3 final = gra_Float3(tileTexCoordCache * gra_RcpCacheInTiles(layer) + gra_BorderPixelsRcpCache(layer), slice);
+    gra_Float3 final = gra_Float3(tileTexCoordCache * gra_RcpCacheInTiles(layer) + gra_BorderPixelsRcpCache(layer),
+                                  slice);
 
     numPagesOnLevel = numTilesOnLevel * gra_TileContentInTiles * gra_RcpCacheInTiles(layer);
 
     return final;
 }
 
-gra_Float4 GranitePrivate_DrawDebugTiles(in gra_Float4 sourceColor, in gra_Float2 textureCoord, in gra_Float2 numPagesOnLevel)
+gra_Float4 GranitePrivate_DrawDebugTiles(in gra_Float4 sourceColor, in gra_Float2 textureCoord,
+                                         in gra_Float2 numPagesOnLevel)
 {
     // Calculate the border values
     gra_Float2 cacheOffs = frac(textureCoord * numPagesOnLevel);
-    float borderTemp = max(cacheOffs.x, 1.0-cacheOffs.x);
-    borderTemp = max(max(cacheOffs.y, 1.0-cacheOffs.y), borderTemp);
+    float borderTemp = max(cacheOffs.x, 1.0 - cacheOffs.x);
+    borderTemp = max(max(cacheOffs.y, 1.0 - cacheOffs.y), borderTemp);
     float border = smoothstep(0.98, 0.99, borderTemp);
 
     // White
-    gra_Float4 borderColor = gra_Float4(1,1,1,1);
+    gra_Float4 borderColor = gra_Float4(1, 1, 1, 1);
 
     //Lerp it over the source color
     return lerp(sourceColor, borderColor, border);
@@ -2744,11 +2821,11 @@ gra_Float4 GranitePrivate_DrawDebugTiles(in gra_Float4 sourceColor, in gra_Float
 
 gra_Float4 GranitePrivate_MakeResolveOutput(in GraniteTilesetConstantBuffer tsCB, in gra_Float2 tileXY, in float level)
 {
-#if GRA_PACK_RESOLVE_OUTPUT
+    #if GRA_PACK_RESOLVE_OUTPUT
     return GranitePrivate_PackTileId(tileXY, level, gra_TextureId);
-#else
+    #else
     return gra_Float4(tileXY, level, gra_TextureId);
-#endif
+    #endif
 }
 
 gra_Float4 GranitePrivate_ResolverPixel(in GraniteTilesetConstantBuffer tsCB, in gra_Float2 inputTexCoord, in float LOD)
@@ -2766,7 +2843,10 @@ gra_Float4 GranitePrivate_ResolverPixel(in GraniteTilesetConstantBuffer tsCB, in
     return GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 }
 
-void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in gra_Float3 dVx, in gra_Float3 dVy, in GraniteStreamingTextureCubeConstantBuffer transforms, out int faceIdx, out gra_Float2 texCoord, out gra_Float2 dX, out gra_Float2 dY)
+void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in gra_Float3 dVx, in gra_Float3 dVy,
+                                                in GraniteStreamingTextureCubeConstantBuffer transforms,
+                                                out int faceIdx, out gra_Float2 texCoord, out gra_Float2 dX,
+                                                out gra_Float2 dY)
 {
     gra_Float2 contTexCoord;
     gra_Float3 derivX;
@@ -2776,7 +2856,7 @@ void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in 
     if (abs(inputTexCoord.z) >= abs(inputTexCoord.x) && abs(inputTexCoord.z) >= abs(inputTexCoord.y))
     {
         // Z major axis
-        if(inputTexCoord.z < 0.0)
+        if (inputTexCoord.z < 0.0)
         {
             faceIdx = 5;
             texCoord.x = -inputTexCoord.x;
@@ -2796,7 +2876,7 @@ void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in 
     else if (abs(inputTexCoord.y) >= abs(inputTexCoord.x))
     {
         // Y major axis
-        if(inputTexCoord.y < 0.0)
+        if (inputTexCoord.y < 0.0)
         {
             faceIdx = 3;
             texCoord.y = -inputTexCoord.z;
@@ -2816,7 +2896,7 @@ void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in 
     else
     {
         // X major axis
-        if(inputTexCoord.x < 0.0)
+        if (inputTexCoord.x < 0.0)
         {
             faceIdx = 1;
             texCoord.x = inputTexCoord.z;
@@ -2835,13 +2915,13 @@ void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in 
     }
     texCoord = (texCoord + majorAxis) / (2.0 * abs(majorAxis));
 
-#if GRA_HQ_CUBEMAPPING
+    #if GRA_HQ_CUBEMAPPING
     dX = /*contTexCoord **/ ((contTexCoord + derivX.xy) / ( 2.0 * (majorAxis + derivX.z)) - (contTexCoord / (2.0 * majorAxis)));
     dY = /*contTexCoord **/ ((contTexCoord + derivY.xy) / ( 2.0 * (majorAxis + derivY.z)) - (contTexCoord / (2.0 * majorAxis)));
-#else
+    #else
     dX = ((/*contTexCoord **/ derivX.xy) / (2.0 * abs(majorAxis)));
     dY = ((/*contTexCoord **/ derivY.xy) / (2.0 * abs(majorAxis)));
-#endif
+    #endif
 
     // Now scale the derivatives with the texture transform scale
     dX *= transforms.data[faceIdx].data[0].zw;
@@ -2849,7 +2929,10 @@ void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in 
 }
 
 // Auto-level
-void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord, in GraniteStreamingTextureCubeConstantBuffer transforms, out int faceIdx, out gra_Float2 texCoord, out gra_Float2 dX, out gra_Float2 dY)
+void GranitePrivate_CalculateCubemapCoordinates(in gra_Float3 inputTexCoord,
+                                                in GraniteStreamingTextureCubeConstantBuffer transforms,
+                                                out int faceIdx, out gra_Float2 texCoord, out gra_Float2 dX,
+                                                out gra_Float2 dY)
 {
     gra_Float3 dVx = ddx(inputTexCoord);
     gra_Float3 dVy = ddy(inputTexCoord);
@@ -2868,16 +2951,18 @@ gra_Float2 Granite_GetTextureDimensions(in GraniteStreamingTextureConstantBuffer
 //! GranitePrivate_Lookup_PreTransformed_Software_Linear
 
 // General
-int GranitePrivate_Lookup_Software_General_Linear(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_Linear(in GraniteTilesetConstantBuffer tsCB,
+                                                  in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                  in gra_Float2 inputTexCoord,
+                                                  in GraniteTranslationTexture translationTable,
+                                                  out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
+                                                  in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelLinear(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -2885,11 +2970,11 @@ int GranitePrivate_Lookup_Software_General_Linear(in GraniteTilesetConstantBuffe
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -2899,7 +2984,10 @@ int GranitePrivate_Lookup_Software_General_Linear(in GraniteTilesetConstantBuffe
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                         in GraniteTranslationTexture translationTable,
+                                                         out GraniteLookupData graniteLookupData,
+                                                         out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -2907,16 +2995,25 @@ int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffe
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                         in gra_Float2 ddX, in gra_Float2 ddY,
+                                                         in GraniteTranslationTexture translationTable,
+                                                         out GraniteLookupData graniteLookupData,
+                                                         out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -2924,59 +3021,76 @@ int GranitePrivate_Lookup_PreTransformed_Software_Linear(in GraniteConstantBuffe
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                          in GraniteTranslationTexture translationTable,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                          in gra_Float2 ddX, in gra_Float2 ddY,
+                                          in GraniteTranslationTexture translationTable,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Linear(in GraniteConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Linear(grCB, inputTexCoord, translationTable,
+                                                                graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_Linear(   in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Linear(in GraniteConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                         in gra_Float2 ddX, in gra_Float2 ddY,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Linear(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                                graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Linear(in GraniteConstantBuffers grCB,
+                          in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Linear(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                 resolveResult);
 }
 
-int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Linear(in GraniteConstantBuffers grCB,
+                          in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                          in gra_Float2 ddY,
+                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData,
+                                                 resolveResult);
 }
 
 
@@ -2984,9 +3098,9 @@ int Granite_Lookup_Linear(  in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Linear(in GraniteCubeConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -2995,25 +3109,33 @@ int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Linear(in GraniteCubeConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                               in gra_Float3 ddX, in gra_Float3 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3022,16 +3144,19 @@ int Granite_Lookup_Cube_Linear( in GraniteCubeConstantBuffers grCB,
 //! GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear
 
 // General
-int GranitePrivate_Lookup_Software_General_UDIM_Linear(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_UDIM_Linear(in GraniteTilesetConstantBuffer tsCB,
+                                                       in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                       in gra_Float2 inputTexCoord,
+                                                       in GraniteTranslationTexture translationTable,
+                                                       out GraniteLookupData graniteLookupData,
+                                                       out gra_Float4 resolveResult,
+                                                       in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelLinear(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3039,11 +3164,11 @@ int GranitePrivate_Lookup_Software_General_UDIM_Linear(in GraniteTilesetConstant
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -3053,7 +3178,11 @@ int GranitePrivate_Lookup_Software_General_UDIM_Linear(in GraniteTilesetConstant
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                                              in gra_Float2 inputTexCoord,
+                                                              in GraniteTranslationTexture translationTable,
+                                                              out GraniteLookupData graniteLookupData,
+                                                              out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -3061,16 +3190,26 @@ int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstant
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                              in gra_Float2 ddY,
+                                                              in GraniteTranslationTexture translationTable,
+                                                              out GraniteLookupData graniteLookupData,
+                                                              out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -3078,59 +3217,77 @@ int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(in GraniteConstant
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                               in GraniteTranslationTexture translationTable,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                               in gra_Float2 ddX, in gra_Float2 ddY,
+                                               in GraniteTranslationTexture translationTable,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(grCB, inputTexCoord, translationTable,
+                                                                     graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_UDIM_Linear(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Linear(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                                     graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_UDIM_Linear(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_UDIM_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_UDIM_Linear(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                      resolveResult);
 }
 
-int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_UDIM_Linear(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               in gra_Float2 ddX, in gra_Float2 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_UDIM_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_UDIM_Linear(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                      graniteLookupData, resolveResult);
 }
 
 
@@ -3138,7 +3295,7 @@ int Granite_Lookup_UDIM_Linear( in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
+int Granite_Lookup_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB,
                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
@@ -3149,25 +3306,33 @@ int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
+int Granite_Lookup_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    in gra_Float3 ddX, in gra_Float3 ddY,
                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3176,16 +3341,19 @@ int Granite_Lookup_Cube_UDIM_Linear(    in GraniteCubeConstantBuffers grCB,
 //! GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear
 
 // General
-int GranitePrivate_Lookup_Software_General_Clamp_Linear(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_Clamp_Linear(in GraniteTilesetConstantBuffer tsCB,
+                                                        in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                        in gra_Float2 inputTexCoord,
+                                                        in GraniteTranslationTexture translationTable,
+                                                        out GraniteLookupData graniteLookupData,
+                                                        out gra_Float4 resolveResult,
+                                                        in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelLinear(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3193,11 +3361,11 @@ int GranitePrivate_Lookup_Software_General_Clamp_Linear(in GraniteTilesetConstan
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -3207,7 +3375,11 @@ int GranitePrivate_Lookup_Software_General_Clamp_Linear(in GraniteTilesetConstan
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                               in gra_Float2 inputTexCoord,
+                                                               in GraniteTranslationTexture translationTable,
+                                                               out GraniteLookupData graniteLookupData,
+                                                               out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -3215,16 +3387,26 @@ int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstan
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                               in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                               in gra_Float2 ddY,
+                                                               in GraniteTranslationTexture translationTable,
+                                                               out GraniteLookupData graniteLookupData,
+                                                               out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -3232,59 +3414,77 @@ int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(in GraniteConstan
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in GraniteTranslationTexture translationTable,
+                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in gra_Float2 ddX, in gra_Float2 ddY,
+                                                in GraniteTranslationTexture translationTable,
+                                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                               in GraniteTranslationTexture translationTable,
+                                               in gra_Float2 inputTexCoord,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(grCB, inputTexCoord, translationTable,
+                                                                      graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_Clamp_Linear( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                               in GraniteTranslationTexture translationTable,
+                                               in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Linear(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                                      graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
+int Granite_Lookup_Clamp_Linear(in GraniteConstantBuffers grCB,
                                 in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
                                 out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Clamp_Linear(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Clamp_Linear(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                       resolveResult);
 }
 
-int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+int Granite_Lookup_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                in gra_Float2 ddX, in gra_Float2 ddY,
                                 out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Clamp_Linear(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Clamp_Linear(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                       graniteLookupData, resolveResult);
 }
 
 
@@ -3292,9 +3492,9 @@ int Granite_Lookup_Clamp_Linear(    in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -3303,25 +3503,33 @@ int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                     in gra_Float3 ddX, in gra_Float3 ddY,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Linear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Linear(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3330,16 +3538,19 @@ int Granite_Lookup_Cube_Clamp_Linear(   in GraniteCubeConstantBuffers grCB,
 //! GranitePrivate_Lookup_PreTransformed_Software_Anisotropic
 
 // General
-int GranitePrivate_Lookup_Software_General_Anisotropic(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_Anisotropic(in GraniteTilesetConstantBuffer tsCB,
+                                                       in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                       in gra_Float2 inputTexCoord,
+                                                       in GraniteTranslationTexture translationTable,
+                                                       out GraniteLookupData graniteLookupData,
+                                                       out gra_Float4 resolveResult,
+                                                       in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelAnisotropic(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3347,11 +3558,11 @@ int GranitePrivate_Lookup_Software_General_Anisotropic(in GraniteTilesetConstant
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -3361,7 +3572,11 @@ int GranitePrivate_Lookup_Software_General_Anisotropic(in GraniteTilesetConstant
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstantBuffers grCB,
+                                                              in gra_Float2 inputTexCoord,
+                                                              in GraniteTranslationTexture translationTable,
+                                                              out GraniteLookupData graniteLookupData,
+                                                              out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -3369,16 +3584,26 @@ int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstant
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstantBuffers grCB,
+                                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                              in gra_Float2 ddY,
+                                                              in GraniteTranslationTexture translationTable,
+                                                              out GraniteLookupData graniteLookupData,
+                                                              out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -3386,59 +3611,77 @@ int GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(in GraniteConstant
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                               in GraniteTranslationTexture translationTable,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                               in gra_Float2 ddX, in gra_Float2 ddY,
+                                               in GraniteTranslationTexture translationTable,
+                                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(grCB, inputTexCoord, translationTable,
+                                                                     graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_Anisotropic(  in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB,
+                                              in GraniteTranslationTexture translationTable,
+                                              in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                              out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                                     graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Anisotropic(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                      resolveResult);
 }
 
-int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Anisotropic(in GraniteConstantBuffers grCB,
+                               in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                               in gra_Float2 ddX, in gra_Float2 ddY,
+                               out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                      graniteLookupData, resolveResult);
 }
 
 
@@ -3446,7 +3689,7 @@ int Granite_Lookup_Anisotropic( in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
+int Granite_Lookup_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB,
                                     in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
@@ -3457,25 +3700,33 @@ int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
+int Granite_Lookup_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                    in gra_Float3 ddX, in gra_Float3 ddY,
                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3484,16 +3735,19 @@ int Granite_Lookup_Cube_Anisotropic(    in GraniteCubeConstantBuffers grCB,
 //! GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic
 
 // General
-int GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(in GraniteTilesetConstantBuffer tsCB,
+                                                            in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                            in gra_Float2 inputTexCoord,
+                                                            in GraniteTranslationTexture translationTable,
+                                                            out GraniteLookupData graniteLookupData,
+                                                            out gra_Float4 resolveResult,
+                                                            in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelAnisotropic(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3501,11 +3755,11 @@ int GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(in GraniteTilesetCon
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -3515,7 +3769,11 @@ int GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(in GraniteTilesetCon
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                   in gra_Float2 inputTexCoord,
+                                                                   in GraniteTranslationTexture translationTable,
+                                                                   out GraniteLookupData graniteLookupData,
+                                                                   out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -3523,16 +3781,26 @@ int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteCon
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                   in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                   in gra_Float2 ddY,
+                                                                   in GraniteTranslationTexture translationTable,
+                                                                   out GraniteLookupData graniteLookupData,
+                                                                   out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -3540,59 +3808,81 @@ int GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(in GraniteCon
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                    in gra_Float2 ddX, in gra_Float2 ddY,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                   in GraniteTranslationTexture translationTable,
+                                                   in gra_Float2 inputTexCoord,
+                                                   out GraniteLookupData graniteLookupData,
+                                                   out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(
+        grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_UDIM_Anisotropic( in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                   in GraniteTranslationTexture translationTable,
+                                                   in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                                   out GraniteLookupData graniteLookupData,
+                                                   out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_UDIM_Anisotropic(
+        grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_UDIM_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_UDIM_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                           resolveResult);
 }
 
-int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                    in gra_Float2 ddX, in gra_Float2 ddY,
+                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_UDIM_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_UDIM_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                           graniteLookupData, resolveResult);
 }
 
 
@@ -3600,9 +3890,9 @@ int Granite_Lookup_UDIM_Anisotropic(    in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -3611,25 +3901,33 @@ int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                         in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                         in gra_Float3 ddX, in gra_Float3 ddY,
+                                         out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_UDIM_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3638,16 +3936,19 @@ int Granite_Lookup_Cube_UDIM_Anisotropic(   in GraniteCubeConstantBuffers grCB,
 //! GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic
 
 // General
-int GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                            in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable,
-                                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult,
-                                                                                                            in gra_Float2 dX, in gra_Float2 dY)
+int GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(in GraniteTilesetConstantBuffer tsCB,
+                                                             in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                             in gra_Float2 inputTexCoord,
+                                                             in GraniteTranslationTexture translationTable,
+                                                             out GraniteLookupData graniteLookupData,
+                                                             out gra_Float4 resolveResult,
+                                                             in gra_Float2 dX, in gra_Float2 dY)
 {
     float smoothLevel = GranitePrivate_CalcMiplevelAnisotropic(tsCB, grSTCB, dX, dY);
     float level = floor(smoothLevel + 0.5f);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3655,11 +3956,11 @@ int GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(in GraniteTilesetCo
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, smoothLevel);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     graniteLookupData.translationTableData = cache;
     graniteLookupData.textureCoordinates = inputTexCoord;
@@ -3669,7 +3970,11 @@ int GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(in GraniteTilesetCo
     return 1;
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                    in gra_Float2 inputTexCoord,
+                                                                    in GraniteTranslationTexture translationTable,
+                                                                    out GraniteLookupData graniteLookupData,
+                                                                    out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -3677,16 +3982,26 @@ int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteCo
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                    in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                    in gra_Float2 ddY,
+                                                                    in GraniteTranslationTexture translationTable,
+                                                                    out GraniteLookupData graniteLookupData,
+                                                                    out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
+
 //
 //  Auto level
 //
@@ -3694,59 +4009,81 @@ int GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(in GraniteCo
 // pretransformed
 
 // Tiled
-int GranitePrivate_Lookup_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in GraniteTranslationTexture translationTable,
+                                                     out GraniteLookupData graniteLookupData,
+                                                     out gra_Float4 resolveResult)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int GranitePrivate_Lookup_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY, in GraniteTranslationTexture translationTable, out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in gra_Float2 ddX, in gra_Float2 ddY,
+                                                     in GraniteTranslationTexture translationTable,
+                                                     out GraniteLookupData graniteLookupData,
+                                                     out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     // Scale the derivatives with the texture transform scale
     ddX *= gra_Transform.zw;
     ddY *= gra_Transform.zw;
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, ddX, ddY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        ddX, ddY);
 }
 
 
 // pretransformed
-int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    in gra_Float2 inputTexCoord,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(
+        grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_Clamp_Anisotropic(    in GraniteConstantBuffers grCB,
-                                                                                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                                                                            out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                    in GraniteTranslationTexture translationTable,
+                                                    in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
+                                                    out GraniteLookupData graniteLookupData,
+                                                    out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Clamp_Anisotropic(
+        grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
 }
 
 
 // Tiled
-int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Clamp_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Clamp_Anisotropic(grCB, inputTexCoord, translationTable, graniteLookupData,
+                                                            resolveResult);
 }
 
-int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY,
-                                out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                     in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                     in gra_Float2 ddX, in gra_Float2 ddY,
+                                     out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Clamp_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Clamp_Anisotropic(grCB, inputTexCoord, ddX, ddY, translationTable,
+                                                            graniteLookupData, resolveResult);
 }
 
 
@@ -3754,9 +4091,9 @@ int Granite_Lookup_Clamp_Anisotropic(   in GraniteConstantBuffers grCB,
 //* GranitePrivate cubemap sampling
 //**
 
-int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                          in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -3765,25 +4102,33 @@ int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
-int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB,
+                                          in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord,
+                                          in gra_Float3 ddX, in gra_Float3 ddY,
+                                          out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Clamp_Anisotropic(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, translationTable, graniteLookupData, resolveResult, dX,
+        dY);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3801,9 +4146,11 @@ int Granite_Lookup_Cube_Clamp_Anisotropic(  in GraniteCubeConstantBuffers grCB,
 //
 
 // General
-int GranitePrivate_Lookup_Software_General( in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                    in gra_Float2 inputTexCoord, in float LOD, in GraniteTranslationTexture translationTable,
-                                                                                                    out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_General(in GraniteTilesetConstantBuffer tsCB,
+                                           in GraniteStreamingTextureConstantBuffer grSTCB,
+                                           in gra_Float2 inputTexCoord, in float LOD,
+                                           in GraniteTranslationTexture translationTable,
+                                           out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Clamp to the highest mip available in the streaming texture
     LOD = clamp(LOD, 0.0f, gra_NumLevels);
@@ -3811,7 +4158,7 @@ int GranitePrivate_Lookup_Software_General( in GraniteTilesetConstantBuffer tsCB
     float level = floor(LOD);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3819,11 +4166,11 @@ int GranitePrivate_Lookup_Software_General( in GraniteTilesetConstantBuffer tsCB
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, LOD);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     // Do a simple cache sample with trilinear filtering
     float cacheLevel = frac(LOD);
@@ -3836,37 +4183,47 @@ int GranitePrivate_Lookup_Software_General( in GraniteTilesetConstantBuffer tsCB
 }
 
 // PreTransformed
-int GranitePrivate_Lookup_PreTransformed_Software(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                  float LOD, in GraniteTranslationTexture translationTable,
+                                                  out GraniteLODLookupData graniteLookupData,
+                                                  out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                  translationTable, graniteLookupData, resolveResult);
 }
 
 // regular
-int GranitePrivate_Lookup_Software(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD,
+                                   in GraniteTranslationTexture translationTable,
+                                   out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                  translationTable, graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed(  in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in float LOD,
+                                  out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software(grCB, inputTexCoord, LOD, translationTable, graniteLookupData,
+                                                         resolveResult);
 }
 
-int Granite_Lookup( in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup(in GraniteConstantBuffers grCB,
+                   in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                   out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     return GranitePrivate_Lookup_Software(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_Cube(    in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube(in GraniteCubeConstantBuffers grCB,
+                        in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -3875,9 +4232,11 @@ int Granite_Lookup_Cube(    in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD,
+                                                  translationTable, graniteLookupData, resolveResult);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3895,9 +4254,12 @@ int Granite_Lookup_Cube(    in GraniteCubeConstantBuffers grCB,
 //
 
 // General
-int GranitePrivate_Lookup_Software_General_UDIM(    in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                    in gra_Float2 inputTexCoord, in float LOD, in GraniteTranslationTexture translationTable,
-                                                                                                    out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_General_UDIM(in GraniteTilesetConstantBuffer tsCB,
+                                                in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                in gra_Float2 inputTexCoord, in float LOD,
+                                                in GraniteTranslationTexture translationTable,
+                                                out GraniteLODLookupData graniteLookupData,
+                                                out gra_Float4 resolveResult)
 {
     // Clamp to the highest mip available in the streaming texture
     LOD = clamp(LOD, 0.0f, gra_NumLevels);
@@ -3905,7 +4267,7 @@ int GranitePrivate_Lookup_Software_General_UDIM(    in GraniteTilesetConstantBuf
     float level = floor(LOD);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -3913,11 +4275,11 @@ int GranitePrivate_Lookup_Software_General_UDIM(    in GraniteTilesetConstantBuf
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, LOD);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     // Do a simple cache sample with trilinear filtering
     float cacheLevel = frac(LOD);
@@ -3930,37 +4292,48 @@ int GranitePrivate_Lookup_Software_General_UDIM(    in GraniteTilesetConstantBuf
 }
 
 // PreTransformed
-int GranitePrivate_Lookup_PreTransformed_Software_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                       float LOD, in GraniteTranslationTexture translationTable,
+                                                       out GraniteLODLookupData graniteLookupData,
+                                                       out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                       translationTable, graniteLookupData, resolveResult);
 }
 
 // regular
-int GranitePrivate_Lookup_Software_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD,
+                                        in GraniteTranslationTexture translationTable,
+                                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                       translationTable, graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_UDIM( in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_UDIM(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in float LOD,
+                                       out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_UDIM(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_UDIM(grCB, inputTexCoord, LOD, translationTable,
+                                                              graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_UDIM(    in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_UDIM(in GraniteConstantBuffers grCB,
+                        in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_UDIM(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_UDIM(grCB, inputTexCoord, LOD, translationTable, graniteLookupData,
+                                               resolveResult);
 }
 
-int Granite_Lookup_Cube_UDIM(   in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_UDIM(in GraniteCubeConstantBuffers grCB,
+                             in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                             out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -3969,9 +4342,11 @@ int Granite_Lookup_Cube_UDIM(   in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_UDIM(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD,
+                                                       translationTable, graniteLookupData, resolveResult);
 }
 
 // These are special values that need to be replaced by the shader stripper
@@ -3989,9 +4364,12 @@ int Granite_Lookup_Cube_UDIM(   in GraniteCubeConstantBuffers grCB,
 //
 
 // General
-int GranitePrivate_Lookup_Software_General_Clamp(   in GraniteTilesetConstantBuffer tsCB, in GraniteStreamingTextureConstantBuffer grSTCB,
-                                                                                                    in gra_Float2 inputTexCoord, in float LOD, in GraniteTranslationTexture translationTable,
-                                                                                                    out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_General_Clamp(in GraniteTilesetConstantBuffer tsCB,
+                                                 in GraniteStreamingTextureConstantBuffer grSTCB,
+                                                 in gra_Float2 inputTexCoord, in float LOD,
+                                                 in GraniteTranslationTexture translationTable,
+                                                 out GraniteLODLookupData graniteLookupData,
+                                                 out gra_Float4 resolveResult)
 {
     // Clamp to the highest mip available in the streaming texture
     LOD = clamp(LOD, 0.0f, gra_NumLevels);
@@ -3999,7 +4377,7 @@ int GranitePrivate_Lookup_Software_General_Clamp(   in GraniteTilesetConstantBuf
     float level = floor(LOD);
 
     // calculate resolver data
-    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX*gra_NumTilesYScale);
+    gra_Float2 level0NumTiles = gra_Float2(gra_Level0NumTilesX, gra_Level0NumTilesX * gra_NumTilesYScale);
     gra_Float2 virtualTilesUv = floor(inputTexCoord * level0NumTiles * pow(0.5, level));
     resolveResult = GranitePrivate_MakeResolveOutput(tsCB, virtualTilesUv, level);
 
@@ -4007,11 +4385,11 @@ int GranitePrivate_Lookup_Software_General_Clamp(   in GraniteTilesetConstantBuf
     // level of the page in the translation texture
     // Note: this is equal for both anisotropic and linear sampling
     // We could use a sample bias here for 'auto' mip level detection
-#if (GRA_LOAD_INSTR==0)
+    #if (GRA_LOAD_INSTR==0)
     gra_Float4 cache = GranitePrivate_SampleLevel_Translation(translationTable, inputTexCoord, LOD);
-#else
+    #else
     gra_Float4 cache = GranitePrivate_Load(translationTable, gra_Int3(virtualTilesUv, level));
-#endif
+    #endif
 
     // Do a simple cache sample with trilinear filtering
     float cacheLevel = frac(LOD);
@@ -4024,37 +4402,50 @@ int GranitePrivate_Lookup_Software_General_Clamp(   in GraniteTilesetConstantBuf
 }
 
 // PreTransformed
-int GranitePrivate_Lookup_PreTransformed_Software_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_PreTransformed_Software_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                        float LOD, in GraniteTranslationTexture translationTable,
+                                                        out GraniteLODLookupData graniteLookupData,
+                                                        out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_General_Clamp(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_Clamp(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData,
+        resolveResult);
 }
 
 // regular
-int GranitePrivate_Lookup_Software_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD, in GraniteTranslationTexture translationTable, out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int GranitePrivate_Lookup_Software_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, float LOD,
+                                         in GraniteTranslationTexture translationTable,
+                                         out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
-    return GranitePrivate_Lookup_Software_General_Clamp(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_Clamp(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLookupData,
+        resolveResult);
 }
 
-int Granite_Lookup_PreTransformed_Clamp(    in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_PreTransformed_Clamp(in GraniteConstantBuffers grCB,
+                                        in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                        in float LOD,
+                                        out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_PreTransformed_Software_Clamp(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_PreTransformed_Software_Clamp(grCB, inputTexCoord, LOD, translationTable,
+                                                               graniteLookupData, resolveResult);
 }
 
-int Granite_Lookup_Clamp(   in GraniteConstantBuffers grCB,
-                            in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
-                            out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Clamp(in GraniteConstantBuffers grCB,
+                         in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord, in float LOD,
+                         out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
-    return GranitePrivate_Lookup_Software_Clamp(grCB, inputTexCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_Clamp(grCB, inputTexCoord, LOD, translationTable, graniteLookupData,
+                                                resolveResult);
 }
 
-int Granite_Lookup_Cube_Clamp(  in GraniteCubeConstantBuffers grCB,
-                                in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
-                                out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Cube_Clamp(in GraniteCubeConstantBuffers grCB,
+                              in GraniteTranslationTexture translationTable, in gra_Float3 inputTexCoord, in float LOD,
+                              out GraniteLODLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -4063,176 +4454,199 @@ int Granite_Lookup_Cube_Clamp(  in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
-    return GranitePrivate_Lookup_Software_General_Clamp(gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD, translationTable, graniteLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General_Clamp(
+        gra_TilesetBuffer, gra_CubeTransform[faceIdx], texCoord, LOD, translationTable, graniteLookupData,
+        resolveResult);
 }
 
-int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Dynamic_Linear(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in bool asUDIM,
+                                  out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     gra_Float2 actualUV = asUDIM ? inputTexCoord : frac(inputTexCoord);
     inputTexCoord = Granite_Transform(gra_StreamingTextureCB, actualUV);
 
-    return GranitePrivate_Lookup_Software_General_Linear(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Linear(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int Granite_Lookup_Dynamic_Linear(  in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM, in float LOD,
-                                    out GraniteLODLookupData graniteLODLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Dynamic_Linear(in GraniteConstantBuffers grCB,
+                                  in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                  in bool asUDIM, in float LOD,
+                                  out GraniteLODLookupData graniteLODLookupData, out gra_Float4 resolveResult)
 {
     gra_Float2 actualUV = asUDIM ? inputTexCoord : frac(inputTexCoord);
     inputTexCoord = Granite_Transform(gra_StreamingTextureCB, actualUV);
 
-    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLODLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                  translationTable, graniteLODLookupData, resolveResult);
 }
 
-int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM,
-                                    out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Dynamic_Anisotropic(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in bool asUDIM,
+                                       out GraniteLookupData graniteLookupData, out gra_Float4 resolveResult)
 {
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
     gra_Float2 actualUV = asUDIM ? inputTexCoord : frac(inputTexCoord);
     inputTexCoord = Granite_Transform(gra_StreamingTextureCB, actualUV);
 
-    return GranitePrivate_Lookup_Software_General_Anisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult, dX, dY);
+    return GranitePrivate_Lookup_Software_General_Anisotropic(
+        gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, translationTable, graniteLookupData, resolveResult,
+        dX, dY);
 }
 
-int Granite_Lookup_Dynamic_Anisotropic( in GraniteConstantBuffers grCB,
-                                    in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
-                                    in bool asUDIM, in float LOD,
-                                    out GraniteLODLookupData graniteLODLookupData, out gra_Float4 resolveResult)
+int Granite_Lookup_Dynamic_Anisotropic(in GraniteConstantBuffers grCB,
+                                       in GraniteTranslationTexture translationTable, in gra_Float2 inputTexCoord,
+                                       in bool asUDIM, in float LOD,
+                                       out GraniteLODLookupData graniteLODLookupData, out gra_Float4 resolveResult)
 {
     gra_Float2 actualUV = asUDIM ? inputTexCoord : frac(inputTexCoord);
     inputTexCoord = Granite_Transform(gra_StreamingTextureCB, actualUV);
 
-    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD, translationTable, graniteLODLookupData, resolveResult);
+    return GranitePrivate_Lookup_Software_General(gra_TilesetBuffer, gra_StreamingTextureCB, inputTexCoord, LOD,
+                                                  translationTable, graniteLODLookupData, resolveResult);
 }
 
 
-int Granite_Sample_Internal(in GraniteTilesetConstantBuffer tsCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample_Internal(in GraniteTilesetConstantBuffer tsCB, in GraniteLookupData graniteLookupData,
+                            in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
     // Convert from pixels to [0-1] and look up in the physical page texture
     gra_Float2 deltaScale;
-    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates, graniteLookupData.translationTableData, layer, deltaScale);
+    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates,
+                                                          graniteLookupData.translationTableData, layer, deltaScale);
 
     // This leads to small artefacts at tile borders but is generally not noticable unless the texture
     // is greatly magnified
-#if GRA_TEXTURE_ARRAY_SUPPORT
+    #if GRA_TEXTURE_ARRAY_SUPPORT
     result = GranitePrivate_SampleArray(cacheTexture, cacheCoord);
-#else
+    #else
     result = GranitePrivate_Sample(cacheTexture, cacheCoord.xy);
-#endif
+    #endif
 
-#if GRA_DEBUG == 1
-    if ( gra_TextureMagic != 2202.0f )
+    #if GRA_DEBUG == 1
+    if (gra_TextureMagic != 2202.0f)
     {
-        result = gra_Float4(1,0,0,1);
+        result = gra_Float4(1, 0, 0, 1);
     }
-#endif
+    #endif
 
-#if GRA_DEBUG_TILES == 1
+    #if GRA_DEBUG_TILES == 1
     //result.xyz = GranitePrivate_DrawDebugTiles(result, graniteLookupData.textureCoordinates, numPagesOnLevel).xyz;
-#endif
+    #endif
 
     return 1;
 }
 
-int Granite_Sample_HQ_Internal(in GraniteTilesetConstantBuffer tsCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample_HQ_Internal(in GraniteTilesetConstantBuffer tsCB, in GraniteLookupData graniteLookupData,
+                               in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
     // Convert from pixels to [0-1] and look up in the physical page texture
     gra_Float2 deltaScale;
-    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates, graniteLookupData.translationTableData, layer, deltaScale);
+    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates,
+                                                          graniteLookupData.translationTableData, layer, deltaScale);
 
     deltaScale *= gra_LodBiasPow2;
 
     // Calculate the delta scale this works by first converting the [0-1] texcoord deltas to
     // pixel deltas on the current mip level, then dividing by the cache size to convert to [0-1] cache deltas
-    gra_Float2 sampDeltaX = graniteLookupData.dX*deltaScale;
-    gra_Float2 sampDeltaY = graniteLookupData.dY*deltaScale;
+    gra_Float2 sampDeltaX = graniteLookupData.dX * deltaScale;
+    gra_Float2 sampDeltaY = graniteLookupData.dY * deltaScale;
 
-#if GRA_TEXTURE_ARRAY_SUPPORT
+    #if GRA_TEXTURE_ARRAY_SUPPORT
     result = GranitePrivate_SampleGradArray(cacheTexture, cacheCoord, sampDeltaX, sampDeltaY);
-#else
+    #else
     result = GranitePrivate_SampleGrad(cacheTexture, cacheCoord.xy, sampDeltaX, sampDeltaY);
-#endif
+    #endif
 
-#if GRA_DEBUG == 1
-    if ( gra_TextureMagic != 2202.0f )
+    #if GRA_DEBUG == 1
+    if (gra_TextureMagic != 2202.0f)
     {
-        result = gra_Float4(1,0,0,1);
+        result = gra_Float4(1, 0, 0, 1);
     }
-#endif
+    #endif
 
-#if GRA_DEBUG_TILES == 1
+    #if GRA_DEBUG_TILES == 1
     //result.xyz = GranitePrivate_DrawDebugTiles(result, graniteLookupData.textureCoordinates, numPagesOnLevel).xyz;
-#endif
+    #endif
 
     return 1;
 }
 
-int Granite_Sample_Interal(in GraniteTilesetConstantBuffer tsCB, in GraniteLODLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample_Interal(in GraniteTilesetConstantBuffer tsCB, in GraniteLODLookupData graniteLookupData,
+                           in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
     gra_Float2 deltaScale;
-    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates, graniteLookupData.translationTableData, layer, deltaScale);
+    gra_Float3 cacheCoord = GranitePrivate_TranslateCoord(tsCB, graniteLookupData.textureCoordinates,
+                                                          graniteLookupData.translationTableData, layer, deltaScale);
 
-#if GRA_TEXTURE_ARRAY_SUPPORT
+    #if GRA_TEXTURE_ARRAY_SUPPORT
     result = GranitePrivate_SampleLevelArray(cacheTexture, cacheCoord, graniteLookupData.cacheLevel);
-#else
+    #else
     result = GranitePrivate_SampleLevel(cacheTexture, cacheCoord.xy, graniteLookupData.cacheLevel);
-#endif
+    #endif
 
-#if GRA_DEBUG == 1
-    if ( gra_TextureMagic != 2202.0f )
+    #if GRA_DEBUG == 1
+    if (gra_TextureMagic != 2202.0f)
     {
-        result = gra_Float4(1,0,0,1);
+        result = gra_Float4(1, 0, 0, 1);
     }
-#endif
+    #endif
 
-#if GRA_DEBUG_TILES == 1
+    #if GRA_DEBUG_TILES == 1
     //result.xyz = GranitePrivate_DrawDebugTiles(result, inputTexCoord, numPagesOnLevel).xyz;
-#endif
+    #endif
 
     return 1;
 }
 
 // LQ
-int Granite_Sample(in GraniteConstantBuffers grCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample(in GraniteConstantBuffers grCB, in GraniteLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
-        return Granite_Sample_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+    return Granite_Sample_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
 }
-int Granite_Sample(in GraniteCubeConstantBuffers grCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+
+int Granite_Sample(in GraniteCubeConstantBuffers grCB, in GraniteLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
-        return Granite_Sample_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+    return Granite_Sample_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
 }
 
 // HQ
-int Granite_Sample_HQ(in GraniteConstantBuffers grCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample_HQ(in GraniteConstantBuffers grCB, in GraniteLookupData graniteLookupData,
+                      in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
-        return Granite_Sample_HQ_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+    return Granite_Sample_HQ_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
 }
-int Granite_Sample_HQ(in GraniteCubeConstantBuffers grCB, in GraniteLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+
+int Granite_Sample_HQ(in GraniteCubeConstantBuffers grCB, in GraniteLookupData graniteLookupData,
+                      in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
-        return Granite_Sample_HQ_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+    return Granite_Sample_HQ_Internal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
 }
 
 // LOD
-int Granite_Sample(in GraniteConstantBuffers grCB, in GraniteLODLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+int Granite_Sample(in GraniteConstantBuffers grCB, in GraniteLODLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
 {
-        return Granite_Sample_Interal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
-}
-int Granite_Sample(in GraniteCubeConstantBuffers grCB, in GraniteLODLookupData graniteLookupData, in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
-{
-        return Granite_Sample_Interal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+    return Granite_Sample_Interal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
 }
 
+int Granite_Sample(in GraniteCubeConstantBuffers grCB, in GraniteLODLookupData graniteLookupData,
+                   in GraniteCacheTexture cacheTexture, in int layer, out gra_Float4 result)
+{
+    return Granite_Sample_Interal(gra_TilesetBuffer, graniteLookupData, cacheTexture, layer, result);
+}
 
 
 //**
@@ -4258,7 +4672,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                       in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4279,17 +4694,20 @@ gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_F
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                        in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4309,23 +4727,27 @@ gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB,
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                             in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4355,7 +4777,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBu
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                            in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4376,17 +4799,20 @@ gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in 
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_UDIM_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                             in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4406,23 +4832,27 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers 
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                  in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4438,7 +4868,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Linear(in GraniteCubeConstantBuffers 
 //
 
 // Auto level
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                             in gra_Float2 inputTexCoord)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -4452,7 +4883,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantB
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Linear(in GraniteConstantBuffers grCB,
+                                                             in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                             in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4473,17 +4906,20 @@ gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_Clamp_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                              in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4503,23 +4939,27 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_Clamp_Linear(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                   in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelLinear(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4549,7 +4989,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBu
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                            in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4570,17 +5011,20 @@ gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in 
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                             in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4600,23 +5044,27 @@ gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers 
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                  in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4632,7 +5080,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Anisotropic(in GraniteCubeConstantBuffers 
 //
 
 // Auto level
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord)
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                 in gra_Float2 inputTexCoord)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -4646,7 +5095,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConst
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                 in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                 in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4667,17 +5118,20 @@ gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_UDIM_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                  in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4697,23 +5151,27 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuf
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                       in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4729,7 +5187,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM_Anisotropic(in GraniteCubeConstantBuf
 //
 
 // Auto level
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                  in gra_Float2 inputTexCoord)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = ddx(inputTexCoord);
@@ -4743,7 +5202,9 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteCons
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp_Anisotropic(in GraniteConstantBuffers grCB,
+                                                                  in gra_Float2 inputTexCoord, in gra_Float2 ddX,
+                                                                  in gra_Float2 ddY)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4764,17 +5225,20 @@ gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grC
     gra_Float2 dY = gra_Transform.zw * ddy(inputTexCoord);
 
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in gra_Float2 ddX, in gra_Float2 ddY)
+gra_Float4 Granite_ResolverPixel_Clamp_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                   in gra_Float2 ddX, in gra_Float2 ddY)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_StreamingTextureCB, ddX, ddY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, level);
@@ -4794,23 +5258,27 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBu
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
 }
 
 // Explicit derivatives
-gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in gra_Float3 ddX, in gra_Float3 ddY)
+gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                                        in gra_Float3 ddX, in gra_Float3 ddY)
 {
     int faceIdx;
     gra_Float2 texCoord;
     gra_Float2 dX;
     gra_Float2 dY;
-    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
+    GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, ddX, ddY, gra_StreamingTextureCubeCB, faceIdx, texCoord,
+                                               dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
     float level = GranitePrivate_CalcMiplevelAnisotropic(gra_TilesetBuffer, gra_CubeTransform[faceIdx], dX, dY);
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, level);
@@ -4826,7 +5294,8 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp_Anisotropic(in GraniteCubeConstantBu
 //
 
 // Explicit level
-gra_Float4 Granite_ResolverPixel_PreTransformed(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
+gra_Float4 Granite_ResolverPixel_PreTransformed(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in float LOD)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4842,7 +5311,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed(in GraniteConstantBuffers grCB, 
 gra_Float4 Granite_ResolverPixel(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_RepeatUV(inputTexCoord, gra_StreamingTextureCB));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, LOD);
 }
@@ -4861,7 +5331,8 @@ gra_Float4 Granite_ResolverPixel_Cube(in GraniteCubeConstantBuffers grCB, in gra
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_RepeatUV(texCoord, gra_CubeTransform[faceIdx]));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, LOD);
 }
@@ -4876,7 +5347,8 @@ gra_Float4 Granite_ResolverPixel_Cube(in GraniteCubeConstantBuffers grCB, in gra
 //
 
 // Explicit level
-gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
+gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in float LOD)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4892,7 +5364,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_UDIM(in GraniteConstantBuffers g
 gra_Float4 Granite_ResolverPixel_UDIM(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_UdimUV(inputTexCoord, gra_StreamingTextureCB));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, LOD);
 }
@@ -4902,7 +5375,8 @@ gra_Float4 Granite_ResolverPixel_UDIM(in GraniteConstantBuffers grCB, in gra_Flo
 //**
 
 // Explicit level
-gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in float LOD)
+gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                           in float LOD)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -4911,7 +5385,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, i
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_UdimUV(texCoord, gra_CubeTransform[faceIdx]));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, LOD);
 }
@@ -4926,7 +5401,8 @@ gra_Float4 Granite_ResolverPixel_Cube_UDIM(in GraniteCubeConstantBuffers grCB, i
 //
 
 // Explicit level
-gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
+gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                      in float LOD)
 {
     // Always in 0-1 range
     inputTexCoord = GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB);
@@ -4942,7 +5418,8 @@ gra_Float4 Granite_ResolverPixel_PreTransformed_Clamp(in GraniteConstantBuffers 
 gra_Float4 Granite_ResolverPixel_Clamp(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in float LOD)
 {
     // Always in 0-1 range
-    inputTexCoord = Granite_Transform(gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
+    inputTexCoord = Granite_Transform(
+        gra_StreamingTextureCB, GranitePrivate_ClampUV(inputTexCoord, gra_StreamingTextureCB));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, inputTexCoord, LOD);
 }
@@ -4952,7 +5429,8 @@ gra_Float4 Granite_ResolverPixel_Clamp(in GraniteConstantBuffers grCB, in gra_Fl
 //**
 
 // Explicit level
-gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord, in float LOD)
+gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, in gra_Float3 inputTexCoord,
+                                            in float LOD)
 {
     int faceIdx;
     gra_Float2 texCoord;
@@ -4961,13 +5439,15 @@ gra_Float4 Granite_ResolverPixel_Cube_Clamp(in GraniteCubeConstantBuffers grCB, 
     GranitePrivate_CalculateCubemapCoordinates(inputTexCoord, gra_StreamingTextureCubeCB, faceIdx, texCoord, dX, dY);
 
     // Always in 0-1 range
-    texCoord = Granite_Transform(gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
+    texCoord = Granite_Transform(
+        gra_CubeTransform[faceIdx], GranitePrivate_ClampUV(texCoord, gra_CubeTransform[faceIdx]));
 
     return GranitePrivate_ResolverPixel(gra_TilesetBuffer, texCoord, LOD);
 }
 
 
-gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in bool asUDIM)
+gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                in bool asUDIM)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);
@@ -4982,7 +5462,8 @@ gra_Float4 Granite_ResolverPixel_Dynamic_Linear(in GraniteConstantBuffers grCB, 
 }
 
 
-gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord, in bool asUDIM)
+gra_Float4 Granite_ResolverPixel_Dynamic_Anisotropic(in GraniteConstantBuffers grCB, in gra_Float2 inputTexCoord,
+                                                     in bool asUDIM)
 {
     // Calculate texcoord deltas (do this before the frac to avoid any discontinuities)
     gra_Float2 dX = gra_Transform.zw * ddx(inputTexCoord);

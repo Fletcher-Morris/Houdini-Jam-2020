@@ -11,22 +11,22 @@
 half SpecularStrength(half3 specular)
 {
     #if (SHADER_TARGET < 30)
-        // SM2.0: instruction count limitation
-        // SM2.0: simplified SpecularStrength
-        return specular.r; // Red channel - because most metals are either monocrhome or with redish/yellowish tint
+    // SM2.0: instruction count limitation
+    // SM2.0: simplified SpecularStrength
+    return specular.r; // Red channel - because most metals are either monocrhome or with redish/yellowish tint
     #else
         return max (max (specular.r, specular.g), specular.b);
     #endif
 }
 
 // Diffuse/Spec Energy conservation
-inline half3 EnergyConservationBetweenDiffuseAndSpecular (half3 albedo, half3 specColor, out half oneMinusReflectivity)
+inline half3 EnergyConservationBetweenDiffuseAndSpecular(half3 albedo, half3 specColor, out half oneMinusReflectivity)
 {
     oneMinusReflectivity = 1 - SpecularStrength(specColor);
     #if !UNITY_CONSERVE_ENERGY
         return albedo;
     #elif UNITY_CONSERVE_ENERGY_MONOCHROME
-        return albedo * oneMinusReflectivity;
+    return albedo * oneMinusReflectivity;
     #else
         return albedo * (half3(1,1,1) - specColor);
     #endif
@@ -43,14 +43,15 @@ inline half OneMinusReflectivityFromMetallic(half metallic)
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
 
-inline half3 DiffuseAndSpecularFromMetallic (half3 albedo, half metallic, out half3 specColor, out half oneMinusReflectivity)
+inline half3 DiffuseAndSpecularFromMetallic(half3 albedo, half metallic, out half3 specColor,
+                                            out half oneMinusReflectivity)
 {
-    specColor = lerp (unity_ColorSpaceDielectricSpec.rgb, albedo, metallic);
+    specColor = lerp(unity_ColorSpaceDielectricSpec.rgb, albedo, metallic);
     oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
     return albedo * oneMinusReflectivity;
 }
 
-inline half3 PreMultiplyAlpha (half3 diffColor, half alpha, half oneMinusReflectivity, out half outModifiedAlpha)
+inline half3 PreMultiplyAlpha(half3 diffColor, half alpha, half oneMinusReflectivity, out half outModifiedAlpha)
 {
     #if defined(_ALPHAPREMULTIPLY_ON)
         // NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
@@ -58,28 +59,28 @@ inline half3 PreMultiplyAlpha (half3 diffColor, half alpha, half oneMinusReflect
         // Transparency 'removes' from Diffuse component
         diffColor *= alpha;
 
-        #if (SHADER_TARGET < 30)
+    #if (SHADER_TARGET < 30)
             // SM2.0: instruction count limitation
             // Instead will sacrifice part of physically based transparency where amount Reflectivity is affecting Transparency
             // SM2.0: uses unmodified alpha
             outModifiedAlpha = alpha;
-        #else
+    #else
             // Reflectivity 'removes' from the rest of components, including Transparency
             // outAlpha = 1-(1-alpha)*(1-reflectivity) = 1-(oneMinusReflectivity - alpha*oneMinusReflectivity) =
             //          = 1-oneMinusReflectivity + alpha*oneMinusReflectivity
             outModifiedAlpha = 1-oneMinusReflectivity + alpha*oneMinusReflectivity;
-        #endif
+    #endif
     #else
-        outModifiedAlpha = alpha;
+    outModifiedAlpha = alpha;
     #endif
     return diffColor;
 }
 
 // Same as ParallaxOffset in Unity CG, except:
 //  *) precision - half instead of float
-half2 ParallaxOffset1Step (half h, half height, half3 viewDir)
+half2 ParallaxOffset1Step(half h, half height, half3 viewDir)
 {
-    h = h * height - height/2.0;
+    h = h * height - height / 2.0;
     half3 v = normalize(viewDir);
     v.z += 0.42;
     return h * (v.xy / v.z);
@@ -114,25 +115,25 @@ half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
 {
     #if defined(UNITY_NO_DXT5nm)
         half3 normal = packednormal.xyz * 2 - 1;
-        #if (SHADER_TARGET >= 30)
+    #if (SHADER_TARGET >= 30)
             // SM2.0: instruction count limitation
             // SM2.0: normal scaler is not supported
             normal.xy *= bumpScale;
-        #endif
+    #endif
         return normal;
     #else
-        // This do the trick
-        packednormal.x *= packednormal.w;
+    // This do the trick
+    packednormal.x *= packednormal.w;
 
-        half3 normal;
-        normal.xy = (packednormal.xy * 2 - 1);
-        #if (SHADER_TARGET >= 30)
+    half3 normal;
+    normal.xy = (packednormal.xy * 2 - 1);
+    #if (SHADER_TARGET >= 30)
             // SM2.0: instruction count limitation
             // SM2.0: normal scaler is not supported
             normal.xy *= bumpScale;
-        #endif
-        normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
-        return normal;
+    #endif
+    normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
+    return normal;
     #endif
 }
 
@@ -143,7 +144,7 @@ half3 UnpackScaleNormal(half4 packednormal, half bumpScale)
 
 half3 BlendNormals(half3 n1, half3 n2)
 {
-    return normalize(half3(n1.xy + n2.xy, n1.z*n2.z));
+    return normalize(half3(n1.xy + n2.xy, n1.z * n2.z));
 }
 
 half3x3 CreateTangentToWorldPerVertex(half3 normal, half3 tangent, half tangentSign)
@@ -155,76 +156,77 @@ half3x3 CreateTangentToWorldPerVertex(half3 normal, half3 tangent, half tangentS
 }
 
 //-------------------------------------------------------------------------------------
-half3 ShadeSHPerVertex (half3 normal, half3 ambient)
+half3 ShadeSHPerVertex(half3 normal, half3 ambient)
 {
     #if UNITY_SAMPLE_FULL_SH_PER_PIXEL
-        // Completely per-pixel
-        // nothing to do here
+    // Completely per-pixel
+    // nothing to do here
     #elif (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
-        // Completely per-vertex
-        ambient += max(half3(0,0,0), ShadeSH9 (half4(normal, 1.0)));
+    // Completely per-vertex
+    ambient += max(half3(0, 0, 0), ShadeSH9(half4(normal, 1.0)));
     #else
-        // L2 per-vertex, L0..L1 & gamma-correction per-pixel
+    // L2 per-vertex, L0..L1 & gamma-correction per-pixel
 
-        // NOTE: SH data is always in Linear AND calculation is split between vertex & pixel
-        // Convert ambient to Linear and do final gamma-correction at the end (per-pixel)
-        #ifdef UNITY_COLORSPACE_GAMMA
+    // NOTE: SH data is always in Linear AND calculation is split between vertex & pixel
+    // Convert ambient to Linear and do final gamma-correction at the end (per-pixel)
+    #ifdef UNITY_COLORSPACE_GAMMA
             ambient = GammaToLinearSpace (ambient);
-        #endif
+    #endif
         ambient += SHEvalLinearL2 (half4(normal, 1.0));     // no max since this is only L2 contribution
     #endif
 
     return ambient;
 }
 
-half3 ShadeSHPerPixel (half3 normal, half3 ambient, float3 worldPos)
+half3 ShadeSHPerPixel(half3 normal, half3 ambient, float3 worldPos)
 {
     half3 ambient_contrib = 0.0;
 
     #if UNITY_SAMPLE_FULL_SH_PER_PIXEL
-        // Completely per-pixel
-        #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+    // Completely per-pixel
+    #if UNITY_LIGHT_PROBE_PROXY_VOLUME
             if (unity_ProbeVolumeParams.x == 1.0)
                 ambient_contrib = SHEvalLinearL0L1_SampleProbeVolume(half4(normal, 1.0), worldPos);
             else
                 ambient_contrib = SHEvalLinearL0L1(half4(normal, 1.0));
-        #else
+    #else
             ambient_contrib = SHEvalLinearL0L1(half4(normal, 1.0));
-        #endif
+    #endif
 
             ambient_contrib += SHEvalLinearL2(half4(normal, 1.0));
 
             ambient += max(half3(0, 0, 0), ambient_contrib);
 
-        #ifdef UNITY_COLORSPACE_GAMMA
+    #ifdef UNITY_COLORSPACE_GAMMA
             ambient = LinearToGammaSpace(ambient);
-        #endif
+    #endif
     #elif (SHADER_TARGET < 30) || UNITY_STANDARD_SIMPLE
-        // Completely per-vertex
-        // nothing to do here. Gamma conversion on ambient from SH takes place in the vertex shader, see ShadeSHPerVertex.
+    // Completely per-vertex
+    // nothing to do here. Gamma conversion on ambient from SH takes place in the vertex shader, see ShadeSHPerVertex.
     #else
-        // L2 per-vertex, L0..L1 & gamma-correction per-pixel
-        // Ambient in this case is expected to be always Linear, see ShadeSHPerVertex()
-        #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+    // L2 per-vertex, L0..L1 & gamma-correction per-pixel
+    // Ambient in this case is expected to be always Linear, see ShadeSHPerVertex()
+    #if UNITY_LIGHT_PROBE_PROXY_VOLUME
             if (unity_ProbeVolumeParams.x == 1.0)
                 ambient_contrib = SHEvalLinearL0L1_SampleProbeVolume (half4(normal, 1.0), worldPos);
             else
                 ambient_contrib = SHEvalLinearL0L1 (half4(normal, 1.0));
-        #else
+    #else
             ambient_contrib = SHEvalLinearL0L1 (half4(normal, 1.0));
-        #endif
+    #endif
 
         ambient = max(half3(0, 0, 0), ambient+ambient_contrib);     // include L2 contribution in vertex shader before clamp.
-        #ifdef UNITY_COLORSPACE_GAMMA
+    #ifdef UNITY_COLORSPACE_GAMMA
             ambient = LinearToGammaSpace (ambient);
-        #endif
+    #endif
     #endif
 
     return ambient;
 }
 
 //-------------------------------------------------------------------------------------
-inline float3 BoxProjectedCubemapDirection (float3 worldRefl, float3 worldPos, float4 cubemapCenter, float4 boxMin, float4 boxMax)
+inline float3 BoxProjectedCubemapDirection(float3 worldRefl, float3 worldPos, float4 cubemapCenter, float4 boxMin,
+                                           float4 boxMax)
 {
     // Do we have a valid reflection probe?
     UNITY_BRANCH
@@ -233,10 +235,10 @@ inline float3 BoxProjectedCubemapDirection (float3 worldRefl, float3 worldPos, f
         float3 nrdir = normalize(worldRefl);
 
         #if 1
-            float3 rbmax = (boxMax.xyz - worldPos) / nrdir;
-            float3 rbmin = (boxMin.xyz - worldPos) / nrdir;
+        float3 rbmax = (boxMax.xyz - worldPos) / nrdir;
+        float3 rbmin = (boxMin.xyz - worldPos) / nrdir;
 
-            float3 rbminmax = (nrdir > 0.0f) ? rbmax : rbmin;
+        float3 rbminmax = (nrdir > 0.0f) ? rbmax : rbmin;
 
         #else // Optimized version
             float3 rbmax = (boxMax.xyz - worldPos);

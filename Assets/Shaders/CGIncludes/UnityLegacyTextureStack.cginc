@@ -242,6 +242,7 @@ StackInfo MakeStackInfo(float2 uv)
     result.uv = uv;
     return result;
 }
+
 StackInfo MakeStackInfoLod(float2 uv, float lod)
 {
     StackInfo result;

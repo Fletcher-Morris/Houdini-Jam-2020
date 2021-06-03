@@ -20,8 +20,8 @@
 
 struct Input
 {
-    half2   uv_MainTex  : TEXCOORD0;
-    fixed4  color       : COLOR;
+    half2 uv_MainTex : TEXCOORD0;
+    fixed4 color : COLOR;
 
     #ifdef EFFECT_BACKSIDE_NORMALS
         fixed   facing      : VFACE;
@@ -39,8 +39,8 @@ int _TwoSided;
 #ifdef EFFECT_EXTRA_TEX
     sampler2D _ExtraTex;
 #else
-    half _Glossiness;
-    half _Metallic;
+half _Glossiness;
+half _Metallic;
 #endif
 
 #ifdef EFFECT_HUE_VARIATION
@@ -89,7 +89,7 @@ void OffsetSpeedTreeVertex(inout appdata_full data, float lodValue)
             float3 treePos = float3(unity_ObjectToWorld[0].w, unity_ObjectToWorld[1].w, unity_ObjectToWorld[2].w);
             float3 windyPosition = data.vertex.xyz;
 
-            #ifndef EFFECT_BILLBOARD
+    #ifndef EFFECT_BILLBOARD
                 // geometry type
                 float geometryType = (int)(data.texcoord3.w + 0.25);
                 bool leafTwo = false;
@@ -115,15 +115,15 @@ void OffsetSpeedTreeVertex(inout appdata_full data, float lodValue)
                     }
 
                     // leaf wind
-                    #if defined(_WINDQUALITY_FAST) || defined(_WINDQUALITY_BETTER) || defined(_WINDQUALITY_BEST)
-                        #ifdef _WINDQUALITY_BEST
+    #if defined(_WINDQUALITY_FAST) || defined(_WINDQUALITY_BETTER) || defined(_WINDQUALITY_BEST)
+    #ifdef _WINDQUALITY_BEST
                             bool bBestWind = true;
-                        #else
+    #else
                             bool bBestWind = false;
-                        #endif
+    #endif
                         float leafWindTrigOffset = anchor.x + anchor.y;
                         windyPosition = LeafWind(bBestWind, leafTwo, windyPosition, data.normal, data.texcoord3.x, float3(0,0,0), data.texcoord3.y, data.texcoord3.z, leafWindTrigOffset, rotatedWindVector);
-                    #endif
+    #endif
 
                     // move back out to anchor
                     windyPosition += anchor;
@@ -131,27 +131,27 @@ void OffsetSpeedTreeVertex(inout appdata_full data, float lodValue)
 
                 // frond wind
                 bool bPalmWind = false;
-                #ifdef _WINDQUALITY_PALM
+    #ifdef _WINDQUALITY_PALM
                     bPalmWind = true;
                     if (geometryType == GEOM_TYPE_FROND)
                     {
                         windyPosition = RippleFrond(windyPosition, data.normal, data.texcoord.x, data.texcoord.y, data.texcoord3.x, data.texcoord3.y, data.texcoord3.z);
                     }
-                #endif
+    #endif
 
-                // branch wind (applies to all 3D geometry)
-                #if defined(_WINDQUALITY_BETTER) || defined(_WINDQUALITY_BEST) || defined(_WINDQUALITY_PALM)
+    // branch wind (applies to all 3D geometry)
+    #if defined(_WINDQUALITY_BETTER) || defined(_WINDQUALITY_BEST) || defined(_WINDQUALITY_PALM)
                     float3 rotatedBranchAnchor = normalize(mul(_ST_WindBranchAnchor.xyz, (float3x3)unity_ObjectToWorld)) * _ST_WindBranchAnchor.w;
                     windyPosition = BranchWind(bPalmWind, windyPosition, treePos, float4(data.texcoord.zw, 0, 0), rotatedWindVector, rotatedBranchAnchor);
-                #endif
+    #endif
 
-            #endif // !EFFECT_BILLBOARD
+    #endif // !EFFECT_BILLBOARD
 
             // global wind
             float globalWindTime = _ST_WindGlobal.x;
-            #if defined(EFFECT_BILLBOARD) && defined(UNITY_INSTANCING_ENABLED)
+    #if defined(EFFECT_BILLBOARD) && defined(UNITY_INSTANCING_ENABLED)
                 globalWindTime += UNITY_ACCESS_INSTANCED_PROP(STWind, _GlobalWindTime);
-            #endif
+    #endif
             windyPosition = GlobalWind(windyPosition, treePos, true, rotatedWindVector, globalWindTime);
             data.vertex.xyz = windyPosition;
         }
@@ -237,10 +237,11 @@ void LightingSpeedTreeSubsurface_GI(inout SurfaceOutputStandard s, UnityGIInput 
     LightingStandard_GI(s, data, gi);
 }
 
-half4 LightingSpeedTreeSubsurface_Deferred(SurfaceOutputStandard s, half3 viewDir, UnityGI gi, out half4 outGBuffer0, out half4 outGBuffer1, out half4 outGBuffer2)
+half4 LightingSpeedTreeSubsurface_Deferred(SurfaceOutputStandard s, half3 viewDir, UnityGI gi, out half4 outGBuffer0,
+                                           out half4 outGBuffer1, out half4 outGBuffer2)
 {
     // no light/shadow info in deferred, so stop subsurface
-    s.Emission = half3(0,0,0);
+    s.Emission = half3(0, 0, 0);
 
     return LightingStandard_Deferred(s, viewDir, gi, outGBuffer0, outGBuffer1, outGBuffer2);
 }
@@ -302,9 +303,9 @@ void SpeedTreeSurf(Input IN, inout SurfaceOutputStandard OUT)
         OUT.Metallic = extra.g;
         OUT.Occlusion = extra.b * IN.color.r;
     #else
-        OUT.Smoothness = _Glossiness;
-        OUT.Metallic = _Metallic;
-        OUT.Occlusion = IN.color.r;
+    OUT.Smoothness = _Glossiness;
+    OUT.Metallic = _Metallic;
+    OUT.Occlusion = IN.color.r;
     #endif
 
     // subsurface (hijack emissive)

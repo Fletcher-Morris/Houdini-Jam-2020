@@ -11,17 +11,19 @@
 
 struct appdata_customrendertexture
 {
-    uint    vertexID    : SV_VertexID;
+    uint vertexID : SV_VertexID;
 };
 
 // User facing vertex to fragment shader structure
 struct v2f_customrendertexture
 {
-    float4 vertex           : SV_POSITION;
-    float3 localTexcoord    : TEXCOORD0;    // Texcoord local to the update zone (== globalTexcoord if no partial update zone is specified)
-    float3 globalTexcoord   : TEXCOORD1;    // Texcoord relative to the complete custom texture
-    uint primitiveID        : TEXCOORD2;    // Index of the update zone (correspond to the index in the updateZones of the Custom Texture)
-    float3 direction        : TEXCOORD3;    // For cube textures, direction of the pixel being rendered in the cubemap
+    float4 vertex : SV_POSITION;
+    float3 localTexcoord : TEXCOORD0;
+    // Texcoord local to the update zone (== globalTexcoord if no partial update zone is specified)
+    float3 globalTexcoord : TEXCOORD1; // Texcoord relative to the complete custom texture
+    uint primitiveID : TEXCOORD2;
+    // Index of the update zone (correspond to the index in the updateZones of the Custom Texture)
+    float3 direction : TEXCOORD3; // For cube textures, direction of the pixel being rendered in the cubemap
 };
 
 float2 CustomRenderTextureRotate2D(float2 pos, float angle)
@@ -29,21 +31,21 @@ float2 CustomRenderTextureRotate2D(float2 pos, float angle)
     float sn = sin(angle);
     float cs = cos(angle);
 
-    return float2( pos.x * cs - pos.y * sn, pos.x * sn + pos.y * cs);
+    return float2(pos.x * cs - pos.y * sn, pos.x * sn + pos.y * cs);
 }
 
 // Internal
-float4      CustomRenderTextureCenters[kCustomTextureBatchSize];
-float4      CustomRenderTextureSizesAndRotations[kCustomTextureBatchSize];
-float       CustomRenderTexturePrimitiveIDs[kCustomTextureBatchSize];
+float4 CustomRenderTextureCenters[kCustomTextureBatchSize];
+float4 CustomRenderTextureSizesAndRotations[kCustomTextureBatchSize];
+float CustomRenderTexturePrimitiveIDs[kCustomTextureBatchSize];
 
-float4      CustomRenderTextureParameters;
+float4 CustomRenderTextureParameters;
 #define     CustomRenderTextureUpdateSpace  CustomRenderTextureParameters.x // Normalized(0)/PixelSpace(1)
 #define     CustomRenderTexture3DTexcoordW  CustomRenderTextureParameters.y
 #define     CustomRenderTextureIs3D         CustomRenderTextureParameters.z
 
 // User facing uniform variables
-float4      _CustomRenderTextureInfo; // x = width, y = height, z = depth, w = face/3DSlice
+float4 _CustomRenderTextureInfo; // x = width, y = height, z = depth, w = face/3DSlice
 
 // Helpers
 #define _CustomRenderTextureWidth   _CustomRenderTextureInfo.x
@@ -54,35 +56,35 @@ float4      _CustomRenderTextureInfo; // x = width, y = height, z = depth, w = f
 #define _CustomRenderTextureCubeFace    _CustomRenderTextureInfo.w
 #define _CustomRenderTexture3DSlice     _CustomRenderTextureInfo.w
 
-sampler2D   _SelfTexture2D;
+sampler2D _SelfTexture2D;
 samplerCUBE _SelfTextureCube;
-sampler3D   _SelfTexture3D;
+sampler3D _SelfTexture3D;
 
 float3 CustomRenderTextureComputeCubeDirection(float2 globalTexcoord)
 {
     float2 xy = globalTexcoord * 2.0 - 1.0;
     float3 direction;
-    if(_CustomRenderTextureCubeFace == 0.0)
+    if (_CustomRenderTextureCubeFace == 0.0)
     {
         direction = normalize(float3(1.0, -xy.y, -xy.x));
     }
-    else if(_CustomRenderTextureCubeFace == 1.0)
+    else if (_CustomRenderTextureCubeFace == 1.0)
     {
         direction = normalize(float3(-1.0, -xy.y, xy.x));
     }
-    else if(_CustomRenderTextureCubeFace == 2.0)
+    else if (_CustomRenderTextureCubeFace == 2.0)
     {
         direction = normalize(float3(xy.x, 1.0, xy.y));
     }
-    else if(_CustomRenderTextureCubeFace == 3.0)
+    else if (_CustomRenderTextureCubeFace == 3.0)
     {
         direction = normalize(float3(xy.x, -1.0, -xy.y));
     }
-    else if(_CustomRenderTextureCubeFace == 4.0)
+    else if (_CustomRenderTextureCubeFace == 4.0)
     {
         direction = normalize(float3(xy.x, -xy.y, 1.0));
     }
-    else if(_CustomRenderTextureCubeFace == 5.0)
+    else if (_CustomRenderTextureCubeFace == 5.0)
     {
         direction = normalize(float3(-xy.x, -xy.y, -1.0));
     }
@@ -95,27 +97,27 @@ v2f_customrendertexture CustomRenderTextureVertexShader(appdata_customrendertext
 {
     v2f_customrendertexture OUT;
 
-#if UNITY_UV_STARTS_AT_TOP
+    #if UNITY_UV_STARTS_AT_TOP
     const float2 vertexPositions[6] =
     {
-        { -1.0f,  1.0f },
-        { -1.0f, -1.0f },
-        {  1.0f, -1.0f },
-        {  1.0f,  1.0f },
-        { -1.0f,  1.0f },
-        {  1.0f, -1.0f }
+        {-1.0f, 1.0f},
+        {-1.0f, -1.0f},
+        {1.0f, -1.0f},
+        {1.0f, 1.0f},
+        {-1.0f, 1.0f},
+        {1.0f, -1.0f}
     };
 
     const float2 texCoords[6] =
     {
-        { 0.0f, 0.0f },
-        { 0.0f, 1.0f },
-        { 1.0f, 1.0f },
-        { 1.0f, 0.0f },
-        { 0.0f, 0.0f },
-        { 1.0f, 1.0f }
+        {0.0f, 0.0f},
+        {0.0f, 1.0f},
+        {1.0f, 1.0f},
+        {1.0f, 0.0f},
+        {0.0f, 0.0f},
+        {1.0f, 1.0f}
     };
-#else
+    #else
     const float2 vertexPositions[6] =
     {
         {  1.0f,  1.0f },
@@ -135,7 +137,7 @@ v2f_customrendertexture CustomRenderTextureVertexShader(appdata_customrendertext
         { 1.0f, 1.0f },
         { 1.0f, 0.0f }
     };
-#endif
+    #endif
 
     uint primitiveID = IN.vertexID / 6;
     uint vertexID = IN.vertexID % 6;
@@ -143,9 +145,9 @@ v2f_customrendertexture CustomRenderTextureVertexShader(appdata_customrendertext
     float3 updateZoneSize = CustomRenderTextureSizesAndRotations[primitiveID].xyz;
     float rotation = CustomRenderTextureSizesAndRotations[primitiveID].w * UNITY_PI / 180.0f;
 
-#if !UNITY_UV_STARTS_AT_TOP
+    #if !UNITY_UV_STARTS_AT_TOP
     rotation = -rotation;
-#endif
+    #endif
 
     // Normalize rect if needed
     if (CustomRenderTextureUpdateSpace > 0.0) // Pixel space
@@ -168,11 +170,11 @@ v2f_customrendertexture CustomRenderTextureVertexShader(appdata_customrendertext
     float2 pos = vertexPositions[vertexID] * updateZoneSize.xy;
     pos = CustomRenderTextureRotate2D(pos, rotation);
     pos.x += clipSpaceCenter.x;
-#if UNITY_UV_STARTS_AT_TOP
+    #if UNITY_UV_STARTS_AT_TOP
     pos.y += clipSpaceCenter.y;
-#else
+    #else
     pos.y -= clipSpaceCenter.y;
-#endif
+    #endif
 
     // For 3D texture, cull quads outside of the update zone
     // This is neeeded in additional to the preliminary minSlice/maxSlice done on the CPU because update zones can be disjointed.
@@ -191,9 +193,9 @@ v2f_customrendertexture CustomRenderTextureVertexShader(appdata_customrendertext
     OUT.primitiveID = asuint(CustomRenderTexturePrimitiveIDs[primitiveID]);
     OUT.localTexcoord = float3(texCoords[vertexID], CustomRenderTexture3DTexcoordW);
     OUT.globalTexcoord = float3(pos.xy * 0.5 + 0.5, CustomRenderTexture3DTexcoordW);
-#if UNITY_UV_STARTS_AT_TOP
+    #if UNITY_UV_STARTS_AT_TOP
     OUT.globalTexcoord.y = 1.0 - OUT.globalTexcoord.y;
-#endif
+    #endif
     OUT.direction = CustomRenderTextureComputeCubeDirection(OUT.globalTexcoord.xy);
 
     return OUT;
@@ -214,7 +216,7 @@ struct v2f_init_customrendertexture
 };
 
 // standard custom texture vertex shader that should always be used for initialization shaders
-v2f_init_customrendertexture InitCustomRenderTextureVertexShader (appdata_init_customrendertexture v)
+v2f_init_customrendertexture InitCustomRenderTextureVertexShader(appdata_init_customrendertexture v)
 {
     v2f_init_customrendertexture o;
     o.vertex = UnityObjectToClipPos(v.vertex);

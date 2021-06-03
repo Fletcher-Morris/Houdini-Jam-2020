@@ -55,14 +55,16 @@
 #define LIGHTMAP_RGBM_SCALE 5.0
 #define EMISSIVE_RGBM_SCALE 97.0
 
-struct appdata_base {
+struct appdata_base
+{
     float4 vertex : POSITION;
     float3 normal : NORMAL;
     float4 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-struct appdata_tan {
+struct appdata_tan
+{
     float4 vertex : POSITION;
     float4 tangent : TANGENT;
     float3 normal : NORMAL;
@@ -70,7 +72,8 @@ struct appdata_tan {
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-struct appdata_full {
+struct appdata_full
+{
     float4 vertex : POSITION;
     float4 tangent : TANGENT;
     float3 normal : NORMAL;
@@ -88,21 +91,20 @@ inline bool IsGammaSpace()
     #ifdef UNITY_COLORSPACE_GAMMA
         return true;
     #else
-        return false;
+    return false;
     #endif
 }
 
-inline float GammaToLinearSpaceExact (float value)
+inline float GammaToLinearSpaceExact(float value)
 {
     if (value <= 0.04045F)
         return value / 12.92F;
-    else if (value < 1.0F)
-        return pow((value + 0.055F)/1.055F, 2.4F);
-    else
-        return pow(value, 2.2F);
+    if (value < 1.0F)
+        return pow((value + 0.055F) / 1.055F, 2.4F);
+    return pow(value, 2.2F);
 }
 
-inline half3 GammaToLinearSpace (half3 sRGB)
+inline half3 GammaToLinearSpace(half3 sRGB)
 {
     // Approximate version from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
     return sRGB * (sRGB * (sRGB * 0.305306011h + 0.682171111h) + 0.012522878h);
@@ -111,19 +113,18 @@ inline half3 GammaToLinearSpace (half3 sRGB)
     //return half3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
 }
 
-inline float LinearToGammaSpaceExact (float value)
+inline float LinearToGammaSpaceExact(float value)
 {
     if (value <= 0.0F)
         return 0.0F;
-    else if (value <= 0.0031308F)
+    if (value <= 0.0031308F)
         return 12.92F * value;
-    else if (value < 1.0F)
+    if (value < 1.0F)
         return 1.055F * pow(value, 0.4166667F) - 0.055F;
-    else
-        return pow(value, 0.45454545F);
+    return pow(value, 0.45454545F);
 }
 
-inline half3 LinearToGammaSpace (half3 linRGB)
+inline half3 LinearToGammaSpace(half3 linRGB)
 {
     linRGB = max(linRGB, half3(0.h, 0.h, 0.h));
     // An almost-perfect approximation from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
@@ -134,109 +135,111 @@ inline half3 LinearToGammaSpace (half3 linRGB)
 }
 
 // Tranforms position from world to homogenous space
-inline float4 UnityWorldToClipPos( in float3 pos )
+inline float4 UnityWorldToClipPos(in float3 pos)
 {
     return mul(UNITY_MATRIX_VP, float4(pos, 1.0));
 }
 
 // Tranforms position from view to homogenous space
-inline float4 UnityViewToClipPos( in float3 pos )
+inline float4 UnityViewToClipPos(in float3 pos)
 {
     return mul(UNITY_MATRIX_P, float4(pos, 1.0));
 }
 
 // Tranforms position from object to camera space
-inline float3 UnityObjectToViewPos( in float3 pos )
+inline float3 UnityObjectToViewPos(in float3 pos)
 {
     return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, float4(pos, 1.0))).xyz;
 }
-inline float3 UnityObjectToViewPos(float4 pos) // overload for float4; avoids "implicit truncation" warning for existing shaders
+
+inline float3 UnityObjectToViewPos(float4 pos)
+// overload for float4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToViewPos(pos.xyz);
 }
 
 // Tranforms position from world to camera space
-inline float3 UnityWorldToViewPos( in float3 pos )
+inline float3 UnityWorldToViewPos(in float3 pos)
 {
     return mul(UNITY_MATRIX_V, float4(pos, 1.0)).xyz;
 }
 
 // Transforms direction from object to world space
-inline float3 UnityObjectToWorldDir( in float3 dir )
+inline float3 UnityObjectToWorldDir(in float3 dir)
 {
     return normalize(mul((float3x3)unity_ObjectToWorld, dir));
 }
 
 // Transforms direction from world to object space
-inline float3 UnityWorldToObjectDir( in float3 dir )
+inline float3 UnityWorldToObjectDir(in float3 dir)
 {
     return normalize(mul((float3x3)unity_WorldToObject, dir));
 }
 
 // Transforms normal from object to world space
-inline float3 UnityObjectToWorldNormal( in float3 norm )
+inline float3 UnityObjectToWorldNormal(in float3 norm)
 {
-#ifdef UNITY_ASSUME_UNIFORM_SCALING
+    #ifdef UNITY_ASSUME_UNIFORM_SCALING
     return UnityObjectToWorldDir(norm);
-#else
+    #else
     // mul(IT_M, norm) => mul(norm, I_M) => {dot(norm, I_M.col0), dot(norm, I_M.col1), dot(norm, I_M.col2)}
     return normalize(mul(norm, (float3x3)unity_WorldToObject));
-#endif
+    #endif
 }
 
 // Computes world space light direction, from world space position
-inline float3 UnityWorldSpaceLightDir( in float3 worldPos )
+inline float3 UnityWorldSpaceLightDir(in float3 worldPos)
 {
     #ifndef USING_LIGHT_MULTI_COMPILE
-        return _WorldSpaceLightPos0.xyz - worldPos * _WorldSpaceLightPos0.w;
+    return _WorldSpaceLightPos0.xyz - worldPos * _WorldSpaceLightPos0.w;
     #else
-        #ifndef USING_DIRECTIONAL_LIGHT
+    #ifndef USING_DIRECTIONAL_LIGHT
         return _WorldSpaceLightPos0.xyz - worldPos;
-        #else
+    #else
         return _WorldSpaceLightPos0.xyz;
-        #endif
+    #endif
     #endif
 }
 
 // Computes world space light direction, from object space position
 // *Legacy* Please use UnityWorldSpaceLightDir instead
-inline float3 WorldSpaceLightDir( in float4 localPos )
+inline float3 WorldSpaceLightDir(in float4 localPos)
 {
     float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceLightDir(worldPos);
 }
 
 // Computes object space light direction
-inline float3 ObjSpaceLightDir( in float4 v )
+inline float3 ObjSpaceLightDir(in float4 v)
 {
     float3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
     #ifndef USING_LIGHT_MULTI_COMPILE
-        return objSpaceLightPos.xyz - v.xyz * _WorldSpaceLightPos0.w;
+    return objSpaceLightPos.xyz - v.xyz * _WorldSpaceLightPos0.w;
     #else
-        #ifndef USING_DIRECTIONAL_LIGHT
+    #ifndef USING_DIRECTIONAL_LIGHT
         return objSpaceLightPos.xyz - v.xyz;
-        #else
+    #else
         return objSpaceLightPos.xyz;
-        #endif
+    #endif
     #endif
 }
 
 // Computes world space view direction, from object space position
-inline float3 UnityWorldSpaceViewDir( in float3 worldPos )
+inline float3 UnityWorldSpaceViewDir(in float3 worldPos)
 {
     return _WorldSpaceCameraPos.xyz - worldPos;
 }
 
 // Computes world space view direction, from object space position
 // *Legacy* Please use UnityWorldSpaceViewDir instead
-inline float3 WorldSpaceViewDir( in float4 localPos )
+inline float3 WorldSpaceViewDir(in float4 localPos)
 {
     float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceViewDir(worldPos);
 }
 
 // Computes object space view direction
-inline float3 ObjSpaceViewDir( in float4 v )
+inline float3 ObjSpaceViewDir(in float4 v)
 {
     float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos.xyz, 1)).xyz;
     return objSpaceCameraPos - v.xyz;
@@ -248,9 +251,8 @@ inline float3 ObjSpaceViewDir( in float4 v )
     float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal )
 
 
-
 // Used in ForwardBase pass: Calculates diffuse lighting from 4 point lights, with data packed in a special way.
-float3 Shade4PointLights (
+float3 Shade4PointLights(
     float4 lightPosX, float4 lightPosY, float4 lightPosZ,
     float3 lightColor0, float3 lightColor1, float3 lightColor2, float3 lightColor3,
     float4 lightAttenSq,
@@ -275,7 +277,7 @@ float3 Shade4PointLights (
     ndotl += toLightZ * normal.z;
     // correct NdotL
     float4 corr = rsqrt(lengthSq);
-    ndotl = max (float4(0,0,0,0), ndotl * corr);
+    ndotl = max(float4(0, 0, 0, 0), ndotl * corr);
     // attenuation
     float4 atten = 1.0 / (1.0 + lengthSq * lightAttenSq);
     float4 diff = ndotl * atten;
@@ -290,13 +292,14 @@ float3 Shade4PointLights (
 
 // Used in Vertex pass: Calculates diffuse lighting from lightCount lights. Specifying true to spotLight is more expensive
 // to calculate but lights are treated as spot lights otherwise they are treated as point lights.
-float3 ShadeVertexLightsFull (float4 vertex, float3 normal, int lightCount, bool spotLight)
+float3 ShadeVertexLightsFull(float4 vertex, float3 normal, int lightCount, bool spotLight)
 {
-    float3 viewpos = UnityObjectToViewPos (vertex.xyz);
-    float3 viewN = normalize (mul ((float3x3)UNITY_MATRIX_IT_MV, normal));
+    float3 viewpos = UnityObjectToViewPos(vertex.xyz);
+    float3 viewN = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, normal));
 
     float3 lightColor = UNITY_LIGHTMODEL_AMBIENT.xyz;
-    for (int i = 0; i < lightCount; i++) {
+    for (int i = 0; i < lightCount; i++)
+    {
         float3 toLight = unity_LightPosition[i].xyz - viewpos.xyz * unity_LightPosition[i].w;
         float lengthSq = dot(toLight, toLight);
 
@@ -308,47 +311,47 @@ float3 ShadeVertexLightsFull (float4 vertex, float3 normal, int lightCount, bool
         float atten = 1.0 / (1.0 + lengthSq * unity_LightAtten[i].z);
         if (spotLight)
         {
-            float rho = max (0, dot(toLight, unity_SpotDirection[i].xyz));
+            float rho = max(0, dot(toLight, unity_SpotDirection[i].xyz));
             float spotAtt = (rho - unity_LightAtten[i].x) * unity_LightAtten[i].y;
             atten *= saturate(spotAtt);
         }
 
-        float diff = max (0, dot (viewN, toLight));
+        float diff = max(0, dot(viewN, toLight));
         lightColor += unity_LightColor[i].rgb * (diff * atten);
     }
     return lightColor;
 }
 
-float3 ShadeVertexLights (float4 vertex, float3 normal)
+float3 ShadeVertexLights(float4 vertex, float3 normal)
 {
-    return ShadeVertexLightsFull (vertex, normal, 4, false);
+    return ShadeVertexLightsFull(vertex, normal, 4, false);
 }
 
 // normal should be normalized, w=1.0
-half3 SHEvalLinearL0L1 (half4 normal)
+half3 SHEvalLinearL0L1(half4 normal)
 {
     half3 x;
 
     // Linear (L1) + constant (L0) polynomial terms
-    x.r = dot(unity_SHAr,normal);
-    x.g = dot(unity_SHAg,normal);
-    x.b = dot(unity_SHAb,normal);
+    x.r = dot(unity_SHAr, normal);
+    x.g = dot(unity_SHAg, normal);
+    x.b = dot(unity_SHAb, normal);
 
     return x;
 }
 
 // normal should be normalized, w=1.0
-half3 SHEvalLinearL2 (half4 normal)
+half3 SHEvalLinearL2(half4 normal)
 {
     half3 x1, x2;
     // 4 of the quadratic (L2) polynomials
     half4 vB = normal.xyzz * normal.yzzx;
-    x1.r = dot(unity_SHBr,vB);
-    x1.g = dot(unity_SHBg,vB);
-    x1.b = dot(unity_SHBb,vB);
+    x1.r = dot(unity_SHBr, vB);
+    x1.g = dot(unity_SHBg, vB);
+    x1.b = dot(unity_SHBb, vB);
 
     // Final (5th) quadratic (L2) polynomial
-    half vC = normal.x*normal.x - normal.y*normal.y;
+    half vC = normal.x * normal.x - normal.y * normal.y;
     x2 = unity_SHC.rgb * vC;
 
     return x1 + x2;
@@ -356,17 +359,17 @@ half3 SHEvalLinearL2 (half4 normal)
 
 // normal should be normalized, w=1.0
 // output in active color space
-half3 ShadeSH9 (half4 normal)
+half3 ShadeSH9(half4 normal)
 {
     // Linear + constant polynomial terms
-    half3 res = SHEvalLinearL0L1 (normal);
+    half3 res = SHEvalLinearL0L1(normal);
 
     // Quadratic polynomials
-    res += SHEvalLinearL2 (normal);
+    res += SHEvalLinearL2(normal);
 
-#   ifdef UNITY_COLORSPACE_GAMMA
+    #   ifdef UNITY_COLORSPACE_GAMMA
         res = LinearToGammaSpace (res);
-#   endif
+    #   endif
 
     return res;
 }
@@ -375,11 +378,11 @@ half3 ShadeSH9 (half4 normal)
 half3 ShadeSH3Order(half4 normal)
 {
     // Quadratic polynomials
-    half3 res = SHEvalLinearL2 (normal);
+    half3 res = SHEvalLinearL2(normal);
 
-#   ifdef UNITY_COLORSPACE_GAMMA
+    #   ifdef UNITY_COLORSPACE_GAMMA
         res = LinearToGammaSpace (res);
-#   endif
+    #   endif
 
     return res;
 }
@@ -426,14 +429,14 @@ half3 SHEvalLinearL0L1_SampleProbeVolume (half4 normal, float3 worldPos)
 #endif
 
 // normal should be normalized, w=1.0
-half3 ShadeSH12Order (half4 normal)
+half3 ShadeSH12Order(half4 normal)
 {
     // Linear + constant polynomial terms
-    half3 res = SHEvalLinearL0L1 (normal);
+    half3 res = SHEvalLinearL0L1(normal);
 
-#   ifdef UNITY_COLORSPACE_GAMMA
+    #   ifdef UNITY_COLORSPACE_GAMMA
         res = LinearToGammaSpace (res);
-#   endif
+    #   endif
 
     return res;
 }
@@ -445,9 +448,9 @@ half3 ShadeSH12Order (half4 normal)
 #define TRANSFORM_UV(idx) v.texcoord.xy
 
 
-
-struct v2f_vertex_lit {
-    float2 uv   : TEXCOORD0;
+struct v2f_vertex_lit
+{
+    float2 uv : TEXCOORD0;
     fixed4 diff : COLOR0;
     fixed4 spec : COLOR1;
 };
@@ -456,16 +459,16 @@ inline fixed4 VertexLight(v2f_vertex_lit i, sampler2D mainTex)
 {
     fixed4 texcol = tex2D(mainTex, i.uv);
     fixed4 c;
-    c.xyz = ( texcol.xyz * i.diff.xyz + i.spec.xyz * texcol.a );
+    c.xyz = (texcol.xyz * i.diff.xyz + i.spec.xyz * texcol.a);
     c.w = texcol.w * i.diff.w;
     return c;
 }
 
 
 // Calculates UV offset for parallax bump mapping
-inline float2 ParallaxOffset( half h, half height, half3 viewDir )
+inline float2 ParallaxOffset(half h, half height, half3 viewDir)
 {
-    h = h * height - height/2.0;
+    h = h * height - height / 2.0;
     float3 v = normalize(viewDir);
     v.z += 0.42;
     return h * (v.xy / v.z);
@@ -481,10 +484,10 @@ inline half Luminance(half3 rgb)
 // with rgb in linear space with sRGB primaries and D65 white point
 half LinearRgbToLuminance(half3 linearRgb)
 {
-    return dot(linearRgb, half3(0.2126729f,  0.7151522f, 0.0721750f));
+    return dot(linearRgb, half3(0.2126729f, 0.7151522f, 0.0721750f));
 }
 
-half4 UnityEncodeRGBM (half3 color, float maxRGBM)
+half4 UnityEncodeRGBM(half3 color, float maxRGBM)
 {
     float kOneOverRGBMMaxRange = 1.0 / maxRGBM;
     const float kMinMultiplier = 2.0 * 1e-2;
@@ -501,7 +504,7 @@ half4 UnityEncodeRGBM (half3 color, float maxRGBM)
 
 // Decodes HDR textures
 // handles dLDR, RGBM formats
-inline half3 DecodeHDR (half4 data, half4 decodeInstructions)
+inline half3 DecodeHDR(half4 data, half4 decodeInstructions)
 {
     // Take into account texture alpha if decodeInstructions.w is true(the alpha value affects the RGB channels)
     half alpha = decodeInstructions.w * (data.a - 1.0) + 1.0;
@@ -513,14 +516,14 @@ inline half3 DecodeHDR (half4 data, half4 decodeInstructions)
     #   if defined(UNITY_USE_NATIVE_HDR)
             return decodeInstructions.x * data.rgb; // Multiplier for future HDRI relative to absolute conversion.
     #   else
-            return (decodeInstructions.x * pow(alpha, decodeInstructions.y)) * data.rgb;
+    return (decodeInstructions.x * pow(alpha, decodeInstructions.y)) * data.rgb;
     #   endif
     #endif
 }
 
 // Decodes HDR textures
 // handles dLDR, RGBM formats
-inline half3 DecodeLightmapRGBM (half4 data, half4 decodeInstructions)
+inline half3 DecodeLightmapRGBM(half4 data, half4 decodeInstructions)
 {
     // If Linear mode is not supported we can skip exponent part
     #if defined(UNITY_COLORSPACE_GAMMA)
@@ -530,33 +533,33 @@ inline half3 DecodeLightmapRGBM (half4 data, half4 decodeInstructions)
         return (decodeInstructions.x * data.a) * data.rgb;
     # endif
     #else
-        return (decodeInstructions.x * pow(data.a, decodeInstructions.y)) * data.rgb;
+    return (decodeInstructions.x * pow(data.a, decodeInstructions.y)) * data.rgb;
     #endif
 }
 
 // Decodes doubleLDR encoded lightmaps.
-inline half3 DecodeLightmapDoubleLDR( fixed4 color, half4 decodeInstructions)
+inline half3 DecodeLightmapDoubleLDR(fixed4 color, half4 decodeInstructions)
 {
     // decodeInstructions.x contains 2.0 when gamma color space is used or pow(2.0, 2.2) = 4.59 when linear color space is used on mobile platforms
     return decodeInstructions.x * color.rgb;
 }
 
-inline half3 DecodeLightmap( fixed4 color, half4 decodeInstructions)
+inline half3 DecodeLightmap(fixed4 color, half4 decodeInstructions)
 {
-#if defined(UNITY_LIGHTMAP_DLDR_ENCODING)
+    #if defined(UNITY_LIGHTMAP_DLDR_ENCODING)
     return DecodeLightmapDoubleLDR(color, decodeInstructions);
-#elif defined(UNITY_LIGHTMAP_RGBM_ENCODING)
+    #elif defined(UNITY_LIGHTMAP_RGBM_ENCODING)
     return DecodeLightmapRGBM(color, decodeInstructions);
-#else //defined(UNITY_LIGHTMAP_FULL_HDR)
+    #else //defined(UNITY_LIGHTMAP_FULL_HDR)
     return color.rgb;
-#endif
+    #endif
 }
 
 half4 unity_Lightmap_HDR;
 
-inline half3 DecodeLightmap( fixed4 color )
+inline half3 DecodeLightmap(fixed4 color)
 {
-    return DecodeLightmap( color, unity_Lightmap_HDR );
+    return DecodeLightmap(color, unity_Lightmap_HDR);
 }
 
 half4 unity_DynamicLightmap_HDR;
@@ -566,14 +569,14 @@ half4 unity_DynamicLightmap_HDR;
 // (such as Baked Lightmaps, Reflection Probes and IBL images)
 // Instead Enlighten provides RGBM texture in _Linear_ color space with _different_ exponent.
 // WARNING: 3 pow operations, might be very expensive for mobiles!
-inline half3 DecodeRealtimeLightmap( fixed4 color )
+inline half3 DecodeRealtimeLightmap(fixed4 color)
 {
     //@TODO: Temporary until Geomerics gives us an API to convert lightmaps to RGBM in gamma space on the enlighten thread before we upload the textures.
-#if defined(UNITY_FORCE_LINEAR_READ_FOR_RGBM)
+    #if defined(UNITY_FORCE_LINEAR_READ_FOR_RGBM)
     return pow ((unity_DynamicLightmap_HDR.x * color.a) * sqrt(color.rgb), unity_DynamicLightmap_HDR.y);
-#else
-    return pow ((unity_DynamicLightmap_HDR.x * color.a) * color.rgb, unity_DynamicLightmap_HDR.y);
-#endif
+    #else
+    return pow((unity_DynamicLightmap_HDR.x * color.a) * color.rgb, unity_DynamicLightmap_HDR.y);
+    #endif
 }
 
 inline half3 DecodeDirectionalLightmap(half3 color, fixed4 dirTex, half3 normalWorld)
@@ -591,74 +594,77 @@ inline half3 DecodeDirectionalLightmap(half3 color, fixed4 dirTex, half3 normalW
 }
 
 // Encoding/decoding [0..1) floats into 8 bit/channel RGBA. Note that 1.0 will not be encoded properly.
-inline float4 EncodeFloatRGBA( float v )
+inline float4 EncodeFloatRGBA(float v)
 {
     float4 kEncodeMul = float4(1.0, 255.0, 65025.0, 16581375.0);
-    float kEncodeBit = 1.0/255.0;
+    float kEncodeBit = 1.0 / 255.0;
     float4 enc = kEncodeMul * v;
-    enc = frac (enc);
+    enc = frac(enc);
     enc -= enc.yzww * kEncodeBit;
     return enc;
 }
-inline float DecodeFloatRGBA( float4 enc )
+
+inline float DecodeFloatRGBA(float4 enc)
 {
-    float4 kDecodeDot = float4(1.0, 1/255.0, 1/65025.0, 1/16581375.0);
-    return dot( enc, kDecodeDot );
+    float4 kDecodeDot = float4(1.0, 1 / 255.0, 1 / 65025.0, 1 / 16581375.0);
+    return dot(enc, kDecodeDot);
 }
 
 // Encoding/decoding [0..1) floats into 8 bit/channel RG. Note that 1.0 will not be encoded properly.
-inline float2 EncodeFloatRG( float v )
+inline float2 EncodeFloatRG(float v)
 {
     float2 kEncodeMul = float2(1.0, 255.0);
-    float kEncodeBit = 1.0/255.0;
+    float kEncodeBit = 1.0 / 255.0;
     float2 enc = kEncodeMul * v;
-    enc = frac (enc);
+    enc = frac(enc);
     enc.x -= enc.y * kEncodeBit;
     return enc;
 }
-inline float DecodeFloatRG( float2 enc )
+
+inline float DecodeFloatRG(float2 enc)
 {
-    float2 kDecodeDot = float2(1.0, 1/255.0);
-    return dot( enc, kDecodeDot );
+    float2 kDecodeDot = float2(1.0, 1 / 255.0);
+    return dot(enc, kDecodeDot);
 }
 
 
 // Encoding/decoding view space normals into 2D 0..1 vector
-inline float2 EncodeViewNormalStereo( float3 n )
+inline float2 EncodeViewNormalStereo(float3 n)
 {
     float kScale = 1.7777;
     float2 enc;
-    enc = n.xy / (n.z+1);
+    enc = n.xy / (n.z + 1);
     enc /= kScale;
-    enc = enc*0.5+0.5;
+    enc = enc * 0.5 + 0.5;
     return enc;
 }
-inline float3 DecodeViewNormalStereo( float4 enc4 )
+
+inline float3 DecodeViewNormalStereo(float4 enc4)
 {
     float kScale = 1.7777;
-    float3 nn = enc4.xyz*float3(2*kScale,2*kScale,0) + float3(-kScale,-kScale,1);
-    float g = 2.0 / dot(nn.xyz,nn.xyz);
+    float3 nn = enc4.xyz * float3(2 * kScale, 2 * kScale, 0) + float3(-kScale, -kScale, 1);
+    float g = 2.0 / dot(nn.xyz, nn.xyz);
     float3 n;
-    n.xy = g*nn.xy;
-    n.z = g-1;
+    n.xy = g * nn.xy;
+    n.z = g - 1;
     return n;
 }
 
-inline float4 EncodeDepthNormal( float depth, float3 normal )
+inline float4 EncodeDepthNormal(float depth, float3 normal)
 {
     float4 enc;
-    enc.xy = EncodeViewNormalStereo (normal);
-    enc.zw = EncodeFloatRG (depth);
+    enc.xy = EncodeViewNormalStereo(normal);
+    enc.zw = EncodeFloatRG(depth);
     return enc;
 }
 
-inline void DecodeDepthNormal( float4 enc, out float depth, out float3 normal )
+inline void DecodeDepthNormal(float4 enc, out float depth, out float3 normal)
 {
-    depth = DecodeFloatRG (enc.zw);
-    normal = DecodeViewNormalStereo (enc);
+    depth = DecodeFloatRG(enc.zw);
+    normal = DecodeViewNormalStereo(enc);
 }
 
-inline fixed3 UnpackNormalDXT5nm (fixed4 packednormal)
+inline fixed3 UnpackNormalDXT5nm(fixed4 packednormal)
 {
     fixed3 normal;
     normal.xy = packednormal.wy * 2 - 1;
@@ -671,29 +677,30 @@ inline fixed3 UnpackNormalDXT5nm (fixed4 packednormal)
 fixed3 UnpackNormalmapRGorAG(fixed4 packednormal)
 {
     // This do the trick
-   packednormal.x *= packednormal.w;
+    packednormal.x *= packednormal.w;
 
     fixed3 normal;
     normal.xy = packednormal.xy * 2 - 1;
     normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
     return normal;
 }
+
 inline fixed3 UnpackNormal(fixed4 packednormal)
 {
-#if defined(UNITY_NO_DXT5nm)
+    #if defined(UNITY_NO_DXT5nm)
     return packednormal.xyz * 2 - 1;
-#else
+    #else
     return UnpackNormalmapRGorAG(packednormal);
-#endif
+    #endif
 }
 
 fixed3 UnpackNormalWithScale(fixed4 packednormal, float scale)
 {
-#ifndef UNITY_NO_DXT5nm
+    #ifndef UNITY_NO_DXT5nm
     // Unpack normal as DXT5nm (1, y, 1, x) or BC5 (x, y, 0, 1)
     // Note neutral texture like "bump" is (0, 0, 1, 1) to work with both plain RGB normal and DXT5nm/BC5
     packednormal.x *= packednormal.w;
-#endif
+    #endif
     fixed3 normal;
     normal.xy = (packednormal.xy * 2 - 1) * scale;
     normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
@@ -701,12 +708,13 @@ fixed3 UnpackNormalWithScale(fixed4 packednormal, float scale)
 }
 
 // Z buffer to linear 0..1 depth
-inline float Linear01Depth( float z )
+inline float Linear01Depth(float z)
 {
     return 1.0 / (_ZBufferParams.x * z + _ZBufferParams.y);
 }
+
 // Z buffer to linear depth
-inline float LinearEyeDepth( float z )
+inline float LinearEyeDepth(float z)
 {
     return 1.0 / (_ZBufferParams.z * z + _ZBufferParams.w);
 }
@@ -719,7 +727,8 @@ inline float2 UnityStereoScreenSpaceUVAdjustInternal(float2 uv, float4 scaleAndO
 
 inline float4 UnityStereoScreenSpaceUVAdjustInternal(float4 uv, float4 scaleAndOffset)
 {
-    return float4(UnityStereoScreenSpaceUVAdjustInternal(uv.xy, scaleAndOffset), UnityStereoScreenSpaceUVAdjustInternal(uv.zw, scaleAndOffset));
+    return float4(UnityStereoScreenSpaceUVAdjustInternal(uv.xy, scaleAndOffset),
+                  UnityStereoScreenSpaceUVAdjustInternal(uv.zw, scaleAndOffset));
 }
 
 #define UnityStereoScreenSpaceUVAdjust(x, y) UnityStereoScreenSpaceUVAdjustInternal(x, y)
@@ -774,20 +783,21 @@ struct v2f_img
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-float2 MultiplyUV (float4x4 mat, float2 inUV) {
-    float4 temp = float4 (inUV.x, inUV.y, 0, 0);
-    temp = mul (mat, temp);
+float2 MultiplyUV(float4x4 mat, float2 inUV)
+{
+    float4 temp = float4(inUV.x, inUV.y, 0, 0);
+    temp = mul(mat, temp);
     return temp.xy;
 }
 
-v2f_img vert_img( appdata_img v )
+v2f_img vert_img(appdata_img v)
 {
     v2f_img o;
     UNITY_INITIALIZE_OUTPUT(v2f_img, o);
     UNITY_SETUP_INSTANCE_ID(v);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    o.pos = UnityObjectToClipPos (v.vertex);
+    o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = v.texcoord;
     return o;
 }
@@ -795,62 +805,67 @@ v2f_img vert_img( appdata_img v )
 // Projected screen position helpers
 #define V2F_SCREEN_TYPE float4
 
-inline float4 ComputeNonStereoScreenPos(float4 pos) {
+inline float4 ComputeNonStereoScreenPos(float4 pos)
+{
     float4 o = pos * 0.5f;
-    o.xy = float2(o.x, o.y*_ProjectionParams.x) + o.w;
+    o.xy = float2(o.x, o.y * _ProjectionParams.x) + o.w;
     o.zw = pos.zw;
     return o;
 }
 
-inline float4 ComputeScreenPos(float4 pos) {
+inline float4 ComputeScreenPos(float4 pos)
+{
     float4 o = ComputeNonStereoScreenPos(pos);
-#if defined(UNITY_SINGLE_PASS_STEREO)
+    #if defined(UNITY_SINGLE_PASS_STEREO)
     o.xy = TransformStereoScreenSpaceTex(o.xy, pos.w);
-#endif
+    #endif
     return o;
 }
 
-inline float4 ComputeGrabScreenPos (float4 pos) {
+inline float4 ComputeGrabScreenPos(float4 pos)
+{
     #if UNITY_UV_STARTS_AT_TOP
     float scale = -1.0;
     #else
     float scale = 1.0;
     #endif
     float4 o = pos * 0.5f;
-    o.xy = float2(o.x, o.y*scale) + o.w;
-#ifdef UNITY_SINGLE_PASS_STEREO
+    o.xy = float2(o.x, o.y * scale) + o.w;
+    #ifdef UNITY_SINGLE_PASS_STEREO
     o.xy = TransformStereoScreenSpaceTex(o.xy, pos.w);
-#endif
+    #endif
     o.zw = pos.zw;
     return o;
 }
 
 // snaps post-transformed position to screen pixels
-inline float4 UnityPixelSnap (float4 pos)
+inline float4 UnityPixelSnap(float4 pos)
 {
     float2 hpc = _ScreenParams.xy * 0.5f;
-#if  SHADER_API_PSSL
+    #if  SHADER_API_PSSL
 // An old sdk used to implement round() as floor(x+0.5) current sdks use the round to even method so we manually use the old method here for compatabilty.
     float2 temp = ((pos.xy / pos.w) * hpc) + float2(0.5f,0.5f);
     float2 pixelPos = float2(floor(temp.x), floor(temp.y));
-#else
-    float2 pixelPos = round ((pos.xy / pos.w) * hpc);
-#endif
+    #else
+    float2 pixelPos = round((pos.xy / pos.w) * hpc);
+    #endif
     pos.xy = pixelPos / hpc * pos.w;
     return pos;
 }
 
-inline float2 TransformViewToProjection (float2 v) {
+inline float2 TransformViewToProjection(float2 v)
+{
     return mul((float2x2)UNITY_MATRIX_P, v);
 }
 
-inline float3 TransformViewToProjection (float3 v) {
+inline float3 TransformViewToProjection(float3 v)
+{
     return mul((float3x3)UNITY_MATRIX_P, v);
 }
 
 // Shadow caster pass helpers
 
-float4 UnityEncodeCubeShadowDepth (float z)
+float4 UnityEncodeCubeShadowDepth(float z)
 {
     #ifdef UNITY_USE_RGBA_FOR_POINT_SHADOWS
     return EncodeFloatRGBA (min(z, 0.999));
@@ -859,7 +874,7 @@ float4 UnityEncodeCubeShadowDepth (float z)
     #endif
 }
 
-float UnityDecodeCubeShadowDepth (float4 vals)
+float UnityDecodeCubeShadowDepth(float4 vals)
 {
     #ifdef UNITY_USE_RGBA_FOR_POINT_SHADOWS
     return DecodeFloatRGBA (vals);
@@ -886,7 +901,7 @@ float4 UnityClipSpaceShadowCasterPos(float4 vertex, float3 normal)
         // scaled by world space texel size.
 
         float shadowCos = dot(wNormal, wLight);
-        float shadowSine = sqrt(1-shadowCos*shadowCos);
+        float shadowSine = sqrt(1 - shadowCos * shadowCos);
         float normalBias = unity_LightShadowBias.z * shadowSine;
 
         wPos.xyz -= wNormal * normalBias;
@@ -894,6 +909,7 @@ float4 UnityClipSpaceShadowCasterPos(float4 vertex, float3 normal)
 
     return mul(UNITY_MATRIX_VP, wPos);
 }
+
 // Legacy, not used anymore; kept around to not break existing user shaders
 float4 UnityClipSpaceShadowCasterPos(float3 vertex, float3 normal)
 {
@@ -907,21 +923,21 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
     // For point lights that support depth cube map, the bias is applied in the fragment shader sampling the shadow map.
     // This is because the legacy behaviour for point light shadow map cannot be implemented by offseting the vertex position
     // in the vertex shader generating the shadow map.
-#if !(defined(SHADOWS_CUBE) && defined(SHADOWS_CUBE_IN_DEPTH_TEX))
+    #if !(defined(SHADOWS_CUBE) && defined(SHADOWS_CUBE_IN_DEPTH_TEX))
     #if defined(UNITY_REVERSED_Z)
-        // We use max/min instead of clamp to ensure proper handling of the rare case
-        // where both numerator and denominator are zero and the fraction becomes NaN.
-        clipPos.z += max(-1, min(unity_LightShadowBias.x / clipPos.w, 0));
+    // We use max/min instead of clamp to ensure proper handling of the rare case
+    // where both numerator and denominator are zero and the fraction becomes NaN.
+    clipPos.z += max(-1, min(unity_LightShadowBias.x / clipPos.w, 0));
     #else
         clipPos.z += saturate(unity_LightShadowBias.x/clipPos.w);
     #endif
-#endif
+    #endif
 
-#if defined(UNITY_REVERSED_Z)
-    float clamped = min(clipPos.z, clipPos.w*UNITY_NEAR_CLIP_VALUE);
-#else
+    #if defined(UNITY_REVERSED_Z)
+    float clamped = min(clipPos.z, clipPos.w * UNITY_NEAR_CLIP_VALUE);
+    #else
     float clamped = max(clipPos.z, clipPos.w*UNITY_NEAR_CLIP_VALUE);
-#endif
+    #endif
     clipPos.z = lerp(clipPos.z, clamped, unity_LightShadowBias.y);
     return clipPos;
 }
@@ -935,18 +951,18 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
     #define SHADOW_CASTER_FRAGMENT(i) return UnityEncodeCubeShadowDepth ((length(i.vec) + unity_LightShadowBias.x) * _LightPositionRange.w);
 
 #else
-    // Rendering into directional or spot light shadows
-    #define V2F_SHADOW_CASTER_NOPOS
-    // Let embedding code know that V2F_SHADOW_CASTER_NOPOS is empty; so that it can workaround
-    // empty structs that could possibly be produced.
-    #define V2F_SHADOW_CASTER_NOPOS_IS_EMPTY
-    #define TRANSFER_SHADOW_CASTER_NOPOS_LEGACY(o,opos) \
+// Rendering into directional or spot light shadows
+#define V2F_SHADOW_CASTER_NOPOS
+// Let embedding code know that V2F_SHADOW_CASTER_NOPOS is empty; so that it can workaround
+// empty structs that could possibly be produced.
+#define V2F_SHADOW_CASTER_NOPOS_IS_EMPTY
+#define TRANSFER_SHADOW_CASTER_NOPOS_LEGACY(o,opos) \
         opos = UnityObjectToClipPos(v.vertex.xyz); \
         opos = UnityApplyLinearShadowBias(opos);
-    #define TRANSFER_SHADOW_CASTER_NOPOS(o,opos) \
+#define TRANSFER_SHADOW_CASTER_NOPOS(o,opos) \
         opos = UnityClipSpaceShadowCasterPos(v.vertex, v.normal); \
         opos = UnityApplyLinearShadowBias(opos);
-    #define SHADOW_CASTER_FRAGMENT(i) return 0;
+#define SHADOW_CASTER_FRAGMENT(i) return 0;
 #endif
 
 // Declare all data needed for shadow caster pass output (any shadow directions/depths/distances as needed),
@@ -986,14 +1002,14 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
 #endif
 
 #if defined(UNITY_REVERSED_Z)
-    #if UNITY_REVERSED_Z == 1
-        //D3d with reversed Z => z clip range is [near, 0] -> remapping to [0, far]
-        //max is required to protect ourselves from near plane not being correct/meaningfull in case of oblique matrices.
-        #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(((1.0-(coord)/_ProjectionParams.y)*_ProjectionParams.z),0)
-    #else
+#if UNITY_REVERSED_Z == 1
+//D3d with reversed Z => z clip range is [near, 0] -> remapping to [0, far]
+//max is required to protect ourselves from near plane not being correct/meaningfull in case of oblique matrices.
+#define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(((1.0-(coord)/_ProjectionParams.y)*_ProjectionParams.z),0)
+#else
         //GL with reversed z => z clip range is [near, -far] -> should remap in theory but dont do it in practice to save some perf (range is close enough)
         #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) max(-(coord), 0)
-    #endif
+#endif
 #elif UNITY_UV_STARTS_AT_TOP
     //D3d without reversed z => z clip range is [0, far] -> nothing to do
     #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
@@ -1012,7 +1028,7 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
     // factor = exp(-(density*z)^2)
     #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = unity_FogParams.x * (coord); unityFogFactor = exp2(-unityFogFactor*unityFogFactor)
 #else
-    #define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = 0.0
+#define UNITY_CALC_FOG_FACTOR_RAW(coord) float unityFogFactor = 0.0
 #endif
 
 #define UNITY_CALC_FOG_FACTOR(coord) UNITY_CALC_FOG_FACTOR_RAW(UNITY_Z_0_FAR_FROM_CLIPSPACE(coord))
@@ -1022,54 +1038,54 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
 #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
     #define UNITY_FOG_COORDS(idx) UNITY_FOG_COORDS_PACKED(idx, float1)
 
-    #if (SHADER_TARGET < 30) || defined(SHADER_API_MOBILE)
+#if (SHADER_TARGET < 30) || defined(SHADER_API_MOBILE)
         // mobile or SM2.0: calculate fog factor per-vertex
         #define UNITY_TRANSFER_FOG(o,outpos) UNITY_CALC_FOG_FACTOR((outpos).z); o.fogCoord.x = unityFogFactor
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_TSPACE(o,outpos) UNITY_CALC_FOG_FACTOR((outpos).z); o.tSpace1.y = tangentSign; o.tSpace2.y = unityFogFactor
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_WORLD_POS(o,outpos) UNITY_CALC_FOG_FACTOR((outpos).z); o.worldPos.w = unityFogFactor
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o,outpos) UNITY_CALC_FOG_FACTOR((outpos).z); o.eyeVec.w = unityFogFactor
-    #else
+#else
         // SM3.0 and PC/console: calculate fog distance per-vertex, and fog factor per-pixel
         #define UNITY_TRANSFER_FOG(o,outpos) o.fogCoord.x = (outpos).z
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_TSPACE(o,outpos) o.tSpace2.y = (outpos).z
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_WORLD_POS(o,outpos) o.worldPos.w = (outpos).z
         #define UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o,outpos) o.eyeVec.w = (outpos).z
-    #endif
+#endif
 #else
-    #define UNITY_FOG_COORDS(idx)
-    #define UNITY_TRANSFER_FOG(o,outpos)
-    #define UNITY_TRANSFER_FOG_COMBINED_WITH_TSPACE(o,outpos)
-    #define UNITY_TRANSFER_FOG_COMBINED_WITH_WORLD_POS(o,outpos)
-    #define UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o,outpos)
+#define UNITY_FOG_COORDS(idx)
+#define UNITY_TRANSFER_FOG(o,outpos)
+#define UNITY_TRANSFER_FOG_COMBINED_WITH_TSPACE(o,outpos)
+#define UNITY_TRANSFER_FOG_COMBINED_WITH_WORLD_POS(o,outpos)
+#define UNITY_TRANSFER_FOG_COMBINED_WITH_EYE_VEC(o,outpos)
 #endif
 
 #define UNITY_FOG_LERP_COLOR(col,fogCol,fogFac) col.rgb = lerp((fogCol).rgb, (col).rgb, saturate(fogFac))
 
 
 #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    #if (SHADER_TARGET < 30) || defined(SHADER_API_MOBILE)
+#if (SHADER_TARGET < 30) || defined(SHADER_API_MOBILE)
         // mobile or SM2.0: fog factor was already calculated per-vertex, so just lerp the color
         #define UNITY_APPLY_FOG_COLOR(coord,col,fogCol) UNITY_FOG_LERP_COLOR(col,fogCol,(coord).x)
-    #else
+#else
         // SM3.0 and PC/console: calculate fog factor and lerp fog color
         #define UNITY_APPLY_FOG_COLOR(coord,col,fogCol) UNITY_CALC_FOG_FACTOR((coord).x); UNITY_FOG_LERP_COLOR(col,fogCol,unityFogFactor)
-    #endif
+#endif
     #define UNITY_EXTRACT_FOG(name) float _unity_fogCoord = name.fogCoord
     #define UNITY_EXTRACT_FOG_FROM_TSPACE(name) float _unity_fogCoord = name.tSpace2.y
     #define UNITY_EXTRACT_FOG_FROM_WORLD_POS(name) float _unity_fogCoord = name.worldPos.w
     #define UNITY_EXTRACT_FOG_FROM_EYE_VEC(name) float _unity_fogCoord = name.eyeVec.w
 #else
-    #define UNITY_APPLY_FOG_COLOR(coord,col,fogCol)
-    #define UNITY_EXTRACT_FOG(name)
-    #define UNITY_EXTRACT_FOG_FROM_TSPACE(name)
-    #define UNITY_EXTRACT_FOG_FROM_WORLD_POS(name)
-    #define UNITY_EXTRACT_FOG_FROM_EYE_VEC(name)
+#define UNITY_APPLY_FOG_COLOR(coord,col,fogCol)
+#define UNITY_EXTRACT_FOG(name)
+#define UNITY_EXTRACT_FOG_FROM_TSPACE(name)
+#define UNITY_EXTRACT_FOG_FROM_WORLD_POS(name)
+#define UNITY_EXTRACT_FOG_FROM_EYE_VEC(name)
 #endif
 
 #ifdef UNITY_PASS_FORWARDADD
     #define UNITY_APPLY_FOG(coord,col) UNITY_APPLY_FOG_COLOR(coord,col,fixed4(0,0,0,0))
 #else
-    #define UNITY_APPLY_FOG(coord,col) UNITY_APPLY_FOG_COLOR(coord,col,unity_FogColor)
+#define UNITY_APPLY_FOG(coord,col) UNITY_APPLY_FOG_COLOR(coord,col,unity_FogColor)
 #endif
 
 // ------------------------------------------------------------------
@@ -1091,7 +1107,7 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
 #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
     #define UNITY_RECONSTRUCT_TBN(name) UNITY_EXTRACT_TBN_T(name); UNITY_EXTRACT_TBN_N(name); UNITY_EXTRACT_TBN_B(name); UNITY_CORRECT_TBN_B_SIGN(name); UNITY_RECONSTRUCT_TBN_0; UNITY_RECONSTRUCT_TBN_1; UNITY_RECONSTRUCT_TBN_2
 #else
-    #define UNITY_RECONSTRUCT_TBN(name) UNITY_EXTRACT_TBN(name)
+#define UNITY_RECONSTRUCT_TBN(name) UNITY_EXTRACT_TBN(name)
 #endif
 
 //  LOD cross fade helpers
@@ -1112,7 +1128,7 @@ float4 UnityApplyLinearShadowBias(float4 clipPos)
         clip(unity_LODFade.x - mask * sgn);
     }
 #else
-    #define UNITY_APPLY_DITHER_CROSSFADE(vpos)
+#define UNITY_APPLY_DITHER_CROSSFADE(vpos)
 #endif
 
 
@@ -1187,13 +1203,12 @@ UNITY_DECLARE_SHADOWMAP(_ShadowMapTexture);
 #define UNITY_OUTPUT_DEPTH(i) return 0
 
 
-
 #define API_HAS_GUARANTEED_R16_SUPPORT !(SHADER_API_VULKAN || SHADER_API_GLES || SHADER_API_GLES3)
 
 float4 PackHeightmap(float height)
 {
     #if (API_HAS_GUARANTEED_R16_SUPPORT)
-        return height;
+    return height;
     #else
         uint a = (uint)(65535.0f * height);
         return float4((a >> 0) & 0xFF, (a >> 8) & 0xFF, 0, 0) / 255.0f;
@@ -1203,7 +1218,7 @@ float4 PackHeightmap(float height)
 float UnpackHeightmap(float4 height)
 {
     #if (API_HAS_GUARANTEED_R16_SUPPORT)
-        return height.r;
+    return height.r;
     #else
         return (height.r + height.g * 256.0f) / 257.0f; // (255.0f * height.r + 255.0f * 256.0f * height.g) / 65535.0f
     #endif

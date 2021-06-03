@@ -1,89 +1,81 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-    void Awake()
-    {
-        Instance = this;
-    }
+	public static GameManager Instance;
 
-    public int gameLength = 180;
-    public float remainingTime = 180.0f;
-    public bool runClock = false;
-    public Text remainingTimeText;
+	public int gameLength = 180;
+	public float remainingTime = 180.0f;
+	public bool runClock;
+	public Text remainingTimeText;
 
-    public int remainingSheep;
+	public int remainingSheep;
 
-    void Start()
-    {
-        WaypointManager.Instance.UpdateWaypoints();
-        GrassScatter.Instance.Scatter();
+	public List<Sheep> SheepList = new List<Sheep>();
 
-        remainingTime = gameLength;
-    }
+	private void Awake()
+	{
+		Instance = this;
+	}
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Home))
-        {
-            SceneManager.LoadScene(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+	private void Start()
+	{
+		WaypointManager.Instance.UpdateWaypoints();
+		GrassScatter.Instance.Scatter();
 
-        if (runClock)
-        {
-            remainingTime -= Time.deltaTime;
-            remainingTime = remainingTime.Clamp(0, gameLength);
-            remainingTimeText.text = remainingTime.CeilToInt().ToString();
-            if (remainingTime <= 0.0f) TimeUp();
-        }
-    }
+		remainingTime = gameLength;
+	}
 
-    public static void CollectSheep(Sheep sheep)
-    {
-        Instance.SheepList.Remove(sheep);
-        Instance.remainingSheep = Instance.SheepList.Count;
-    }
+	private void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.Home))
+			SceneManager.LoadScene(0);
+		else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
 
-    void TimeUp()
-    {
-        runClock = false;
-    }
+		if (runClock)
+		{
+			remainingTime          -= Time.deltaTime;
+			remainingTime          =  remainingTime.Clamp(0, gameLength);
+			remainingTimeText.text =  remainingTime.CeilToInt().ToString();
+			if (remainingTime <= 0.0f) TimeUp();
+		}
+	}
 
-    public List<Sheep> SheepList = new List<Sheep>();
-    public static void AddSheep(Sheep sheep)
-    {
-        if (Instance == null) return;
-        if (Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
-        Instance.SheepList.Add(sheep);
-        Instance.remainingSheep = Instance.SheepList.Count;
-    }
+	private void OnGUI()
+	{
+		GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
+		//GUILayout.Space(50.0f);
+		GUILayout.BeginHorizontal();
+		GUILayout.Label("Quality");
+		var level = 0;
+		QualitySettings.names.ToList().ForEach(l =>
+		{
+			if (GUILayout.Button(l)) QualitySettings.SetQualityLevel(level, true);
+			level++;
+		});
+		GUILayout.EndHorizontal();
+		GUILayout.EndArea();
+	}
 
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
-        //GUILayout.Space(50.0f);
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Quality");
-        int level = 0;
-        QualitySettings.names.ToList().ForEach(l =>
-        {
-            if (GUILayout.Button(l))
-            {
-                QualitySettings.SetQualityLevel(level, true);
-            }
-            level++;
-        });
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
-    }
+	public static void CollectSheep(Sheep sheep)
+	{
+		Instance.SheepList.Remove(sheep);
+		Instance.remainingSheep = Instance.SheepList.Count;
+	}
+
+	private void TimeUp()
+	{
+		runClock = false;
+	}
+
+	public static void AddSheep(Sheep sheep)
+	{
+		if (Instance == null) return;
+		if (Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
+		Instance.SheepList.Add(sheep);
+		Instance.remainingSheep = Instance.SheepList.Count;
+	}
 }

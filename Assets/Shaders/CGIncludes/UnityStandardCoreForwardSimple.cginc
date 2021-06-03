@@ -9,30 +9,30 @@
 #define GLOSSMAP (defined(_SPECGLOSSMAP) || defined(_METALLICGLOSSMAP))
 
 #ifndef SPECULAR_HIGHLIGHTS
-    #define SPECULAR_HIGHLIGHTS (!defined(_SPECULAR_HIGHLIGHTS_OFF))
+#define SPECULAR_HIGHLIGHTS (!defined(_SPECULAR_HIGHLIGHTS_OFF))
 #endif
 
 struct VertexOutputBaseSimple
 {
     UNITY_POSITION(pos);
-    float4 tex                          : TEXCOORD0;
-    half4 eyeVec                        : TEXCOORD1; // w: grazingTerm
+    float4 tex : TEXCOORD0;
+    half4 eyeVec : TEXCOORD1; // w: grazingTerm
 
-    half4 ambientOrLightmapUV           : TEXCOORD2; // SH or Lightmap UV
+    half4 ambientOrLightmapUV : TEXCOORD2; // SH or Lightmap UV
     SHADOW_COORDS(3)
     UNITY_FOG_COORDS_PACKED(4, half4) // x: fogCoord, yzw: reflectVec
 
-    half4 normalWorld                   : TEXCOORD5; // w: fresnelTerm
+    half4 normalWorld : TEXCOORD5; // w: fresnelTerm
 
-#ifdef _NORMALMAP
+    #ifdef _NORMALMAP
     half3 tangentSpaceLightDir          : TEXCOORD6;
     #if SPECULAR_HIGHLIGHTS
         half3 tangentSpaceEyeVec        : TEXCOORD7;
     #endif
-#endif
-#if UNITY_REQUIRE_FRAG_WORLDPOS
-    float3 posWorld                     : TEXCOORD8;
-#endif
+    #endif
+    #if UNITY_REQUIRE_FRAG_WORLDPOS
+    float3 posWorld : TEXCOORD8;
+    #endif
 
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -72,16 +72,16 @@ void TangentSpaceLightingInput(half3 normalWorld, half4 vTangent, half3 lightDir
     half sign = half(vTangent.w) * half(unity_WorldTransformParams.w);
     half3 binormalWorld = cross(normalWorld, tangentWorld) * sign;
     tangentSpaceLightDir = TransformToTangentSpace(tangentWorld, binormalWorld, normalWorld, lightDirWorld);
-    #if SPECULAR_HIGHLIGHTS
+#if SPECULAR_HIGHLIGHTS
         tangentSpaceEyeVec = normalize(TransformToTangentSpace(tangentWorld, binormalWorld, normalWorld, eyeVecWorld));
-    #else
+#else
         tangentSpaceEyeVec = 0;
-    #endif
+#endif
 }
 
 #endif // _NORMALMAP
 
-VertexOutputBaseSimple vertForwardBaseSimple (VertexInput v)
+VertexOutputBaseSimple vertForwardBaseSimple(VertexInput v)
 {
     UNITY_SETUP_INSTANCE_ID(v);
     VertexOutputBaseSimple o;
@@ -101,9 +101,9 @@ VertexOutputBaseSimple vertForwardBaseSimple (VertexInput v)
     #ifdef _NORMALMAP
         half3 tangentSpaceEyeVec;
         TangentSpaceLightingInput(normalWorld, v.tangent, _WorldSpaceLightPos0.xyz, eyeVec, o.tangentSpaceLightDir, tangentSpaceEyeVec);
-        #if SPECULAR_HIGHLIGHTS
+    #if SPECULAR_HIGHLIGHTS
             o.tangentSpaceEyeVec = tangentSpaceEyeVec;
-        #endif
+    #endif
     #endif
 
     //We need this for shadow receiving
@@ -115,7 +115,7 @@ VertexOutputBaseSimple vertForwardBaseSimple (VertexInput v)
 
     o.normalWorld.w = Pow4(1 - saturate(dot(normalWorld, -eyeVec))); // fresnel term
     #if !GLOSSMAP
-        o.eyeVec.w = saturate(_Glossiness + UNIFORM_REFLECTIVITY()); // grazing term
+    o.eyeVec.w = saturate(_Glossiness + UNIFORM_REFLECTIVITY()); // grazing term
     #endif
 
     UNITY_TRANSFER_FOG(o, o.pos);
@@ -130,10 +130,10 @@ FragmentCommonData FragmentSetupSimple(VertexOutputBaseSimple i)
         clip (alpha - _Cutoff);
     #endif
 
-    FragmentCommonData s = UNITY_SETUP_BRDF_INPUT (i.tex);
+    FragmentCommonData s = UNITY_SETUP_BRDF_INPUT(i.tex);
 
     // NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-    s.diffColor = PreMultiplyAlpha (s.diffColor, alpha, s.oneMinusReflectivity, /*out*/ s.alpha);
+    s.diffColor = PreMultiplyAlpha(s.diffColor, alpha, s.oneMinusReflectivity, /*out*/ s.alpha);
 
     s.normalWorld = i.normalWorld.xyz;
     s.eyeVec = i.eyeVec.xyz;
@@ -143,7 +143,7 @@ FragmentCommonData FragmentSetupSimple(VertexOutputBaseSimple i)
     #ifdef _NORMALMAP
         s.tangentSpaceNormal =  NormalInTangentSpace(i.tex);
     #else
-        s.tangentSpaceNormal =  0;
+    s.tangentSpaceNormal = 0;
     #endif
 
     return s;
@@ -160,7 +160,7 @@ half PerVertexGrazingTerm(VertexOutputBaseSimple i, FragmentCommonData s)
     #if GLOSSMAP
         return saturate(s.smoothness + (1-s.oneMinusReflectivity));
     #else
-        return i.eyeVec.w;
+    return i.eyeVec.w;
     #endif
 }
 
@@ -182,20 +182,20 @@ half3 LightDirForSpecular(VertexOutputBaseSimple i, UnityLight mainLight)
     #if SPECULAR_HIGHLIGHTS && defined(_NORMALMAP)
         return i.tangentSpaceLightDir;
     #else
-        return mainLight.dir;
+    return mainLight.dir;
     #endif
 }
 
 half3 BRDF3DirectSimple(half3 diffColor, half3 specColor, half smoothness, half rl)
 {
     #if SPECULAR_HIGHLIGHTS
-        return BRDF3_Direct(diffColor, specColor, Pow4(rl), smoothness);
+    return BRDF3_Direct(diffColor, specColor, Pow4(rl), smoothness);
     #else
         return diffColor;
     #endif
 }
 
-half4 fragForwardBaseSimpleInternal (VertexOutputBaseSimple i)
+half4 fragForwardBaseSimpleInternal(VertexOutputBaseSimple i)
 {
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
 
@@ -217,19 +217,21 @@ half4 fragForwardBaseSimpleInternal (VertexOutputBaseSimple i)
     half occlusion = Occlusion(i.tex.xy);
     half rl = dot(REFLECTVEC_FOR_SPECULAR(i, s), LightDirForSpecular(i, mainLight));
 
-    UnityGI gi = FragmentGI (s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
+    UnityGI gi = FragmentGI(s, occlusion, i.ambientOrLightmapUV, atten, mainLight);
     half3 attenuatedLightColor = gi.light.color * ndotl;
 
-    half3 c = BRDF3_Indirect(s.diffColor, s.specColor, gi.indirect, PerVertexGrazingTerm(i, s), PerVertexFresnelTerm(i));
+    half3 c = BRDF3_Indirect(s.diffColor, s.specColor, gi.indirect, PerVertexGrazingTerm(i, s),
+                             PerVertexFresnelTerm(i));
     c += BRDF3DirectSimple(s.diffColor, s.specColor, s.smoothness, rl) * attenuatedLightColor;
     c += Emission(i.tex.xy);
 
     UNITY_APPLY_FOG(i.fogCoord, c);
 
-    return OutputForward (half4(c, 1), s.alpha);
+    return OutputForward(half4(c, 1), s.alpha);
 }
 
-half4 fragForwardBaseSimple (VertexOutputBaseSimple i) : SV_Target  // backward compatibility (this used to be the fragment entry function)
+half4 fragForwardBaseSimple(VertexOutputBaseSimple i) : SV_Target
+// backward compatibility (this used to be the fragment entry function)
 {
     return fragForwardBaseSimpleInternal(i);
 }
@@ -237,31 +239,31 @@ half4 fragForwardBaseSimple (VertexOutputBaseSimple i) : SV_Target  // backward 
 struct VertexOutputForwardAddSimple
 {
     UNITY_POSITION(pos);
-    float4 tex                          : TEXCOORD0;
-    float3 posWorld                     : TEXCOORD1;
+    float4 tex : TEXCOORD0;
+    float3 posWorld : TEXCOORD1;
 
-#if !defined(_NORMALMAP) && SPECULAR_HIGHLIGHTS
+    #if !defined(_NORMALMAP) && SPECULAR_HIGHLIGHTS
     UNITY_FOG_COORDS_PACKED(2, half4) // x: fogCoord, yzw: reflectVec
-#else
+    #else
     UNITY_FOG_COORDS_PACKED(2, half1)
-#endif
+    #endif
 
-    half3 lightDir                      : TEXCOORD3;
+    half3 lightDir : TEXCOORD3;
 
-#if defined(_NORMALMAP)
+    #if defined(_NORMALMAP)
     #if SPECULAR_HIGHLIGHTS
         half3 tangentSpaceEyeVec        : TEXCOORD4;
     #endif
-#else
-    half3 normalWorld                   : TEXCOORD4;
-#endif
+    #else
+    half3 normalWorld : TEXCOORD4;
+    #endif
 
     UNITY_LIGHTING_COORDS(5, 6)
 
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-VertexOutputForwardAddSimple vertForwardAddSimple (VertexInput v)
+VertexOutputForwardAddSimple vertForwardAddSimple(VertexInput v)
 {
     VertexOutputForwardAddSimple o;
     UNITY_SETUP_INSTANCE_ID(v);
@@ -278,31 +280,31 @@ VertexOutputForwardAddSimple vertForwardAddSimple (VertexInput v)
 
     half3 lightDir = _WorldSpaceLightPos0.xyz - posWorld.xyz * _WorldSpaceLightPos0.w;
     #ifndef USING_DIRECTIONAL_LIGHT
-        lightDir = NormalizePerVertexNormal(lightDir);
+    lightDir = NormalizePerVertexNormal(lightDir);
     #endif
 
     #if SPECULAR_HIGHLIGHTS
-        half3 eyeVec = normalize(posWorld.xyz - _WorldSpaceCameraPos);
+    half3 eyeVec = normalize(posWorld.xyz - _WorldSpaceCameraPos);
     #endif
 
     half3 normalWorld = UnityObjectToWorldNormal(v.normal);
 
     #ifdef _NORMALMAP
-        #if SPECULAR_HIGHLIGHTS
+    #if SPECULAR_HIGHLIGHTS
             TangentSpaceLightingInput(normalWorld, v.tangent, lightDir, eyeVec, o.lightDir, o.tangentSpaceEyeVec);
-        #else
+    #else
             half3 ignore;
             TangentSpaceLightingInput(normalWorld, v.tangent, lightDir, 0, o.lightDir, ignore);
-        #endif
+    #endif
     #else
-        o.lightDir = lightDir;
-        o.normalWorld = normalWorld;
-        #if SPECULAR_HIGHLIGHTS
-            o.fogCoord.yzw = reflect(eyeVec, normalWorld);
-        #endif
+    o.lightDir = lightDir;
+    o.normalWorld = normalWorld;
+    #if SPECULAR_HIGHLIGHTS
+    o.fogCoord.yzw = reflect(eyeVec, normalWorld);
+    #endif
     #endif
 
-    UNITY_TRANSFER_FOG(o,o.pos);
+    UNITY_TRANSFER_FOG(o, o.pos);
     return o;
 }
 
@@ -313,10 +315,10 @@ FragmentCommonData FragmentSetupSimpleAdd(VertexOutputForwardAddSimple i)
         clip (alpha - _Cutoff);
     #endif
 
-    FragmentCommonData s = UNITY_SETUP_BRDF_INPUT (i.tex);
+    FragmentCommonData s = UNITY_SETUP_BRDF_INPUT(i.tex);
 
     // NOTE: shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-    s.diffColor = PreMultiplyAlpha (s.diffColor, alpha, s.oneMinusReflectivity, /*out*/ s.alpha);
+    s.diffColor = PreMultiplyAlpha(s.diffColor, alpha, s.oneMinusReflectivity, /*out*/ s.alpha);
 
     s.eyeVec = 0;
     s.posWorld = i.posWorld;
@@ -325,12 +327,12 @@ FragmentCommonData FragmentSetupSimpleAdd(VertexOutputForwardAddSimple i)
         s.tangentSpaceNormal = NormalInTangentSpace(i.tex);
         s.normalWorld = 0;
     #else
-        s.tangentSpaceNormal = 0;
-        s.normalWorld = i.normalWorld;
+    s.tangentSpaceNormal = 0;
+    s.normalWorld = i.normalWorld;
     #endif
 
     #if SPECULAR_HIGHLIGHTS && !defined(_NORMALMAP)
-        s.reflUVW = i.fogCoord.yzw;
+    s.reflUVW = i.fogCoord.yzw;
     #else
         s.reflUVW = 0;
     #endif
@@ -343,11 +345,11 @@ half3 LightSpaceNormal(VertexOutputForwardAddSimple i, FragmentCommonData s)
     #ifdef _NORMALMAP
         return s.tangentSpaceNormal;
     #else
-        return i.normalWorld;
+    return i.normalWorld;
     #endif
 }
 
-half4 fragForwardAddSimpleInternal (VertexOutputForwardAddSimple i)
+half4 fragForwardAddSimpleInternal(VertexOutputForwardAddSimple i)
 {
     UNITY_APPLY_DITHER_CROSSFADE(i.pos.xy);
 
@@ -356,17 +358,18 @@ half4 fragForwardAddSimpleInternal (VertexOutputForwardAddSimple i)
     half3 c = BRDF3DirectSimple(s.diffColor, s.specColor, s.smoothness, dot(REFLECTVEC_FOR_SPECULAR(i, s), i.lightDir));
 
     #if SPECULAR_HIGHLIGHTS // else diffColor has premultiplied light color
-        c *= _LightColor0.rgb;
+    c *= _LightColor0.rgb;
     #endif
 
     UNITY_LIGHT_ATTENUATION(atten, i, s.posWorld)
     c *= atten * saturate(dot(LightSpaceNormal(i, s), i.lightDir));
 
     UNITY_APPLY_FOG_COLOR(i.fogCoord, c.rgb, half4(0,0,0,0)); // fog towards black in additive pass
-    return OutputForward (half4(c, 1), s.alpha);
+    return OutputForward(half4(c, 1), s.alpha);
 }
 
-half4 fragForwardAddSimple (VertexOutputForwardAddSimple i) : SV_Target // backward compatibility (this used to be the fragment entry function)
+half4 fragForwardAddSimple(VertexOutputForwardAddSimple i) : SV_Target
+// backward compatibility (this used to be the fragment entry function)
 {
     return fragForwardAddSimpleInternal(i);
 }

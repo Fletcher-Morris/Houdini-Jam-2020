@@ -31,10 +31,10 @@
 
     // For inputs/outputs analysis SoftParticles and Fading are identical; so make sure to only keep one
     // of them ever defined.
-    #if defined(SOFTPARTICLES_ON)
+#if defined(SOFTPARTICLES_ON)
         #undef SOFTPARTICLES_ON
         #define _FADING_ON
-    #endif
+#endif
 #endif
 
 
@@ -89,12 +89,11 @@ struct VertexOutput
     float4 grabPassPosition : TEXCOORD4;
     #endif
     UNITY_VERTEX_OUTPUT_STEREO
-
 };
 
 fixed4 readTexture(sampler2D tex, Input IN)
 {
-    fixed4 color = tex2D (tex, IN.texcoord);
+    fixed4 color = tex2D(tex, IN.texcoord);
     #ifdef _FLIPBOOK_BLENDING
     fixed4 color2 = tex2D(tex, IN.texcoord2AndBlend.xy);
     color = lerp(color, color2, IN.texcoord2AndBlend.z);
@@ -104,7 +103,7 @@ fixed4 readTexture(sampler2D tex, Input IN)
 
 fixed4 readTexture(sampler2D tex, VertexOutput IN)
 {
-    fixed4 color = tex2D (tex, IN.texcoord);
+    fixed4 color = tex2D(tex, IN.texcoord);
     #ifdef _FLIPBOOK_BLENDING
     fixed4 color2 = tex2D(tex, IN.texcoord2AndBlend.xy);
     color = lerp(color, color2, IN.texcoord2AndBlend.z);
@@ -172,24 +171,24 @@ half3 HSVtoRGB(half3 arg1)
 
 // Flipbook vertex function
 #if defined(UNITY_PARTICLE_INSTANCING_ENABLED)
-    #if defined(_FLIPBOOK_BLENDING)
+#if defined(_FLIPBOOK_BLENDING)
     #define vertTexcoord(v, o) \
         vertInstancingUVs(v.texcoords.xy, o.texcoord, o.texcoord2AndBlend);
-    #else
+#else
     #define vertTexcoord(v, o) \
         vertInstancingUVs(v.texcoords.xy, o.texcoord); \
         o.texcoord = TRANSFORM_TEX(o.texcoord, _MainTex);
-    #endif
+#endif
 #else
-    #if defined(_FLIPBOOK_BLENDING)
+#if defined(_FLIPBOOK_BLENDING)
     #define vertTexcoord(v, o) \
         o.texcoord = v.texcoords.xy; \
         o.texcoord2AndBlend.xy = v.texcoords.zw; \
         o.texcoord2AndBlend.z = v.texcoordBlend;
-    #else
-    #define vertTexcoord(v, o) \
+#else
+#define vertTexcoord(v, o) \
         o.texcoord = TRANSFORM_TEX(v.texcoords.xy, _MainTex);
-    #endif
+#endif
 #endif
 
 // Fading vertex function
@@ -272,7 +271,7 @@ half3 HSVtoRGB(half3 arg1)
 #define fragDistortion(i)
 #endif
 
-void vert (inout appdata_particles v, out Input o)
+void vert(inout appdata_particles v, out Input o)
 {
     UNITY_INITIALIZE_OUTPUT(Input, o);
     float4 clipPosition = UnityObjectToClipPos(v.vertex);
@@ -283,9 +282,9 @@ void vert (inout appdata_particles v, out Input o)
     vertDistortion(o);
 }
 
-void surf (Input IN, inout SurfaceOutputStandard o)
+void surf(Input IN, inout SurfaceOutputStandard o)
 {
-    half4 albedo = readTexture (_MainTex, IN);
+    half4 albedo = readTexture(_MainTex, IN);
     albedo *= _Color;
 
     fragColorMode(IN);
@@ -301,7 +300,7 @@ void surf (Input IN, inout SurfaceOutputStandard o)
     #if defined(_NORMALMAP)
     float3 normal = normalize (UnpackScaleNormal (readTexture (_BumpMap, IN), _BumpScale));
     #else
-    float3 normal = float3(0,0,1);
+    float3 normal = float3(0, 0, 1);
     #endif
 
     #if defined(_EMISSION)
@@ -335,7 +334,7 @@ void surf (Input IN, inout SurfaceOutputStandard o)
     #endif
 }
 
-void vertParticleUnlit (appdata_particles v, out VertexOutput o)
+void vertParticleUnlit(appdata_particles v, out VertexOutput o)
 {
     UNITY_SETUP_INSTANCE_ID(v);
 
@@ -353,9 +352,9 @@ void vertParticleUnlit (appdata_particles v, out VertexOutput o)
     UNITY_TRANSFER_FOG(o, o.vertex);
 }
 
-half4 fragParticleUnlit (VertexOutput IN) : SV_Target
+half4 fragParticleUnlit(VertexOutput IN) : SV_Target
 {
-    half4 albedo = readTexture (_MainTex, IN);
+    half4 albedo = readTexture(_MainTex, IN);
     albedo *= _Color;
 
     fragColorMode(IN);
@@ -365,7 +364,7 @@ half4 fragParticleUnlit (VertexOutput IN) : SV_Target
     #if defined(_NORMALMAP)
     float3 normal = normalize (UnpackScaleNormal (readTexture (_BumpMap, IN), _BumpScale));
     #else
-    float3 normal = float3(0,0,1);
+    float3 normal = float3(0, 0, 1);
     #endif
 
     #if defined(_EMISSION)

@@ -120,9 +120,20 @@ void vertInstancingUVs(in float2 uv, out float2 texcoord)
 
 #else
 
-void vertInstancingSetup() {}
-void vertInstancingColor(inout fixed4 color) {}
-void vertInstancingUVs(in float2 uv, out float2 texcoord, out float3 texcoord2AndBlend) { texcoord = 0.0f; texcoord2AndBlend = 0.0f; }
+void vertInstancingSetup()
+{
+}
+
+void vertInstancingColor(inout fixed4 color)
+{
+}
+
+void vertInstancingUVs(in float2 uv, out float2 texcoord, out float3 texcoord2AndBlend)
+{
+    texcoord = 0.0f;
+    texcoord2AndBlend = 0.0f;
+}
+
 void vertInstancingUVs(in float2 uv, out float2 texcoord) { texcoord = 0.0f; }
 
 #endif

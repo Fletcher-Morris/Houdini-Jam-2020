@@ -34,26 +34,26 @@
     #undef UNITY_SPECCUBE_BLENDING
     #undef UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
 #elif SHADER_TARGET < 30
-    #undef UNITY_SPECCUBE_BOX_PROJECTION
-    #undef UNITY_SPECCUBE_BLENDING
-    #undef UNITY_ENABLE_DETAIL_NORMALMAP
-    #ifdef _PARALLAXMAP
+#undef UNITY_SPECCUBE_BOX_PROJECTION
+#undef UNITY_SPECCUBE_BLENDING
+#undef UNITY_ENABLE_DETAIL_NORMALMAP
+#ifdef _PARALLAXMAP
         #undef _PARALLAXMAP
-    #endif
+#endif
 #endif
 #if (SHADER_TARGET < 30) || defined(SHADER_API_GLES)
-    #undef UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
+#undef UNITY_USE_DITHER_MASK_FOR_ALPHABLENDED_SHADOWS
 #endif
 
 #ifndef UNITY_SAMPLE_FULL_SH_PER_PIXEL
-    // Lightmap UVs and ambient color from SHL2 are shared in the vertex to pixel interpolators. Do full SH evaluation in the pixel shader when static lightmap and LIGHTPROBE_SH is enabled.
-    #define UNITY_SAMPLE_FULL_SH_PER_PIXEL (LIGHTMAP_ON && LIGHTPROBE_SH)
+// Lightmap UVs and ambient color from SHL2 are shared in the vertex to pixel interpolators. Do full SH evaluation in the pixel shader when static lightmap and LIGHTPROBE_SH is enabled.
+#define UNITY_SAMPLE_FULL_SH_PER_PIXEL (LIGHTMAP_ON && LIGHTPROBE_SH)
 
-    // Shaders might fail to compile due to shader instruction count limit. Leave only baked lightmaps on SM20 hardware.
-    #if UNITY_SAMPLE_FULL_SH_PER_PIXEL && (SHADER_TARGET < 25)
+// Shaders might fail to compile due to shader instruction count limit. Leave only baked lightmaps on SM20 hardware.
+#if UNITY_SAMPLE_FULL_SH_PER_PIXEL && (SHADER_TARGET < 25)
         #undef UNITY_SAMPLE_FULL_SH_PER_PIXEL
         #undef LIGHTPROBE_SH
-    #endif
+#endif
 #endif
 
 #ifndef UNITY_BRDF_GGX
@@ -75,20 +75,20 @@
 
 // Simplified Standard Shader is off by default and should not be used for Legacy Shaders
 #ifndef UNITY_STANDARD_SIMPLE
-    #define UNITY_STANDARD_SIMPLE 0
+#define UNITY_STANDARD_SIMPLE 0
 #endif
 
 // Setup a new define with meaningful name to know if we require world pos in fragment shader
 #if UNITY_STANDARD_SIMPLE
     #define UNITY_REQUIRE_FRAG_WORLDPOS 0
 #else
-    #define UNITY_REQUIRE_FRAG_WORLDPOS 1
+#define UNITY_REQUIRE_FRAG_WORLDPOS 1
 #endif
 
 // Should we pack worldPos along tangent (saving an interpolator)
 // We want to skip this on mobile platforms, because worldpos gets packed into mediump
 #if UNITY_REQUIRE_FRAG_WORLDPOS && !defined(_PARALLAXMAP) && !defined(SHADER_API_MOBILE)
-    #define UNITY_PACK_WORLDPOS_WITH_TANGENT 1
+#define UNITY_PACK_WORLDPOS_WITH_TANGENT 1
 #else
     #define UNITY_PACK_WORLDPOS_WITH_TANGENT 0
 #endif

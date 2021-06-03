@@ -7,24 +7,24 @@
 #   define UNITY_outputcontrolpoints    outputcontrolpoints
 #endif
 
-struct TessellationFactors 
+struct TessellationFactors
 {
-	float edge[3] : SV_TessFactor;
-	float inside : SV_InsideTessFactor;
+    float edge[3] : SV_TessFactor;
+    float inside : SV_InsideTessFactor;
 };
 
 CBUFFER_START(UnityPerMaterial)
 float _TessellationUniform;
 CBUFFER_END
 
-TessellationFactors patchConstantFunction (InputPatch<Varyings, 3> patch)
+TessellationFactors patchConstantFunction(InputPatch<Varyings, 3> patch)
 {
-	TessellationFactors f;
-	f.edge[0] = _TessellationUniform;
-	f.edge[1] = _TessellationUniform;
-	f.edge[2] = _TessellationUniform;
-	f.inside = _TessellationUniform;
-	return f;
+    TessellationFactors f;
+    f.edge[0] = _TessellationUniform;
+    f.edge[1] = _TessellationUniform;
+    f.edge[2] = _TessellationUniform;
+    f.inside = _TessellationUniform;
+    return f;
 }
 
 [UNITY_domain("tri")]
@@ -32,25 +32,26 @@ TessellationFactors patchConstantFunction (InputPatch<Varyings, 3> patch)
 [UNITY_outputtopology("triangle_cw")]
 [UNITY_partitioning("integer")]
 [UNITY_patchconstantfunc("patchConstantFunction")]
-Varyings hull (InputPatch<Varyings, 3> patch, uint id : SV_OutputControlPointID)
+Varyings hull(InputPatch<Varyings, 3> patch, uint id : SV_OutputControlPointID)
 {
-	return patch[id];
+    return patch[id];
 }
 
 [UNITY_domain("tri")]
-Varyings domain(TessellationFactors factors, OutputPatch<Varyings, 3> patch, float3 barycentricCoordinates : SV_DomainLocation)
+Varyings domain(TessellationFactors factors, OutputPatch<Varyings, 3> patch,
+                float3 barycentricCoordinates : SV_DomainLocation)
 {
-	Varyings v;
+    Varyings v;
 
-	#define MY_DOMAIN_PROGRAM_INTERPOLATE(fieldName) v.fieldName = \
+    #define MY_DOMAIN_PROGRAM_INTERPOLATE(fieldName) v.fieldName = \
 		patch[0].fieldName * barycentricCoordinates.x + \
 		patch[1].fieldName * barycentricCoordinates.y + \
 		patch[2].fieldName * barycentricCoordinates.z;
 
-	MY_DOMAIN_PROGRAM_INTERPOLATE(positionWS)
-	MY_DOMAIN_PROGRAM_INTERPOLATE(positionOS)
-	MY_DOMAIN_PROGRAM_INTERPOLATE(normal)
-	MY_DOMAIN_PROGRAM_INTERPOLATE(tangent)
+    MY_DOMAIN_PROGRAM_INTERPOLATE(positionWS)
+    MY_DOMAIN_PROGRAM_INTERPOLATE(positionOS)
+    MY_DOMAIN_PROGRAM_INTERPOLATE(normal)
+    MY_DOMAIN_PROGRAM_INTERPOLATE(tangent)
 
-	return v;
+    return v;
 }

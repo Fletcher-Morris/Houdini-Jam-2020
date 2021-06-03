@@ -16,7 +16,7 @@
     #define UNITY_COMPILER_HLSL
     #define UNITY_COMPILER_HLSLCC
 #elif defined(SHADER_API_D3D11) || defined(SHADER_API_XBOXONE)
-    #define UNITY_COMPILER_HLSL
+#define UNITY_COMPILER_HLSL
 #else
     #define UNITY_COMPILER_CG
 #endif
@@ -106,13 +106,13 @@
 #if (defined(SHADER_API_GLES3) && !defined(SHADER_API_DESKTOP)) || defined(SHADER_API_GLES) || defined(SHADER_API_N3DS)
     #define UNITY_ALLOWED_MRT_COUNT 4
 #else
-    #define UNITY_ALLOWED_MRT_COUNT 8
+#define UNITY_ALLOWED_MRT_COUNT 8
 #endif
 
 #if (SHADER_TARGET < 30) || defined(SHADER_API_GLES3) || defined(SHADER_API_GLES) || defined(SHADER_API_N3DS)
-    //no fast coherent dynamic branching on these hardware
+//no fast coherent dynamic branching on these hardware
 #else
-    #define UNITY_FAST_COHERENT_DYNAMIC_BRANCHING 1
+#define UNITY_FAST_COHERENT_DYNAMIC_BRANCHING 1
 #endif
 
 // Disable warnings we aren't interested in
@@ -259,8 +259,8 @@
     #define GLOBAL_CBUFFER_START(name)    cbuffer name {
     #define GLOBAL_CBUFFER_END            }
 #else
-    #define GLOBAL_CBUFFER_START(name)    CBUFFER_START(name)
-    #define GLOBAL_CBUFFER_END            CBUFFER_END
+#define GLOBAL_CBUFFER_START(name)    CBUFFER_START(name)
+#define GLOBAL_CBUFFER_END            CBUFFER_END
 #endif
 
 #if defined(UNITY_STEREO_MULTIVIEW_ENABLED) && defined(SHADER_STAGE_VERTEX)
@@ -287,11 +287,11 @@
 // SAMPLE_DEPTH_TEXTURE_PROJ(sampler,uv): projected sample
 // SAMPLE_DEPTH_TEXTURE_LOD(sampler,uv): sample with LOD level
 
-    // Sample depth, just the red component.
+// Sample depth, just the red component.
 #   define SAMPLE_DEPTH_TEXTURE(sampler, uv) (tex2D(sampler, uv).r)
 #   define SAMPLE_DEPTH_TEXTURE_PROJ(sampler, uv) (tex2Dproj(sampler, uv).r)
 #   define SAMPLE_DEPTH_TEXTURE_LOD(sampler, uv) (tex2Dlod(sampler, uv).r)
-    // Sample depth, all components.
+// Sample depth, all components.
 #   define SAMPLE_RAW_DEPTH_TEXTURE(sampler, uv) (tex2D(sampler, uv))
 #   define SAMPLE_RAW_DEPTH_TEXTURE_PROJ(sampler, uv) (tex2Dproj(sampler, uv))
 #   define SAMPLE_RAW_DEPTH_TEXTURE_LOD(sampler, uv) (tex2Dlod(sampler, uv))
@@ -309,25 +309,25 @@
 
 
 #if !defined(SHADER_API_GLES)
-    // all platforms except GLES2.0 have built-in shadow comparison samplers
-    #define SHADOWS_NATIVE
+// all platforms except GLES2.0 have built-in shadow comparison samplers
+#define SHADOWS_NATIVE
 #elif defined(SHADER_API_GLES) && defined(UNITY_ENABLE_NATIVE_SHADOW_LOOKUPS)
     // GLES2.0 also has built-in shadow comparison samplers, but only on platforms where we pass UNITY_ENABLE_NATIVE_SHADOW_LOOKUPS from the editor
     #define SHADOWS_NATIVE
 #endif
 
 #if defined(SHADER_API_D3D11) || (defined(UNITY_COMPILER_HLSLCC) && defined(SHADOWS_NATIVE))
-    // DX11 & hlslcc platforms: built-in PCF
-    #define UNITY_DECLARE_SHADOWMAP(tex) Texture2D tex; SamplerComparisonState sampler##tex
-    #define UNITY_DECLARE_TEXCUBE_SHADOWMAP(tex) TextureCube tex; SamplerComparisonState sampler##tex
-    #define UNITY_SAMPLE_SHADOW(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xy,(coord).z)
-    #define UNITY_SAMPLE_SHADOW_PROJ(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xy/(coord).w,(coord).z/(coord).w)
-    #if defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_VULKAN) || defined(SHADER_API_SWITCH)
+// DX11 & hlslcc platforms: built-in PCF
+#define UNITY_DECLARE_SHADOWMAP(tex) Texture2D tex; SamplerComparisonState sampler##tex
+#define UNITY_DECLARE_TEXCUBE_SHADOWMAP(tex) TextureCube tex; SamplerComparisonState sampler##tex
+#define UNITY_SAMPLE_SHADOW(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xy,(coord).z)
+#define UNITY_SAMPLE_SHADOW_PROJ(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xy/(coord).w,(coord).z/(coord).w)
+#if defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_VULKAN) || defined(SHADER_API_SWITCH)
         // GLSL does not have textureLod(samplerCubeShadow, ...) support. GLES2 does not have core support for samplerCubeShadow, so we ignore it.
         #define UNITY_SAMPLE_TEXCUBE_SHADOW(tex,coord) tex.SampleCmp (sampler##tex,(coord).xyz,(coord).w)
-    #else
-       #define UNITY_SAMPLE_TEXCUBE_SHADOW(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xyz,(coord).w)
-    #endif
+#else
+#define UNITY_SAMPLE_TEXCUBE_SHADOW(tex,coord) tex.SampleCmpLevelZero (sampler##tex,(coord).xyz,(coord).w)
+#endif
 #elif defined(SHADER_API_PSSL)
     // PS4: built-in PCF
     #define UNITY_DECLARE_SHADOWMAP(tex)        Texture2D tex; SamplerComparisonState sampler##tex
@@ -353,23 +353,23 @@
 //      That another texture must also be actually used in the current shader, otherwise
 //      the correct sampler will not be set.
 #if defined(SHADER_API_D3D11) || defined(SHADER_API_XBOXONE) || defined(UNITY_COMPILER_HLSLCC) || defined(SHADER_API_PSSL) || (defined(SHADER_TARGET_SURFACE_ANALYSIS) && !defined(SHADER_TARGET_SURFACE_ANALYSIS_MOJOSHADER))
-    // DX11 style HLSL syntax; separate textures and samplers
-    //
-    // Note: for HLSLcc we have special unity-specific syntax to pass sampler precision information.
-    //
-    // Note: for surface shader analysis, go into DX11 syntax path when non-mojoshader part of analysis is done,
-    // this allows surface shaders to use _NOSAMPLER and similar macros, without using up a sampler register.
-    // Don't do that for mojoshader part, as that one can only parse DX9 style HLSL.
+// DX11 style HLSL syntax; separate textures and samplers
+//
+// Note: for HLSLcc we have special unity-specific syntax to pass sampler precision information.
+//
+// Note: for surface shader analysis, go into DX11 syntax path when non-mojoshader part of analysis is done,
+// this allows surface shaders to use _NOSAMPLER and similar macros, without using up a sampler register.
+// Don't do that for mojoshader part, as that one can only parse DX9 style HLSL.
 
-    #define UNITY_SEPARATE_TEXTURE_SAMPLER
+#define UNITY_SEPARATE_TEXTURE_SAMPLER
 
-    // 2D textures
-    #define UNITY_DECLARE_TEX2D(tex) Texture2D tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX2D_NOSAMPLER(tex) Texture2D tex
-    #define UNITY_DECLARE_TEX2D_NOSAMPLER_INT(tex) Texture2D<int4> tex
-    #define UNITY_DECLARE_TEX2D_NOSAMPLER_UINT(tex) Texture2D<uint4> tex
-    #define UNITY_SAMPLE_TEX2D(tex,coord) tex.Sample (sampler##tex,coord)
-    #define UNITY_SAMPLE_TEX2D_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
+// 2D textures
+#define UNITY_DECLARE_TEX2D(tex) Texture2D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX2D_NOSAMPLER(tex) Texture2D tex
+#define UNITY_DECLARE_TEX2D_NOSAMPLER_INT(tex) Texture2D<int4> tex
+#define UNITY_DECLARE_TEX2D_NOSAMPLER_UINT(tex) Texture2D<uint4> tex
+#define UNITY_SAMPLE_TEX2D(tex,coord) tex.Sample (sampler##tex,coord)
+#define UNITY_SAMPLE_TEX2D_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
 
 #if defined(UNITY_COMPILER_HLSLCC) && !defined(SHADER_API_GLCORE) // GL Core doesn't have the _half mangling, the rest of them do.
     #define UNITY_DECLARE_TEX2D_HALF(tex) Texture2D_half tex; SamplerState sampler##tex
@@ -377,56 +377,56 @@
     #define UNITY_DECLARE_TEX2D_NOSAMPLER_HALF(tex) Texture2D_half tex
     #define UNITY_DECLARE_TEX2D_NOSAMPLER_FLOAT(tex) Texture2D_float tex
 #else
-    #define UNITY_DECLARE_TEX2D_HALF(tex) Texture2D tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX2D_FLOAT(tex) Texture2D tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX2D_NOSAMPLER_HALF(tex) Texture2D tex
-    #define UNITY_DECLARE_TEX2D_NOSAMPLER_FLOAT(tex) Texture2D tex
+#define UNITY_DECLARE_TEX2D_HALF(tex) Texture2D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX2D_FLOAT(tex) Texture2D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX2D_NOSAMPLER_HALF(tex) Texture2D tex
+#define UNITY_DECLARE_TEX2D_NOSAMPLER_FLOAT(tex) Texture2D tex
 #endif
 
-    // Cubemaps
-    #define UNITY_DECLARE_TEXCUBE(tex) TextureCube tex; SamplerState sampler##tex
-    #define UNITY_ARGS_TEXCUBE(tex) TextureCube tex, SamplerState sampler##tex
-    #define UNITY_PASS_TEXCUBE(tex) tex, sampler##tex
-    #define UNITY_PASS_TEXCUBE_SAMPLER(tex,samplertex) tex, sampler##samplertex
-    #define UNITY_PASS_TEXCUBE_SAMPLER_LOD(tex, samplertex, lod) tex, sampler##samplertex, lod
-    #define UNITY_DECLARE_TEXCUBE_NOSAMPLER(tex) TextureCube tex
-    #define UNITY_SAMPLE_TEXCUBE(tex,coord) tex.Sample (sampler##tex,coord)
-    #define UNITY_SAMPLE_TEXCUBE_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
-    #define UNITY_SAMPLE_TEXCUBE_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
-    #define UNITY_SAMPLE_TEXCUBE_SAMPLER_LOD(tex, samplertex, coord, lod) tex.SampleLevel (sampler##samplertex, coord, lod)
-    // 3D textures
-    #define UNITY_DECLARE_TEX3D(tex) Texture3D tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX3D_NOSAMPLER(tex) Texture3D tex
-    #define UNITY_SAMPLE_TEX3D(tex,coord) tex.Sample (sampler##tex,coord)
-    #define UNITY_SAMPLE_TEX3D_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
-    #define UNITY_SAMPLE_TEX3D_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
-    #define UNITY_SAMPLE_TEX3D_SAMPLER_LOD(tex, samplertex, coord, lod) tex.SampleLevel(sampler##samplertex, coord, lod)
+// Cubemaps
+#define UNITY_DECLARE_TEXCUBE(tex) TextureCube tex; SamplerState sampler##tex
+#define UNITY_ARGS_TEXCUBE(tex) TextureCube tex, SamplerState sampler##tex
+#define UNITY_PASS_TEXCUBE(tex) tex, sampler##tex
+#define UNITY_PASS_TEXCUBE_SAMPLER(tex,samplertex) tex, sampler##samplertex
+#define UNITY_PASS_TEXCUBE_SAMPLER_LOD(tex, samplertex, lod) tex, sampler##samplertex, lod
+#define UNITY_DECLARE_TEXCUBE_NOSAMPLER(tex) TextureCube tex
+#define UNITY_SAMPLE_TEXCUBE(tex,coord) tex.Sample (sampler##tex,coord)
+#define UNITY_SAMPLE_TEXCUBE_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
+#define UNITY_SAMPLE_TEXCUBE_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
+#define UNITY_SAMPLE_TEXCUBE_SAMPLER_LOD(tex, samplertex, coord, lod) tex.SampleLevel (sampler##samplertex, coord, lod)
+// 3D textures
+#define UNITY_DECLARE_TEX3D(tex) Texture3D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX3D_NOSAMPLER(tex) Texture3D tex
+#define UNITY_SAMPLE_TEX3D(tex,coord) tex.Sample (sampler##tex,coord)
+#define UNITY_SAMPLE_TEX3D_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
+#define UNITY_SAMPLE_TEX3D_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
+#define UNITY_SAMPLE_TEX3D_SAMPLER_LOD(tex, samplertex, coord, lod) tex.SampleLevel(sampler##samplertex, coord, lod)
 
 #if defined(UNITY_COMPILER_HLSLCC) && !defined(SHADER_API_GLCORE) // GL Core doesn't have the _half mangling, the rest of them do.
     #define UNITY_DECLARE_TEX3D_FLOAT(tex) Texture3D_float tex; SamplerState sampler##tex
     #define UNITY_DECLARE_TEX3D_HALF(tex) Texture3D_half tex; SamplerState sampler##tex
 #else
-    #define UNITY_DECLARE_TEX3D_FLOAT(tex) Texture3D tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX3D_HALF(tex) Texture3D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX3D_FLOAT(tex) Texture3D tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX3D_HALF(tex) Texture3D tex; SamplerState sampler##tex
 #endif
 
-    // 2D arrays
-    #define UNITY_DECLARE_TEX2DARRAY_MS(tex) Texture2DMSArray<float> tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX2DARRAY_MS_NOSAMPLER(tex) Texture2DArray<float> tex
-    #define UNITY_DECLARE_TEX2DARRAY(tex) Texture2DArray tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEX2DARRAY_NOSAMPLER(tex) Texture2DArray tex
-    #define UNITY_ARGS_TEX2DARRAY(tex) Texture2DArray tex, SamplerState sampler##tex
-    #define UNITY_PASS_TEX2DARRAY(tex) tex, sampler##tex
-    #define UNITY_SAMPLE_TEX2DARRAY(tex,coord) tex.Sample (sampler##tex,coord)
-    #define UNITY_SAMPLE_TEX2DARRAY_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
-    #define UNITY_SAMPLE_TEX2DARRAY_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
-    #define UNITY_SAMPLE_TEX2DARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex.SampleLevel (sampler##samplertex,coord,lod)
+// 2D arrays
+#define UNITY_DECLARE_TEX2DARRAY_MS(tex) Texture2DMSArray<float> tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX2DARRAY_MS_NOSAMPLER(tex) Texture2DArray<float> tex
+#define UNITY_DECLARE_TEX2DARRAY(tex) Texture2DArray tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEX2DARRAY_NOSAMPLER(tex) Texture2DArray tex
+#define UNITY_ARGS_TEX2DARRAY(tex) Texture2DArray tex, SamplerState sampler##tex
+#define UNITY_PASS_TEX2DARRAY(tex) tex, sampler##tex
+#define UNITY_SAMPLE_TEX2DARRAY(tex,coord) tex.Sample (sampler##tex,coord)
+#define UNITY_SAMPLE_TEX2DARRAY_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
+#define UNITY_SAMPLE_TEX2DARRAY_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
+#define UNITY_SAMPLE_TEX2DARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex.SampleLevel (sampler##samplertex,coord,lod)
 
-    // Cube arrays
-    #define UNITY_DECLARE_TEXCUBEARRAY(tex) TextureCubeArray tex; SamplerState sampler##tex
-    #define UNITY_DECLARE_TEXCUBEARRAY_NOSAMPLER(tex) TextureCubeArray tex
-    #define UNITY_ARGS_TEXCUBEARRAY(tex) TextureCubeArray tex, SamplerState sampler##tex
-    #define UNITY_PASS_TEXCUBEARRAY(tex) tex, sampler##tex
+// Cube arrays
+#define UNITY_DECLARE_TEXCUBEARRAY(tex) TextureCubeArray tex; SamplerState sampler##tex
+#define UNITY_DECLARE_TEXCUBEARRAY_NOSAMPLER(tex) TextureCubeArray tex
+#define UNITY_ARGS_TEXCUBEARRAY(tex) TextureCubeArray tex, SamplerState sampler##tex
+#define UNITY_PASS_TEXCUBEARRAY(tex) tex, sampler##tex
 #if defined(SHADER_API_PSSL)
     // round the layer index to get DX11-like behaviour (otherwise fractional indices result in mixed up cubemap faces)
     #define UNITY_SAMPLE_TEXCUBEARRAY(tex,coord) tex.Sample (sampler##tex,float4((coord).xyz, round((coord).w)))
@@ -434,10 +434,10 @@
     #define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,float4((coord).xyz, round((coord).w)))
     #define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex.SampleLevel (sampler##samplertex,float4((coord).xyz, round((coord).w)), lod)
 #else
-    #define UNITY_SAMPLE_TEXCUBEARRAY(tex,coord) tex.Sample (sampler##tex,coord)
-    #define UNITY_SAMPLE_TEXCUBEARRAY_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
-    #define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
-    #define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex.SampleLevel (sampler##samplertex,coord,lod)
+#define UNITY_SAMPLE_TEXCUBEARRAY(tex,coord) tex.Sample (sampler##tex,coord)
+#define UNITY_SAMPLE_TEXCUBEARRAY_LOD(tex,coord,lod) tex.SampleLevel (sampler##tex,coord, lod)
+#define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER(tex,samplertex,coord) tex.Sample (sampler##samplertex,coord)
+#define UNITY_SAMPLE_TEXCUBEARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex.SampleLevel (sampler##samplertex,coord,lod)
 #endif
 
 
@@ -477,7 +477,7 @@
     #define UNITY_SAMPLE_TEX3D_SAMPLER_LOD(tex,samplertex,coord,lod) tex3D (tex,float4(coord,lod))
 
     // 2D array syntax for surface shader analysis
-    #if defined(SHADER_TARGET_SURFACE_ANALYSIS)
+#if defined(SHADER_TARGET_SURFACE_ANALYSIS)
         #define UNITY_DECLARE_TEX2DARRAY(tex) sampler2DArray tex
         #define UNITY_DECLARE_TEX2DARRAY_NOSAMPLER(tex) sampler2DArray tex
         #define UNITY_ARGS_TEX2DARRAY(tex) sampler2DArray tex
@@ -486,14 +486,14 @@
         #define UNITY_SAMPLE_TEX2DARRAY_LOD(tex,coord,lod) tex2DArraylod (tex, float4(coord,lod))
         #define UNITY_SAMPLE_TEX2DARRAY_SAMPLER(tex,samplertex,coord) tex2DArray (tex,coord)
         #define UNITY_SAMPLE_TEX2DARRAY_SAMPLER_LOD(tex,samplertex,coord,lod) tex2DArraylod (tex, float4(coord,lod))
-    #endif
+#endif
 
-    // surface shader analysis; just pretend that 2D arrays are cubemaps
-    #if defined(SHADER_TARGET_SURFACE_ANALYSIS)
+// surface shader analysis; just pretend that 2D arrays are cubemaps
+#if defined(SHADER_TARGET_SURFACE_ANALYSIS)
         #define sampler2DArray samplerCUBE
         #define tex2DArray texCUBE
         #define tex2DArraylod texCUBElod
-    #endif
+#endif
 
 #endif
 
@@ -522,7 +522,6 @@
 
 // Data type to be used for "screen space position" pixel shader input semantic; just a float4 now (used to be float2 when on D3D9)
 #define UNITY_VPOS_TYPE float4
-
 
 
 #if defined(UNITY_COMPILER_HLSL)
@@ -609,11 +608,11 @@
 
 // HLSL attributes
 #if defined(UNITY_COMPILER_HLSL)
-    #define UNITY_BRANCH    [branch]
-    #define UNITY_FLATTEN   [flatten]
-    #define UNITY_UNROLL    [unroll]
-    #define UNITY_LOOP      [loop]
-    #define UNITY_FASTOPT   [fastopt]
+#define UNITY_BRANCH    [branch]
+#define UNITY_FLATTEN   [flatten]
+#define UNITY_UNROLL    [unroll]
+#define UNITY_LOOP      [loop]
+#define UNITY_FASTOPT   [fastopt]
 #else
     #define UNITY_BRANCH
     #define UNITY_FLATTEN
@@ -639,8 +638,8 @@
     // Sampler / image declaration with set/binding decoration
     #define DECL_WITH_BINDING(Type, Name, Set, Binding) Type Name##hlslcc_set_##Set##_bind_##Binding
 #else
-    #define CBUFFER_START_WITH_BINDING(Name, Set, Binding) CBUFFER_START(Name)
-    #define DECL_WITH_BINDING(Type, Name, Set, Binding) Type Name
+#define CBUFFER_START_WITH_BINDING(Name, Set, Binding) CBUFFER_START(Name)
+#define DECL_WITH_BINDING(Type, Name, Set, Binding) Type Name
 #endif
 
 // TODO: Really need a better define for iOS Metal than the framebuffer fetch one, that's also enabled on android and webgl (???)
@@ -742,12 +741,12 @@
     #define UNITY_DECLARE_SCREENSPACE_TEXTURE UNITY_DECLARE_TEX2DARRAY
     #define UNITY_SAMPLE_SCREENSPACE_TEXTURE(tex, uv) UNITY_SAMPLE_TEX2DARRAY(tex, float3((uv).xy, (float)unity_StereoEyeIndex))
 #else
-    #define UNITY_DECLARE_DEPTH_TEXTURE_MS(tex)  Texture2DMS<float> tex;
-    #define UNITY_DECLARE_DEPTH_TEXTURE(tex) sampler2D_float tex
-    #define UNITY_DECLARE_SCREENSPACE_SHADOWMAP(tex) sampler2D tex
-    #define UNITY_SAMPLE_SCREEN_SHADOW(tex, uv) tex2Dproj( tex, UNITY_PROJ_COORD(uv) ).r
-    #define UNITY_DECLARE_SCREENSPACE_TEXTURE(tex) sampler2D_float tex;
-    #define UNITY_SAMPLE_SCREENSPACE_TEXTURE(tex, uv) tex2D(tex, uv)
+#define UNITY_DECLARE_DEPTH_TEXTURE_MS(tex)  Texture2DMS<float> tex;
+#define UNITY_DECLARE_DEPTH_TEXTURE(tex) sampler2D_float tex
+#define UNITY_DECLARE_SCREENSPACE_SHADOWMAP(tex) sampler2D tex
+#define UNITY_SAMPLE_SCREEN_SHADOW(tex, uv) tex2Dproj( tex, UNITY_PROJ_COORD(uv) ).r
+#define UNITY_DECLARE_SCREENSPACE_TEXTURE(tex) sampler2D_float tex;
+#define UNITY_SAMPLE_SCREENSPACE_TEXTURE(tex, uv) tex2D(tex, uv)
 #endif
 
 #endif // HLSL_SUPPORT_INCLUDED

@@ -21,10 +21,10 @@
 
 CBUFFER_START(UnityPerDrawSprite)
 #ifndef UNITY_INSTANCING_ENABLED
-    fixed4 _RendererColor;
-    fixed2 _Flip;
+fixed4 _RendererColor;
+fixed2 _Flip;
 #endif
-    float _EnableExternalAlpha;
+float _EnableExternalAlpha;
 CBUFFER_END
 
 // Material Color.
@@ -32,16 +32,16 @@ fixed4 _Color;
 
 struct appdata_t
 {
-    float4 vertex   : POSITION;
-    float4 color    : COLOR;
+    float4 vertex : POSITION;
+    float4 color : COLOR;
     float2 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 struct v2f
 {
-    float4 vertex   : SV_POSITION;
-    fixed4 color    : COLOR;
+    float4 vertex : SV_POSITION;
+    fixed4 color : COLOR;
     float2 texcoord : TEXCOORD0;
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -55,7 +55,7 @@ v2f SpriteVert(appdata_t IN)
 {
     v2f OUT;
 
-    UNITY_SETUP_INSTANCE_ID (IN);
+    UNITY_SETUP_INSTANCE_ID(IN);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
 
     OUT.vertex = UnityFlipSprite(IN.vertex, _Flip);
@@ -73,21 +73,21 @@ v2f SpriteVert(appdata_t IN)
 sampler2D _MainTex;
 sampler2D _AlphaTex;
 
-fixed4 SampleSpriteTexture (float2 uv)
+fixed4 SampleSpriteTexture(float2 uv)
 {
-    fixed4 color = tex2D (_MainTex, uv);
+    fixed4 color = tex2D(_MainTex, uv);
 
-#if ETC1_EXTERNAL_ALPHA
+    #if ETC1_EXTERNAL_ALPHA
     fixed4 alpha = tex2D (_AlphaTex, uv);
     color.a = lerp (color.a, alpha.r, _EnableExternalAlpha);
-#endif
+    #endif
 
     return color;
 }
 
 fixed4 SpriteFrag(v2f IN) : SV_Target
 {
-    fixed4 c = SampleSpriteTexture (IN.texcoord) * IN.color;
+    fixed4 c = SampleSpriteTexture(IN.texcoord) * IN.color;
     c.rgb *= c.a;
     return c;
 }

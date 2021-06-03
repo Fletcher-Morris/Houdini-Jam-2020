@@ -14,7 +14,7 @@
 #endif
 
 #if SHADER_TARGET >= 35 && (defined(SHADER_API_D3D11) || defined(SHADER_API_GLES3) || defined(SHADER_API_GLCORE) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_PSSL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_METAL))
-    #define UNITY_SUPPORT_INSTANCING
+#define UNITY_SUPPORT_INSTANCING
 #endif
 
 #if defined(SHADER_API_SWITCH)
@@ -24,23 +24,23 @@
 #ifdef SHADER_TARGET_SURFACE_ANALYSIS
     // Treat instancing as not supported for surface shader analysis step -- it does not affect what is being read/written by the shader anyway.
     #undef UNITY_SUPPORT_INSTANCING
-    #ifdef UNITY_MAX_INSTANCE_COUNT
+#ifdef UNITY_MAX_INSTANCE_COUNT
         #undef UNITY_MAX_INSTANCE_COUNT
-    #endif
-    #ifdef UNITY_FORCE_MAX_INSTANCE_COUNT
+#endif
+#ifdef UNITY_FORCE_MAX_INSTANCE_COUNT
         #undef UNITY_FORCE_MAX_INSTANCE_COUNT
-    #endif
+#endif
     // in analysis pass we force array size to be 1
     #define UNITY_FORCE_MAX_INSTANCE_COUNT 1
 #endif
 
 #if defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_VULKAN)
-    #define UNITY_SUPPORT_STEREO_INSTANCING
+#define UNITY_SUPPORT_STEREO_INSTANCING
 #endif
 
 // These platforms support dynamically adjusting the instancing CB size according to the current batch.
 #if defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_METAL) || defined(SHADER_API_PSSL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_SWITCH)
-    #define UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE
+#define UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE
 #endif
 
 #if defined(SHADER_TARGET_SURFACE_ANALYSIS) && defined(UNITY_SUPPORT_INSTANCING)
@@ -67,8 +67,8 @@
     #define UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(name)  cbuffer name {
     #define UNITY_INSTANCING_CBUFFER_SCOPE_END          }
 #else
-    #define UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(name)  CBUFFER_START(name)
-    #define UNITY_INSTANCING_CBUFFER_SCOPE_END          CBUFFER_END
+#define UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(name)  CBUFFER_START(name)
+#define UNITY_INSTANCING_CBUFFER_SCOPE_END          CBUFFER_END
 #endif
 
 ////////////////////////////////////////////////////////
@@ -81,25 +81,25 @@
     static uint unity_InstanceID;
 
     // Don't make UnityDrawCallInfo an actual CB on GL
-    #if !defined(SHADER_API_GLES3) && !defined(SHADER_API_GLCORE)
+#if !defined(SHADER_API_GLES3) && !defined(SHADER_API_GLCORE)
         UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(UnityDrawCallInfo)
-    #endif
+#endif
             int unity_BaseInstanceID;
             int unity_InstanceCount;
-    #if !defined(SHADER_API_GLES3) && !defined(SHADER_API_GLCORE)
+#if !defined(SHADER_API_GLES3) && !defined(SHADER_API_GLCORE)
         UNITY_INSTANCING_CBUFFER_SCOPE_END
-    #endif
+#endif
 
-    #ifdef SHADER_API_PSSL
+#ifdef SHADER_API_PSSL
         #define DEFAULT_UNITY_VERTEX_INPUT_INSTANCE_ID uint instanceID;
         #define UNITY_GET_INSTANCE_ID(input)    _GETINSTANCEID(input)
-    #else
+#else
         #define DEFAULT_UNITY_VERTEX_INPUT_INSTANCE_ID uint instanceID : SV_InstanceID;
         #define UNITY_GET_INSTANCE_ID(input)    input.instanceID
-    #endif
+#endif
 
 #else
-    #define DEFAULT_UNITY_VERTEX_INPUT_INSTANCE_ID
+#define DEFAULT_UNITY_VERTEX_INPUT_INSTANCE_ID
 #endif // UNITY_INSTANCING_ENABLED || UNITY_PROCEDURAL_INSTANCING_ENABLED || UNITY_STEREO_INSTANCING_ENABLED
 
 #if !defined(UNITY_VERTEX_INPUT_INSTANCE_ID)
@@ -129,18 +129,18 @@
     // HACK: Workaround for Mali shader compiler issues with directly using GL_ViewID_OVR (GL_OVR_multiview). This array just contains the values 0 and 1.
     #define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output) output.stereoTargetEyeIndex = unity_StereoEyeIndices[unity_StereoEyeIndex].x;
     #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output) output.stereoTargetEyeIndex = input.stereoTargetEyeIndex;
-    #if defined(SHADER_STAGE_VERTEX)
+#if defined(SHADER_STAGE_VERTEX)
         #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)
-    #else
-        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input) unity_StereoEyeIndex.x = input.stereoTargetEyeIndex;
-    #endif
 #else
-    #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO
-    #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO_EYE_INDEX
-    #define DEFAULT_UNITY_INITIALIZE_OUTPUT_STEREO_EYE_INDEX(output)
-    #define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output)
-    #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output)
-    #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)
+        #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input) unity_StereoEyeIndex.x = input.stereoTargetEyeIndex;
+#endif
+#else
+#define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO
+#define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO_EYE_INDEX
+#define DEFAULT_UNITY_INITIALIZE_OUTPUT_STEREO_EYE_INDEX(output)
+#define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output)
+#define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output)
+#define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input)
 #endif
 
 #if !defined(UNITY_VERTEX_OUTPUT_STEREO_EYE_INDEX)
@@ -171,8 +171,8 @@
 #if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
     void UnitySetupInstanceID(uint inputInstanceID)
     {
-        #ifdef UNITY_STEREO_INSTANCING_ENABLED
-            #if defined(SHADER_API_GLES3)
+#ifdef UNITY_STEREO_INSTANCING_ENABLED
+#if defined(SHADER_API_GLES3)
                 // We must calculate the stereo eye index differently for GLES3
                 // because otherwise,  the unity shader compiler will emit a bitfieldInsert function.
                 // bitfieldInsert requires support for glsl version 400 or later.  Therefore the
@@ -182,30 +182,30 @@
                 // can run stereo instancing on.
                 unity_StereoEyeIndex = round(fmod(inputInstanceID, 2.0));
                 unity_InstanceID = unity_BaseInstanceID + (inputInstanceID >> 1);
-            #else
+#else
                 // stereo eye index is automatically figured out from the instance ID
                 unity_StereoEyeIndex = inputInstanceID & 0x01;
                 unity_InstanceID = unity_BaseInstanceID + (inputInstanceID >> 1);
-            #endif
-        #else
+#endif
+#else
             unity_InstanceID = inputInstanceID + unity_BaseInstanceID;
-        #endif
+#endif
     }
     void UnitySetupCompoundMatrices();
-    #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
-        #ifndef UNITY_INSTANCING_PROCEDURAL_FUNC
+#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
+#ifndef UNITY_INSTANCING_PROCEDURAL_FUNC
             #error "UNITY_INSTANCING_PROCEDURAL_FUNC must be defined."
-        #else
+#else
             void UNITY_INSTANCING_PROCEDURAL_FUNC(); // forward declaration of the procedural function
             #define DEFAULT_UNITY_SETUP_INSTANCE_ID(input)      { UnitySetupInstanceID(UNITY_GET_INSTANCE_ID(input)); UNITY_INSTANCING_PROCEDURAL_FUNC(); UnitySetupCompoundMatrices(); }
-        #endif
-    #else
+#endif
+#else
         #define DEFAULT_UNITY_SETUP_INSTANCE_ID(input)          { UnitySetupInstanceID(UNITY_GET_INSTANCE_ID(input)); UnitySetupCompoundMatrices(); }
-    #endif
+#endif
     #define UNITY_TRANSFER_INSTANCE_ID(input, output)   output.instanceID = UNITY_GET_INSTANCE_ID(input)
 #else
-    #define DEFAULT_UNITY_SETUP_INSTANCE_ID(input)
-    #define UNITY_TRANSFER_INSTANCE_ID(input, output)
+#define DEFAULT_UNITY_SETUP_INSTANCE_ID(input)
+#define UNITY_TRANSFER_INSTANCE_ID(input, output)
 #endif
 
 #if !defined(UNITY_SETUP_INSTANCE_ID)
@@ -216,19 +216,19 @@
 // instanced property arrays
 #if defined(UNITY_INSTANCING_ENABLED)
 
-    #ifdef UNITY_FORCE_MAX_INSTANCE_COUNT
+#ifdef UNITY_FORCE_MAX_INSTANCE_COUNT
         #define UNITY_INSTANCED_ARRAY_SIZE  UNITY_FORCE_MAX_INSTANCE_COUNT
-    #elif defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
+#elif defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
         #define UNITY_INSTANCED_ARRAY_SIZE  2 // minimum array size that ensures dynamic indexing
-    #elif defined(UNITY_MAX_INSTANCE_COUNT)
+#elif defined(UNITY_MAX_INSTANCE_COUNT)
         #define UNITY_INSTANCED_ARRAY_SIZE  UNITY_MAX_INSTANCE_COUNT
-    #else
-        #if defined(SHADER_API_VULKAN) && defined(SHADER_API_MOBILE)
+#else
+#if defined(SHADER_API_VULKAN) && defined(SHADER_API_MOBILE)
             #define UNITY_INSTANCED_ARRAY_SIZE  250
-        #else
+#else
             #define UNITY_INSTANCED_ARRAY_SIZE  500
-        #endif
-    #endif
+#endif
+#endif
 
     #define UNITY_INSTANCING_BUFFER_START(buf)      UNITY_INSTANCING_CBUFFER_SCOPE_BEGIN(UnityInstancing_##buf) struct {
     #define UNITY_INSTANCING_BUFFER_END(arr)        } arr##Array[UNITY_INSTANCED_ARRAY_SIZE]; UNITY_INSTANCING_CBUFFER_SCOPE_END
@@ -237,82 +237,82 @@
     #define UNITY_ACCESS_MERGED_INSTANCED_PROP(arr, var)   arr[unity_InstanceID].var
 
     // Put worldToObject array to a separate CB if UNITY_ASSUME_UNIFORM_SCALING is defined. Most of the time it will not be used.
-    #ifdef UNITY_ASSUME_UNIFORM_SCALING
+#ifdef UNITY_ASSUME_UNIFORM_SCALING
         #define UNITY_WORLDTOOBJECTARRAY_CB 1
-    #else
+#else
         #define UNITY_WORLDTOOBJECTARRAY_CB 0
-    #endif
+#endif
 
-    #if defined(UNITY_INSTANCED_LOD_FADE) && (defined(LOD_FADE_PERCENTAGE) || defined(LOD_FADE_CROSSFADE))
+#if defined(UNITY_INSTANCED_LOD_FADE) && (defined(LOD_FADE_PERCENTAGE) || defined(LOD_FADE_CROSSFADE))
         #define UNITY_USE_LODFADE_ARRAY
-    #endif
+#endif
 
-    #if defined(UNITY_INSTANCED_RENDERING_LAYER)
+#if defined(UNITY_INSTANCED_RENDERING_LAYER)
         #define UNITY_USE_RENDERINGLAYER_ARRAY
-    #endif
+#endif
 
 
-    #ifdef UNITY_INSTANCED_LIGHTMAPSTS
-        #ifdef LIGHTMAP_ON
+#ifdef UNITY_INSTANCED_LIGHTMAPSTS
+#ifdef LIGHTMAP_ON
             #define UNITY_USE_LIGHTMAPST_ARRAY
-        #endif
-        #ifdef DYNAMICLIGHTMAP_ON
+#endif
+#ifdef DYNAMICLIGHTMAP_ON
             #define UNITY_USE_DYNAMICLIGHTMAPST_ARRAY
-        #endif
-    #endif
+#endif
+#endif
 
-    #if defined(UNITY_INSTANCED_SH) && !defined(LIGHTMAP_ON)
-        #if UNITY_SHOULD_SAMPLE_SH
+#if defined(UNITY_INSTANCED_SH) && !defined(LIGHTMAP_ON)
+#if UNITY_SHOULD_SAMPLE_SH
             #define UNITY_USE_SHCOEFFS_ARRAYS
-        #endif
-        #if defined(UNITY_PASS_DEFERRED) && defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
+#endif
+#if defined(UNITY_PASS_DEFERRED) && defined(SHADOWS_SHADOWMASK) && (UNITY_ALLOWED_MRT_COUNT > 4)
             #define UNITY_USE_PROBESOCCLUSION_ARRAY
-        #endif
-    #endif
+#endif
+#endif
 
     UNITY_INSTANCING_BUFFER_START(PerDraw0)
-        #ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
+#ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
             UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_ObjectToWorldArray)
-            #if UNITY_WORLDTOOBJECTARRAY_CB == 0
+#if UNITY_WORLDTOOBJECTARRAY_CB == 0
                 UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_WorldToObjectArray)
-            #endif
-        #endif
-        #if defined(UNITY_USE_LODFADE_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
+#endif
+#endif
+#if defined(UNITY_USE_LODFADE_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
             UNITY_DEFINE_INSTANCED_PROP(float2, unity_LODFadeArray)
             // the quantized fade value (unity_LODFade.y) is automatically used for cross-fading instances
             #define unity_LODFade UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_LODFadeArray).xyxx
-        #endif
-        #if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
+#endif
+#if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
             UNITY_DEFINE_INSTANCED_PROP(float, unity_RenderingLayerArray)
             #define unity_RenderingLayer UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_RenderingLayerArray).xxxx
-        #endif
+#endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins0)
 
     UNITY_INSTANCING_BUFFER_START(PerDraw1)
-        #if !defined(UNITY_DONT_INSTANCE_OBJECT_MATRICES) && UNITY_WORLDTOOBJECTARRAY_CB == 1
+#if !defined(UNITY_DONT_INSTANCE_OBJECT_MATRICES) && UNITY_WORLDTOOBJECTARRAY_CB == 1
             UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_WorldToObjectArray)
-        #endif
-        #if defined(UNITY_USE_LODFADE_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
+#endif
+#if defined(UNITY_USE_LODFADE_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
             UNITY_DEFINE_INSTANCED_PROP(float2, unity_LODFadeArray)
             // the quantized fade value (unity_LODFade.y) is automatically used for cross-fading instances
             #define unity_LODFade UNITY_ACCESS_INSTANCED_PROP(unity_Builtins1, unity_LODFadeArray).xyxx
-        #endif
-        #if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
+#endif
+#if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
             UNITY_DEFINE_INSTANCED_PROP(float, unity_RenderingLayerArray)
             #define unity_RenderingLayer UNITY_ACCESS_INSTANCED_PROP(unity_Builtins1, unity_RenderingLayerArray).xxxx
-        #endif
+#endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins1)
 
     UNITY_INSTANCING_BUFFER_START(PerDraw2)
-        #ifdef UNITY_USE_LIGHTMAPST_ARRAY
+#ifdef UNITY_USE_LIGHTMAPST_ARRAY
             UNITY_DEFINE_INSTANCED_PROP(float4, unity_LightmapSTArray)
             #define unity_LightmapST UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_LightmapSTArray)
-        #endif
-        #ifdef UNITY_USE_DYNAMICLIGHTMAPST_ARRAY
+#endif
+#ifdef UNITY_USE_DYNAMICLIGHTMAPST_ARRAY
             UNITY_DEFINE_INSTANCED_PROP(float4, unity_DynamicLightmapSTArray)
             #define unity_DynamicLightmapST UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_DynamicLightmapSTArray)
-        #endif
-        #ifdef UNITY_USE_SHCOEFFS_ARRAYS
+#endif
+#ifdef UNITY_USE_SHCOEFFS_ARRAYS
             UNITY_DEFINE_INSTANCED_PROP(half4, unity_SHArArray)
             UNITY_DEFINE_INSTANCED_PROP(half4, unity_SHAgArray)
             UNITY_DEFINE_INSTANCED_PROP(half4, unity_SHAbArray)
@@ -327,14 +327,14 @@
             #define unity_SHBg UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_SHBgArray)
             #define unity_SHBb UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_SHBbArray)
             #define unity_SHC  UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_SHCArray)
-        #endif
-        #ifdef UNITY_USE_PROBESOCCLUSION_ARRAY
+#endif
+#ifdef UNITY_USE_PROBESOCCLUSION_ARRAY
             UNITY_DEFINE_INSTANCED_PROP(half4, unity_ProbesOcclusionArray)
             #define unity_ProbesOcclusion UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_ProbesOcclusionArray)
-        #endif
+#endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins2)
 
-    #ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
+#ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
         #define unity_ObjectToWorld     UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_ObjectToWorldArray)
         #define MERGE_UNITY_BUILTINS_INDEX(X) unity_Builtins##X##Array
         #define CALL_MERGE(X) MERGE_UNITY_BUILTINS_INDEX(X)
@@ -349,30 +349,30 @@
             return UnityObjectToClipPosInstanced(pos.xyz);
         }
         #define UnityObjectToClipPos UnityObjectToClipPosInstanced
-    #endif
+#endif
 
 #else // UNITY_INSTANCING_ENABLED
 
-    // in procedural mode we don't need cbuffer, and properties are not uniforms
-    #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
+// in procedural mode we don't need cbuffer, and properties are not uniforms
+#ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
         #define UNITY_INSTANCING_BUFFER_START(buf)
         #define UNITY_INSTANCING_BUFFER_END(arr)
         #define UNITY_DEFINE_INSTANCED_PROP(type, var)      static type var;
-    #else
-        #define UNITY_INSTANCING_BUFFER_START(buf)          CBUFFER_START(buf)
-        #define UNITY_INSTANCING_BUFFER_END(arr)            CBUFFER_END
-        #define UNITY_DEFINE_INSTANCED_PROP(type, var)      type var;
-    #endif
+#else
+#define UNITY_INSTANCING_BUFFER_START(buf)          CBUFFER_START(buf)
+#define UNITY_INSTANCING_BUFFER_END(arr)            CBUFFER_END
+#define UNITY_DEFINE_INSTANCED_PROP(type, var)      type var;
+#endif
 
-    #define UNITY_ACCESS_INSTANCED_PROP(arr, var)           var
+#define UNITY_ACCESS_INSTANCED_PROP(arr, var)           var
 
 #endif // UNITY_INSTANCING_ENABLED
 
 #if defined(UNITY_INSTANCING_ENABLED) || defined(UNITY_PROCEDURAL_INSTANCING_ENABLED) || defined(UNITY_STEREO_INSTANCING_ENABLED)
 
-    #ifdef UNITY_DONT_INSTANCE_OBJECT_MATRICES
+#ifdef UNITY_DONT_INSTANCE_OBJECT_MATRICES
         void UnitySetupCompoundMatrices() {}
-    #else
+#else
         // The following matrix evaluations depend on the static var unity_InstanceID & unity_StereoEyeIndex. They need to be initialized after UnitySetupInstanceID.
         static float4x4 unity_MatrixMVP_Instanced;
         static float4x4 unity_MatrixMV_Instanced;
@@ -393,7 +393,7 @@
         #define UNITY_MATRIX_MV     unity_MatrixMV_Instanced
         #define UNITY_MATRIX_T_MV   unity_MatrixTMV_Instanced
         #define UNITY_MATRIX_IT_MV  unity_MatrixITMV_Instanced
-    #endif // UNITY_DONT_INSTANCE_OBJECT_MATRICES
+#endif // UNITY_DONT_INSTANCE_OBJECT_MATRICES
 #endif // UNITY_INSTANCING_ENABLED || UNITY_PROCEDURAL_INSTANCING_ENABLED || UNITY_STEREO_INSTANCING_ENABLED
 
 #endif // UNITY_INSTANCING_INCLUDED
