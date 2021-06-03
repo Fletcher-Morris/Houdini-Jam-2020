@@ -30,7 +30,7 @@ public class GrassComputeController : MonoBehaviour
 	private ComputeBuffer drawBuffer;
 	private bool initialized;
 	private Bounds localBounds;
-	private float m_grassFill = 1.0f;
+	[SerializeField] [Range(0,1)] private float m_grassFill = 1.0f;
 	private int m_grassKernelId;
 	private ComputeGrassSettingsData m_prevGrassSettings;
 	private ComputeBuffer sourceTriBuffer;
@@ -48,15 +48,15 @@ public class GrassComputeController : MonoBehaviour
 		argsBuffer.SetData(argsBufferReset);
 
 		if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-		if (m_cameraTransform != null)
-		{
-			m_compute.SetVector(m_worldSpaceCameraPosPropertyId,     m_cameraTransform.position);
-			m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
-		}
-		else
+		if (m_cameraTransform is null)
 		{
 			m_compute.SetVector(m_worldSpaceCameraPosPropertyId,     Vector4.zero);
 			m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, Vector4.one);
+		}
+		else
+		{
+			m_compute.SetVector(m_worldSpaceCameraPosPropertyId,     m_cameraTransform.position);
+			m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
 		}
 
 		var bounds = TransformBounds(localBounds);
@@ -65,13 +65,13 @@ public class GrassComputeController : MonoBehaviour
 
 		m_compute.Dispatch(m_grassKernelId, dispatchSize, 1, 1);
 		Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
-			null, null, ShadowCastingMode.Off, true, gameObject.layer);
+			null, null, ShadowCastingMode.On, true, gameObject.layer);
 	}
 
 	private void OnEnable()
 	{
-		Debug.Assert(m_compute != null, "The grass compute shader is null", gameObject);
-		Debug.Assert(material != null,  "The material is null",             gameObject);
+		Debug.Assert(m_compute is null, "The grass compute shader is null", gameObject);
+		Debug.Assert(material is null,  "The material is null",             gameObject);
 
 		DebugHardware();
 
