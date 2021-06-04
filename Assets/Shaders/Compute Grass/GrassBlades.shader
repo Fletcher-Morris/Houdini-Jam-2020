@@ -2,6 +2,7 @@ Shader "Grass/GrassBlades" {
     Properties {
         _BaseColor("Base color", Color) = (0, 0.5, 0, 1) // Color of the lowest layer
         _TipColor("Tip color", Color) = (0, 1, 0, 1) // Color of the highest layer
+        _AlphaTex("Alpha Texture", 2D) = "white" {}
     }
 
     SubShader {
@@ -13,6 +14,7 @@ Shader "Grass/GrassBlades" {
 
             Name "ForwardLit"
             Tags{"LightMode" = "UniversalForward"}
+            ZWrite True
             Cull Off // No culling since the grass must be double sided
 
             HLSLPROGRAM
@@ -33,7 +35,7 @@ Shader "Grass/GrassBlades" {
             #pragma fragment Fragment
 
             // Incude our logic file
-            #include "GrassBlades.hlsl"    
+            #include "GrassBlades.hlsl"
 
             ENDHLSL
         }

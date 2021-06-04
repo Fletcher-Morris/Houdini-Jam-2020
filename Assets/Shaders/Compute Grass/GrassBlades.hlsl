@@ -9,7 +9,8 @@
 struct DrawVertex
 {
     float3 positionWS; // The position in world space
-    float height; // The height of this vertex on the grass blade
+    half height; // The height of this vertex on the grass blade
+    half width;
 };
 
 // A triangle on the generated mesh
@@ -24,7 +25,7 @@ StructuredBuffer<DrawTriangle> _DrawTriangles;
 
 struct VertexOutput
 {
-    float uv : TEXCOORD0; // The height of this vertex on the grass blade
+    half2 uv : TEXCOORD0; // The height of this vertex on the grass blade
     float3 positionWS : TEXCOORD1; // Position in world space
     float3 normalWS : TEXCOORD2; // Normal vector in world space
 
@@ -34,8 +35,18 @@ struct VertexOutput
 // Properties
 float4 _BaseColor;
 float4 _TipColor;
+sampler2D _AlphaTex;
 
 // Vertex functions
+
+DrawTriangle GetDrawTriangle(uint _vertexId)
+{
+    return _DrawTriangles[_vertexId / 3];
+}
+DrawVertex GetDrawVertex(DrawTriangle _tri, uint _vertexId)
+{
+    return _tri.vertices[_vertexId % 3];
+}
 
 VertexOutput Vertex(uint vertexID: SV_VertexID)
 {
@@ -45,12 +56,13 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
     // Get the vertex from the buffer
     // Since the buffer is structured in triangles, we need to divide the vertexID by three
     // to get the triangle, and then modulo by 3 to get the vertex on the triangle
-    DrawTriangle tri = _DrawTriangles[vertexID / 3];
-    DrawVertex input = tri.vertices[vertexID % 3];
+    DrawTriangle tri = GetDrawTriangle(vertexID);
+    DrawVertex input = GetDrawVertex(tri, vertexID);
 
     output.positionWS = input.positionWS;
     output.normalWS = tri.lightingNormalWS;
-    output.uv = input.height;
+    output.uv.x = input.width;
+    output.uv.y = input.height;
     output.positionCS = TransformWorldToHClip(input.positionWS);
 
     return output;
@@ -58,7 +70,7 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
 
 // Fragment functions
 
-half3 Fragment(VertexOutput input) : SV_Target
+half4 Fragment(VertexOutput input) : SV_Target
 {
     // Gather some data for the lighting algorithm
     InputData lightingInput = (InputData)0;
@@ -67,14 +79,11 @@ half3 Fragment(VertexOutput input) : SV_Target
     lightingInput.viewDirectionWS = GetViewDirectionFromPosition(input.positionWS); // Calculate the view direction
     lightingInput.shadowCoord = CalculateShadowCoord(input.positionWS, input.positionCS);
 
-    // Lerp between the base and tip color based on the blade height
-    float colorLerp = input.uv;
-    float3 albedo = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv);
-    return albedo;
+    half clipVal = tex2D(_AlphaTex, input.uv).r;
+    clip(clipVal - 0.1);
 
-    // The URP simple lit algorithm
-    // The arguments are lighting input data, albedo color, specular color, smoothness, emission color, and alpha
-    return (UniversalFragmentBlinnPhong(lightingInput, 0, 1, 0, 0, 1) + 1.0f) * 0.5f * albedo;
+    half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
+    return half4(col, 0);
 }
 
 #endif
