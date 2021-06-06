@@ -19,10 +19,12 @@ public class GrassComputeController : MonoBehaviour
 	private static readonly int m_worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
 	private static readonly int m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
 	private static readonly int m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
+
 	[SerializeField] private Mesh sourceMesh;
 	[SerializeField] private ComputeShader m_compute;
 	[SerializeField] private Material material;
 	[SerializeField] private Transform m_cameraTransform;
+
 	public ComputeGrassSettings grassSettings;
 	private readonly int[] argsBufferReset = {0, 1, 0, 0};
 	private ComputeBuffer argsBuffer;
