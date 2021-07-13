@@ -71,20 +71,20 @@ out float3x3 tsToWs)
 
 float ObjectDistortion(float3 pos)
 {
-    float total = 0.1;
+    float total = 0;
     for (int i = 0; i < 32; i++)
     {
         float d = distance(pos, DistortionbObjects[i].xyz);
         total += step(d, DistortionbObjects[i].w);
     }
-    return clamp(1.0 - total, 0.1, 1.0);
+    return 1 - clamp(total, 0.0, 1.0);
 }
 
 DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
 {
 
     float bendAmount = max(_BendRandom, 1 - ObjectDistortion(anchorWS));
-    float bendRand = rand(float4(anchorWS.x + 0.52, anchorWS.y - 0.25, anchorWS.z + 0.76, 0.5));
+    float bendRand = rand(float4(anchorWS.x + 0.52, anchorWS.y - 0.25, anchorWS.z + 0.76, anchorWS.x + 172.362));
     float hBendVal = pow(uv.y * bendAmount, bendRand);
     float vBendVal = (1 - (bendRand * uv.y)) * bendAmount;
     
