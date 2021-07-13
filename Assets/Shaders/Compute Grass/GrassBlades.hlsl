@@ -52,12 +52,7 @@ DrawVertex GetDrawVertex(DrawTriangle _tri, uint _vertexId)
 
 VertexOutput Vertex(uint vertexID: SV_VertexID)
 {
-    // Initialize the output struct
     VertexOutput output = (VertexOutput)0;
-
-    // Get the vertex from the buffer
-    // Since the buffer is structured in triangles, we need to divide the vertexID by three
-    // to get the triangle, and then modulo by 3 to get the vertex on the triangle
     DrawTriangle tri = GetDrawTriangle(vertexID);
     DrawVertex input = GetDrawVertex(tri, vertexID);
 
@@ -74,11 +69,10 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
 
 half4 Fragment(VertexOutput input) : SV_Target
 {
-    // Gather some data for the lighting algorithm
     InputData lightingInput = (InputData)0;
     lightingInput.positionWS = input.positionWS;
-    lightingInput.normalWS = input.normalWS; // No need to normalize, triangles share a normal
-    lightingInput.viewDirectionWS = GetViewDirectionFromPosition(input.positionWS); // Calculate the view direction
+    lightingInput.normalWS = input.normalWS;
+    lightingInput.viewDirectionWS = GetViewDirectionFromPosition(input.positionWS);
     lightingInput.shadowCoord = CalculateShadowCoord(input.positionWS, input.positionCS);
 
     half clipVal = tex2D(_AlphaTex, input.uv).r;
@@ -87,6 +81,12 @@ half4 Fragment(VertexOutput input) : SV_Target
 	half colRdm = rand(input.normalWS, 0) * _ColorRdm;
 
     half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
+
+    float fres = Fresnel(lightingInput.normalWS, lightingInput.viewDirectionWS, 1.0);
+    half3 fresCol = col;
+    fresCol.r = fres;
+    fresCol.g = fres;
+    fresCol.b = fres;
 
 	//col -= colRdm;
 
