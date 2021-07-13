@@ -168,6 +168,7 @@ public class GrassComputeController : MonoBehaviour
 		m_compute.SetFloat("_GrassHeightCuttoff", grassSettings.SettingsData.grassHeightCuttoff);
 		m_compute.SetFloat("_GrassWidth",         grassSettings.SettingsData.grassWidth);
 		m_compute.SetFloat("_GrassWidthRandom",   grassSettings.SettingsData.grassWidthRandom);
+		m_compute.SetFloat("_BendRandom",   grassSettings.SettingsData.grassBendRandom);
 		m_compute.SetInt("_GrassSegments",  grassSettings.SettingsData.grassSegments);
 		m_compute.SetInt("_GrassPerVertex", Mathf.RoundToInt(grassSettings.SettingsData.grassPerVertex * m_grassFill));
 		m_compute.SetFloat("_RandomPosition",     grassSettings.SettingsData.randomPosition);

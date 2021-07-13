@@ -90,7 +90,7 @@ half4 Fragment(VertexOutput input) : SV_Target
 
 	//col -= colRdm;
 
-    return half4(col, 0);
+    return half4(UniversalFragmentBlinnPhong(lightingInput, col, 0.5, 0.25, 0, 1));
 }
 
 #endif

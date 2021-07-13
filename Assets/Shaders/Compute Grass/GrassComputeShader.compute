@@ -47,6 +47,7 @@ float _GrassHeightRandom;
 float _GrassHeightCuttoff;
 float _GrassWidth;
 float _GrassWidthRandom;
+float _BendRandom;
 int _GrassSegments;
 int _GrassPerVertex;
 float _RandomPosition;
@@ -68,9 +69,9 @@ out float3x3 tsToWs)
     GetTriangleNormalAndTSToWSMatrix(positionA_WS, positionB_WS, positionC_WS, normalWS, tsToWs);
 }
 
-DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
+DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth, float bend)
 {
-    float3 offsetTS = float3((uv.x - 0.5f) * bladeWidth, 0, bladeHeight);
+    float3 offsetTS = float3(((uv.x - 0.5f) * bladeWidth) + ((bend - 0.5) * _BendRandom), 0, bladeHeight);
     float3 offsetWS = mul(tsToWs, offsetTS);
     float3 positionWS = anchorWS + offsetWS;
     DrawVertex output = (DrawVertex)0;
@@ -144,11 +145,12 @@ void Main(uint3 id : SV_DispatchThreadID)
         DrawVertex vertices[3];
 
         float3 randomPosWS = positionWS;
-        randomPosWS.x += (_RandomPosition * rand(float4(grassBlade, positionWS.y, positionWS.z, 0))) - 0.5f;
-        randomPosWS.y += (_RandomPosition * rand(float4(positionWS.x, grassBlade, positionWS.z, 0))) - 0.5f;
-        randomPosWS.z += (_RandomPosition * rand(float4(positionWS.x, positionWS.y, grassBlade, 0))) - 0.5f;
+        randomPosWS.x += (_RandomPosition * (rand(float4(grassBlade, positionWS.y, positionWS.z, 0)) - 0.5));
+        randomPosWS.y += (_RandomPosition * (rand(float4(positionWS.x, grassBlade, positionWS.z, 0)) - 0.5));
+        randomPosWS.z += (_RandomPosition * (rand(float4(positionWS.x, positionWS.y, grassBlade, 0)) - 0.5));
 
         randomPosWS = normalize(randomPosWS) * altitude;
+        //randomPosWS = positionWS;
 
         float bladeHeight = ((rand(float4(randomPosWS.x, randomPosWS.y, randomPosWS.z, grassBlade)) - 0.5f) *
         _GrassHeightRandom) + _GrassHeight;
@@ -176,6 +178,8 @@ void Main(uint3 id : SV_DispatchThreadID)
 
             DrawTriangle tri = (DrawTriangle)0;
 
+            float bend = rand(float4(randomPosWS.x, randomPosWS.y, randomPosWS.z, randomPosWS.x));
+
 
             float segmentLength = 1.0f / bladeSegments;
             for (uint segment = 0; segment < bladeSegments - 1; segment++)
@@ -187,11 +191,11 @@ void Main(uint3 id : SV_DispatchThreadID)
 
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
-                lowerWidth * bladeWidth);
+                lowerWidth * bladeWidth, bend * lower);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, lower), lower * heightFactor,
-                lowerWidth * bladeWidth);
+                lowerWidth * bladeWidth, bend * lower);
                 vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
-                upperWidth * bladeWidth);
+                upperWidth * bladeWidth, bend * lower);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
@@ -199,11 +203,11 @@ void Main(uint3 id : SV_DispatchThreadID)
                 _DrawTriangles.Append(tri);
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, upper), upper * heightFactor,
-                upperWidth * bladeWidth);
+                upperWidth * bladeWidth, bend * lower);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
-                upperWidth * bladeWidth);
+                upperWidth * bladeWidth, bend * lower);
                 vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
-                lowerWidth * bladeWidth);
+                lowerWidth * bladeWidth, bend * lower);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
@@ -218,10 +222,10 @@ void Main(uint3 id : SV_DispatchThreadID)
                 float tipLower = 1.0 - segmentLength;
                 float tipWidth = BladeWidthAtPoint(tipLower);
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower), tipLower * heightFactor,
-                tipWidth * bladeWidth);
+                tipWidth * bladeWidth, bend);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower), tipLower * heightFactor,
-                tipWidth * bladeWidth);
-                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1), heightFactor, 0);
+                tipWidth * bladeWidth, bend);
+                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1), heightFactor, 0, bend);
 
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];

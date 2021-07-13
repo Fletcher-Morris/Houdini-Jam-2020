@@ -21,6 +21,7 @@ public struct ComputeGrassSettingsData
 	[Min(0)] public float grassHeightCuttoff;
 	[Min(0)] public float grassWidth;
 	[Min(0)] public float grassWidthRandom;
+	[Min(0)] public float grassBendRandom;
 	[Range(1, 4)] public int grassSegments;
 	[Range(1, 32)] public int grassPerVertex;
 	[Min(0)] public float randomPosition;
@@ -44,6 +45,7 @@ public struct ComputeGrassSettingsData
 			result += (grassWidth * 3589).RoundToInt();
 			result += (grassHeightRandom * 2954).RoundToInt();
 			result += (grassWidthRandom * 1232).RoundToInt();
+			result += (grassBendRandom * 2845).RoundToInt();
 			result += grassSegments * 242;
 			result += grassPerVertex * 2942;
 			result += (randomPosition * 846).RoundToInt();
