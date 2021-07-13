@@ -21,7 +21,7 @@ public struct ComputeGrassSettingsData
 	[Min(0)] public float grassHeightCuttoff;
 	[Min(0)] public float grassWidth;
 	[Min(0)] public float grassWidthRandom;
-	[Min(0)] public float grassBendRandom;
+	[Range(0, 1)] public float grassBendRandom;
 	[Range(1, 4)] public int grassSegments;
 	[Range(1, 32)] public int grassPerVertex;
 	[Min(0)] public float randomPosition;
