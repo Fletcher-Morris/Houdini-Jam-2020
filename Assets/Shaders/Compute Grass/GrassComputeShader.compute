@@ -69,12 +69,29 @@ out float3x3 tsToWs)
     GetTriangleNormalAndTSToWSMatrix(positionA_WS, positionB_WS, positionC_WS, normalWS, tsToWs);
 }
 
-DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth, float bend)
+float ObjectDistortion(float3 pos)
+{
+    float total = 0.1;
+    for (int i = 0; i < 32; i++)
+    {
+        float d = distance(pos, DistortionbObjects[i].xyz);
+        total += step(d, DistortionbObjects[i].w);
+    }
+    return clamp(1.0 - total, 0.1, 1.0);
+}
+
+DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
 {
     float3 offsetTS = float3(((uv.x - 0.5f) * bladeWidth), 0, bladeHeight);
 
-    float bendVal = pow(bend, rand(float4(anchorWS.x + 0.52, anchorWS.y - 0.25, anchorWS.z + 0.76, 0.5))) * _BendRandom;
-    offsetTS.y += bendVal;
+    float bendAmount = max(_BendRandom, 1 - ObjectDistortion(anchorWS));
+    float bendRand = rand(float4(anchorWS.x + 0.52, anchorWS.y - 0.25, anchorWS.z + 0.76, 0.5));
+    float hBendVal = pow(uv.y, bendRand) * bendAmount;
+    float vBendVal = (1 - (bendRand * uv.y)) * bendAmount;
+
+
+    offsetTS.y += hBendVal * bladeHeight;
+    offsetTS.x += vBendVal * bladeHeight;
 
     float3 offsetWS = mul(tsToWs, offsetTS);
     float3 positionWS = anchorWS + offsetWS;
@@ -90,16 +107,6 @@ float invLerp(float from, float to, float value)
     return (value - from) / (to - from);
 }
 
-float ObjectDistortion(float3 pos)
-{
-    float total = 0.1;
-    for (int i = 0; i < 32; i++)
-    {
-        float d = distance(pos, DistortionbObjects[i].xyz);
-        total += step(d, DistortionbObjects[i].w);
-    }
-    return clamp(1.0 - total, 0.1, 1.0);
-}
 
 float BladeWidthAtPoint(float bladePoint)
 {
@@ -166,7 +173,6 @@ void Main(uint3 id : SV_DispatchThreadID)
         float bladeCamDist = distance(_WorldSpaceCameraPos, randomPosWS);
         float tooCloseCamDist = clamp(pow(bladeCamDist / _MinCameraDistance, 6), 0.1, 1.0);
         float heightFactor = bladeHeight;
-        heightFactor *= ObjectDistortion(randomPosWS.xyz);
         heightFactor *= tooCloseCamDist;
         heightFactor *= step(_MinAltitude, bladeAltitude);
         heightFactor *= step(bladeAltitude, _MaxAltitude);
@@ -195,11 +201,11 @@ void Main(uint3 id : SV_DispatchThreadID)
 
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
-                lowerWidth * bladeWidth, bend * lower);
+                lowerWidth * bladeWidth);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, lower), lower * heightFactor,
-                lowerWidth * bladeWidth, bend * lower);
+                lowerWidth * bladeWidth);
                 vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
-                upperWidth * bladeWidth, bend * upper);
+                upperWidth * bladeWidth);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
@@ -207,11 +213,11 @@ void Main(uint3 id : SV_DispatchThreadID)
                 _DrawTriangles.Append(tri);
 
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, upper), upper * heightFactor,
-                upperWidth * bladeWidth, bend * upper);
+                upperWidth * bladeWidth);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, upper), upper * heightFactor,
-                upperWidth * bladeWidth, bend * upper);
+                upperWidth * bladeWidth);
                 vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0, lower), lower * heightFactor,
-                lowerWidth * bladeWidth, bend * lower);
+                lowerWidth * bladeWidth);
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
                 tri.vertices[1] = vertices[1];
@@ -226,10 +232,10 @@ void Main(uint3 id : SV_DispatchThreadID)
                 float tipLower = 1.0 - segmentLength;
                 float tipWidth = BladeWidthAtPoint(tipLower);
                 vertices[0] = SetupBladePoint(randomPosWS, tsToWs, float2(0, tipLower), tipLower * heightFactor,
-                tipWidth * bladeWidth, bend * tipLower);
+                tipWidth * bladeWidth);
                 vertices[1] = SetupBladePoint(randomPosWS, tsToWs, float2(1, tipLower), tipLower * heightFactor,
-                tipWidth * bladeWidth, bend * tipLower);
-                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1), heightFactor, 0, bend);
+                tipWidth * bladeWidth);
+                vertices[2] = SetupBladePoint(randomPosWS, tsToWs, float2(0.5, 1), heightFactor, 0);
 
                 tri.lightingNormalWS = normalWS;
                 tri.vertices[0] = vertices[0];
