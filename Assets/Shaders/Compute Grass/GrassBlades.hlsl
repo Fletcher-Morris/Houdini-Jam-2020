@@ -4,6 +4,7 @@
 // Include some helper functions
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "GrassGraphicFunctions.hlsl"
+#include "GrassComputeFunctions.hlsl"
 
 // This describes a vertex on the generated mesh
 struct DrawVertex
@@ -35,6 +36,7 @@ struct VertexOutput
 // Properties
 float4 _BaseColor;
 float4 _TipColor;
+half _ColorRdm;
 sampler2D _AlphaTex;
 
 // Vertex functions
@@ -82,7 +84,12 @@ half4 Fragment(VertexOutput input) : SV_Target
     half clipVal = tex2D(_AlphaTex, input.uv).r;
     clip(clipVal - 0.1);
 
+	half colRdm = rand(input.normalWS, 0) * _ColorRdm;
+
     half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
+
+	//col -= colRdm;
+
     return half4(col, 0);
 }
 

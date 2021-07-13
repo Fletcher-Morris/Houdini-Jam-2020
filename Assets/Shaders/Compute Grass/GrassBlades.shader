@@ -1,7 +1,8 @@
 Shader "Grass/GrassBlades" {
     Properties {
         _BaseColor("Base color", Color) = (0, 0.5, 0, 1) // Color of the lowest layer
-        _TipColor("Tip color", Color) = (0, 1, 0, 1) // Color of the highest layer
+        _TipColor("Tip color", Color) = (0, 1, 0, 1)
+		_ColorRdm("Color Rdm", Range(0.0, 0.1)) = 0.05
         _AlphaTex("Alpha Texture", 2D) = "white" {}
     }
 
