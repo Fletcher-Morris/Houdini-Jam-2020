@@ -1,0 +1,3539 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b4c1862f5db84ef78091d2a478c940a, type: 3}
+  m_Name: Waypoint Manager
+  m_EditorClassIdentifier: 
+  m_storeKnownPaths: 1
+  m_knownPathsUsed: 447
+  m_newPathsCalculated: 195
+  mask:
+    serializedVersion: 2
+    m_Bits: 273
+  waypointQuantity: 2000
+  raydius: 100
+  waypointRange: 5
+  maxConnections: 10
+  _deleteAll: 0
+  updateAll: 0
+  updateConnections: 0
+  lineDebugOpacity: 0.01
+  showClusters: 1
+  clusterCount: 10
+  m_cullLines: 1
+  _waypoints:
+  - cluster: 0
+    id: 0
+    position: {x: 2.341387, y: 49.555466, z: 3.053921}
+  - cluster: 0
+    id: 1
+    position: {x: 4.1015086, y: 48.4155, z: -2.6090448}
+  - cluster: 0
+    id: 2
+    position: {x: -1.4048846, y: 49.166393, z: 5.226123}
+  - cluster: 0
+    id: 3
+    position: {x: 5.9115744, y: 49.442547, z: 2.1588929}
+  - cluster: 0
+    id: 4
+    position: {x: 2.219468, y: 49.57206, z: 7.076007}
+  - cluster: 0
+    id: 5
+    position: {x: 7.701572, y: 48.41332, z: -1.6931841}
+  - cluster: 0
+    id: 6
+    position: {x: -4.709494, y: 48.408493, z: 6.698795}
+  - cluster: 0
+    id: 7
+    position: {x: 6.8377705, y: 49.374725, z: 5.7628636}
+  - cluster: 0
+    id: 8
+    position: {x: -0.4494248, y: 49.186134, z: 9.719434}
+  - cluster: 0
+    id: 9
+    position: {x: 10.023599, y: 48.557625, z: 1.3486542}
+  - cluster: 0
+    id: 10
+    position: {x: 5.4479203, y: 49.096577, z: 9.50726}
+  - cluster: 0
+    id: 11
+    position: {x: -4.4475126, y: 48.55335, z: 10.627205}
+  - cluster: 0
+    id: 12
+    position: {x: 10.607396, y: 48.655846, z: 5.5749044}
+  - cluster: 0
+    id: 13
+    position: {x: 2.139458, y: 48.710003, z: 12.448679}
+  - cluster: 0
+    id: 14
+    position: {x: 12.52464, y: 46.944218, z: -1.0376729}
+  - cluster: 0
+    id: 15
+    position: {x: -8.759588, y: 47.45281, z: 9.4689045}
+  - cluster: 0
+    id: 16
+    position: {x: 9.111582, y: 48.444878, z: 10.044147}
+  - cluster: 0
+    id: 17
+    position: {x: -2.5191095, y: 48.24315, z: 13.847382}
+  - cluster: 0
+    id: 18
+    position: {x: 13.736525, y: 47.5687, z: 3.764591}
+  - cluster: 0
+    id: 19
+    position: {x: 5.63105, y: 48.07347, z: 13.8324995}
+  - cluster: 0
+    id: 20
+    position: {x: -7.7404323, y: 47.599743, z: 13.207923}
+  - cluster: 0
+    id: 21
+    position: {x: -3.1712892, y: 46.444668, z: -14.767571}
+  - cluster: 0
+    id: 22
+    position: {x: 12.789661, y: 47.71682, z: 9.085024}
+  - cluster: 0
+    id: 23
+    position: {x: 0.58921814, y: 47.641224, z: 16.154104}
+  - cluster: 0
+    id: 24
+    position: {x: -11.099915, y: 46.135754, z: -11.263402}
+  - cluster: 0
+    id: 25
+    position: {x: -12.523943, y: 46.46832, z: 10.348052}
+  - cluster: 0
+    id: 26
+    position: {x: 2.2587547, y: 46.30883, z: -16.190443}
+  - cluster: 0
+    id: 27
+    position: {x: 9.582318, y: 47.41159, z: 13.916296}
+  - cluster: 0
+    id: 28
+    position: {x: -5.3364863, y: 47.20521, z: 16.450142}
+  - cluster: 0
+    id: 29
+    position: {x: -7.109303, y: 46.344185, z: -15.586263}
+  - cluster: 0
+    id: 30
+    position: {x: 16.04792, y: 46.745693, z: 6.808236}
+  - cluster: 0
+    id: 31
+    position: {x: 8.148492, y: 45.74044, z: -15.322283}
+  - cluster: 0
+    id: 32
+    position: {x: 4.4934387, y: 46.94194, z: 17.390013}
+  - cluster: 0
+    id: 33
+    position: {x: -14.793201, y: 45.7274, z: -9.61412}
+  - cluster: 1
+    id: 34
+    position: {x: -11.259737, y: 46.59677, z: 14.393449}
+  - cluster: 0
+    id: 35
+    position: {x: -1.41924, y: 46.19854, z: -18.208694}
+  - cluster: 0
+    id: 36
+    position: {x: 13.607656, y: 46.732155, z: 12.712}
+  - cluster: 0
+    id: 37
+    position: {x: -1.8434579, y: 46.53675, z: 18.888268}
+  - cluster: 0
+    id: 38
+    position: {x: -11.352794, y: 45.99812, z: -15.110648}
+  - cluster: 0
+    id: 39
+    position: {x: 18.31357, y: 45.006393, z: 3.4239314}
+  - cluster: 1
+    id: 40
+    position: {x: -16.117008, y: 45.52467, z: 10.032885}
+  - cluster: 0
+    id: 41
+    position: {x: 5.1780047, y: 45.8224, z: -18.5388}
+  - cluster: 0
+    id: 42
+    position: {x: 8.854472, y: 46.276764, z: 17.463057}
+  - cluster: 0
+    id: 43
+    position: {x: -18.018412, y: 45.179554, z: -6.78019}
+  - cluster: 1
+    id: 44
+    position: {x: -8.630451, y: 46.160984, z: 17.983751}
+  - cluster: 0
+    id: 45
+    position: {x: -5.781071, y: 45.820656, z: -19.080723}
+  - cluster: 0
+    id: 46
+    position: {x: 17.30695, y: 45.92142, z: 10.256522}
+  - cluster: 1
+    id: 47
+    position: {x: -19.203169, y: 44.485256, z: 4.0258174}
+  - cluster: 0
+    id: 48
+    position: {x: 11.61595, y: 44.867035, z: -16.184626}
+  - cluster: 0
+    id: 49
+    position: {x: 2.4267042, y: 45.689358, z: 20.276716}
+  - cluster: 0
+    id: 50
+    position: {x: -15.516695, y: 45.48078, z: -13.338511}
+  - cluster: 1
+    id: 51
+    position: {x: -14.864236, y: 45.572666, z: 14.506078}
+  - cluster: 0
+    id: 52
+    position: {x: 1.1685896, y: 45.551674, z: -20.859737}
+  - cluster: 0
+    id: 53
+    position: {x: 13.349008, y: 45.676517, z: 16.31755}
+  - cluster: 0
+    id: 54
+    position: {x: -20.496223, y: 44.58879, z: -2.9615762}
+  - cluster: 1
+    id: 55
+    position: {x: -4.8956637, y: 45.468586, z: 20.811457}
+  - cluster: 0
+    id: 56
+    position: {x: -10.473991, y: 45.304108, z: -18.698387}
+  - cluster: 0
+    id: 57
+    position: {x: 20.137873, y: 44.554256, z: 6.6413302}
+  - cluster: 1
+    id: 58
+    position: {x: -19.488777, y: 44.640667, z: 8.774977}
+  - cluster: 0
+    id: 59
+    position: {x: 8.557928, y: 44.981068, z: -19.902126}
+  - cluster: 0
+    id: 60
+    position: {x: 7.1671147, y: 44.92938, z: 20.552858}
+  - cluster: 0
+    id: 61
+    position: {x: -19.256426, y: 44.874397, z: -10.36127}
+  - cluster: 1
+    id: 62
+    position: {x: -12.210262, y: 45.11912, z: 18.58918}
+  - cluster: 0
+    id: 63
+    position: {x: -3.5602813, y: 44.951107, z: -21.9979}
+  - cluster: 0
+    id: 64
+    position: {x: 17.602598, y: 45.00001, z: 13.908865}
+  - cluster: 1
+    id: 65
+    position: {x: -22.051317, y: 44.101807, z: 1.6107781}
+  - cluster: 0
+    id: 66
+    position: {x: 15.062822, y: 43.542416, z: -15.967564}
+  - cluster: 0
+    id: 67
+    position: {x: -0.3297182, y: 44.489845, z: 22.550222}
+  - cluster: 0
+    id: 68
+    position: {x: -15.151764, y: 44.72682, z: -17.033161}
+  - cluster: 1
+    id: 69
+    position: {x: -18.424122, y: 44.56403, z: 13.70242}
+  - cluster: 0
+    id: 70
+    position: {x: 4.3528934, y: 44.565716, z: -22.670769}
+  - cluster: 0
+    id: 71
+    position: {x: 12.141643, y: 44.466988, z: 19.717873}
+  - cluster: 0
+    id: 72
+    position: {x: -22.26944, y: 44.228046, z: -6.3370314}
+  - cluster: 1
+    id: 73
+    position: {x: -8.387204, y: 44.445004, z: 21.964071}
+  - cluster: 0
+    id: 74
+    position: {x: -8.675131, y: 44.334286, z: -21.919424}
+  - cluster: 0
+    id: 75
+    position: {x: 21.163668, y: 44.025627, z: 10.283561}
+  - cluster: 1
+    id: 76
+    position: {x: -22.562273, y: 43.822357, z: 6.716162}
+  - cluster: 0
+    id: 77
+    position: {x: 12.194535, y: 43.941998, z: -20.350616}
+  - cluster: 0
+    id: 78
+    position: {x: 4.716401, y: 43.3691, z: 23.055635}
+  - cluster: 0
+    id: 79
+    position: {x: -19.470358, y: 44.10187, z: -14.118287}
+  - cluster: 1
+    id: 80
+    position: {x: -15.915676, y: 44.08167, z: 18.333397}
+  - cluster: 2
+    id: 81
+    position: {x: -0.6485035, y: 43.879906, z: -24.276762}
+  - cluster: 0
+    id: 82
+    position: {x: 16.994795, y: 43.972134, z: 17.584862}
+  - cluster: 1
+    id: 83
+    position: {x: -24.308815, y: 43.57913, z: -1.480561}
+  - cluster: 1
+    id: 84
+    position: {x: -3.6279254, y: 43.49736, z: 24.27236}
+  - cluster: 0
+    id: 85
+    position: {x: -13.867353, y: 43.754517, z: -20.565928}
+  - cluster: 1
+    id: 86
+    position: {x: -21.803175, y: 43.5521, z: 12.073645}
+  - cluster: 2
+    id: 87
+    position: {x: 7.9514856, y: 43.514523, z: -23.720438}
+  - cluster: 0
+    id: 88
+    position: {x: 10.064482, y: 42.907295, z: 22.647497}
+  - cluster: 0
+    id: 89
+    position: {x: -23.117878, y: 43.459248, z: -10.07476}
+  - cluster: 1
+    id: 90
+    position: {x: -12.157717, y: 43.422863, z: 22.333044}
+  - cluster: 2
+    id: 91
+    position: {x: -6.109508, y: 43.145332, z: -24.633661}
+  - cluster: 0
+    id: 92
+    position: {x: 21.29159, y: 43.249756, z: 14.134663}
+  - cluster: 1
+    id: 93
+    position: {x: -25.223299, y: 43.015095, z: 3.9559906}
+  - cluster: 0
+    id: 94
+    position: {x: 15.88496, y: 42.71184, z: -19.902884}
+  - cluster: 1
+    id: 95
+    position: {x: 1.7104672, y: 42.01559, z: 25.102709}
+  - cluster: 0
+    id: 96
+    position: {x: -18.784584, y: 43.132107, z: -17.89441}
+  - cluster: 1
+    id: 97
+    position: {x: -19.600573, y: 43.047466, z: 17.264868}
+  - cluster: 2
+    id: 98
+    position: {x: 2.7808764, y: 42.711693, z: -25.880013}
+  - cluster: 0
+    id: 99
+    position: {x: 15.521378, y: 42.776394, z: 21.084116}
+  - cluster: 1
+    id: 100
+    position: {x: -25.80649, y: 42.791103, z: -5.085767}
+  - cluster: 1
+    id: 101
+    position: {x: -7.3500333, y: 42.587765, z: 25.358198}
+  - cluster: 0
+    id: 102
+    position: {x: -11.7808485, y: 42.6663, z: -23.80735}
+  - cluster: 0
+    id: 103
+    position: {x: 24.429026, y: 41.90482, z: 9.465429}
+  - cluster: 1
+    id: 104
+    position: {x: -24.87892, y: 42.53653, z: 9.706161}
+  - cluster: 2
+    id: 105
+    position: {x: 11.817086, y: 42.46219, z: -24.02054}
+  - cluster: 0
+    id: 106
+    position: {x: -23.10229, y: 42.492622, z: -13.997184}
+  - cluster: 1
+    id: 107
+    position: {x: -16.05763, y: 42.39456, z: 21.918837}
+  - cluster: 2
+    id: 108
+    position: {x: -2.930621, y: 41.72484, z: -26.690838}
+  - cluster: 0
+    id: 109
+    position: {x: 20.542902, y: 42.28169, z: 18.010483}
+  - cluster: 1
+    id: 110
+    position: {x: -27.329325, y: 42.13565, z: 0.5965019}
+  - cluster: 0
+    id: 111
+    position: {x: 19.363472, y: 41.14774, z: -18.531689}
+  - cluster: 1
+    id: 112
+    position: {x: -1.7677451, y: 41.162735, z: 26.861479}
+  - cluster: 0
+    id: 113
+    position: {x: -17.28933, y: 42.090137, z: -21.559752}
+  - cluster: 1
+    id: 114
+    position: {x: -23.122656, y: 42.00169, z: 15.427598}
+  - cluster: 2
+    id: 115
+    position: {x: 6.6030393, y: 41.67473, z: -26.890312}
+  - cluster: 0
+    id: 116
+    position: {x: 13.200844, y: 41.21714, z: 24.115881}
+  - cluster: 0
+    id: 117
+    position: {x: -26.519472, y: 41.838593, z: -9.034071}
+  - cluster: 1
+    id: 118
+    position: {x: -11.350398, y: 41.634674, z: 25.701542}
+  - cluster: 2
+    id: 119
+    position: {x: -8.966282, y: 41.35741, z: -26.543325}
+  - cluster: 0
+    id: 120
+    position: {x: 24.678413, y: 41.42949, z: 13.591152}
+  - cluster: 1
+    id: 121
+    position: {x: -27.545567, y: 41.524506, z: 6.689074}
+  - cluster: 2
+    id: 122
+    position: {x: 15.787478, y: 41.35282, z: -23.531088}
+  - cluster: 0
+    id: 123
+    position: {x: -22.285643, y: 41.459682, z: -17.965555}
+  - cluster: 1
+    id: 124
+    position: {x: -19.950981, y: 41.36928, z: 20.739708}
+  - cluster: 2
+    id: 125
+    position: {x: 0.68727016, y: 40.363968, z: -28.175291}
+  - cluster: 0
+    id: 126
+    position: {x: 18.966885, y: 41.172703, z: 21.74605}
+  - cluster: 1
+    id: 127
+    position: {x: -28.777908, y: 41.167995, z: -3.2344995}
+  - cluster: 1
+    id: 128
+    position: {x: -5.684768, y: 40.486473, z: 28.121336}
+  - cluster: 2
+    id: 129
+    position: {x: -15.046604, y: 40.99979, z: -24.97869}
+  - cluster: 1
+    id: 130
+    position: {x: -26.355082, y: 40.945507, z: 12.881731}
+  - cluster: 2
+    id: 131
+    position: {x: 10.710037, y: 40.714226, z: -27.245483}
+  - cluster: 0
+    id: 132
+    position: {x: -26.459728, y: 40.815083, z: -13.177946}
+  - cluster: 1
+    id: 133
+    position: {x: -15.483503, y: 40.638256, z: 25.277832}
+  - cluster: 2
+    id: 134
+    position: {x: -5.5371404, y: 39.62976, z: -28.477127}
+  - cluster: 0
+    id: 135
+    position: {x: 23.96119, y: 40.577038, z: 17.733185}
+  - cluster: 1
+    id: 136
+    position: {x: -29.700258, y: 40.506676, z: 3.1152508}
+  - cluster: 2
+    id: 137
+    position: {x: 19.668669, y: 40.105114, z: -22.215809}
+  - cluster: 0
+    id: 138
+    position: {x: -20.70629, y: 40.40059, z: -21.846952}
+  - cluster: 1
+    id: 139
+    position: {x: -23.700718, y: 40.336452, z: 18.817966}
+  - cluster: 2
+    id: 140
+    position: {x: 4.669288, y: 39.39089, z: -29.286186}
+  - cluster: 3
+    id: 141
+    position: {x: 16.56839, y: 39.804764, z: 25.09541}
+  - cluster: 1
+    id: 142
+    position: {x: -29.523623, y: 40.150505, z: -7.401768}
+  - cluster: 1
+    id: 143
+    position: {x: -9.900126, y: 39.65802, z: 28.606194}
+  - cluster: 2
+    id: 144
+    position: {x: -12.0953, y: 39.760006, z: -27.947445}
+  - cluster: 0
+    id: 145
+    position: {x: 27.694523, y: 39.47894, z: 12.391507}
+  - cluster: 1
+    id: 146
+    position: {x: -29.182268, y: 39.879322, z: 9.70018}
+  - cluster: 2
+    id: 147
+    position: {x: 14.952682, y: 39.710007, z: -26.84154}
+  - cluster: 0
+    id: 148
+    position: {x: -25.638681, y: 39.76473, z: -17.382534}
+  - cluster: 1
+    id: 149
+    position: {x: -19.62534, y: 39.636383, z: 24.104193}
+  - cluster: 3
+    id: 150
+    position: {x: 22.396976, y: 39.551414, z: 21.755484}
+  - cluster: 1
+    id: 151
+    position: {x: -31.251047, y: 39.47178, z: -0.9140708}
+  - cluster: 2
+    id: 152
+    position: {x: 23.155048, y: 38.50025, z: -19.998787}
+  - cluster: 2
+    id: 153
+    position: {x: -18.402224, y: 39.325394, z: -25.514091}
+  - cluster: 1
+    id: 154
+    position: {x: -27.16499, y: 39.270718, z: 16.184427}
+  - cluster: 2
+    id: 155
+    position: {x: 8.987374, y: 38.666065, z: -29.9147}
+  - cluster: 3
+    id: 156
+    position: {x: 13.377674, y: 37.966064, z: 27.709805}
+  - cluster: 0
+    id: 157
+    position: {x: -29.537956, y: 39.108833, z: -11.777016}
+  - cluster: 1
+    id: 158
+    position: {x: -14.277243, y: 38.756256, z: 28.321705}
+  - cluster: 2
+    id: 159
+    position: {x: -8.475613, y: 38.057716, z: -30.074114}
+  - cluster: 3
+    id: 160
+    position: {x: 27.189983, y: 38.829052, z: 16.837917}
+  - cluster: 1
+    id: 161
+    position: {x: -31.508438, y: 38.81026, z: 5.9670076}
+  - cluster: 2
+    id: 162
+    position: {x: 19.170958, y: 38.622543, z: -25.641085}
+  - cluster: 0
+    id: 163
+    position: {x: -24.068197, y: 38.701195, z: -21.51926}
+  - cluster: 1
+    id: 164
+    position: {x: -23.648985, y: 38.633125, z: 22.196003}
+  - cluster: 3
+    id: 165
+    position: {x: 20.034447, y: 38.373024, z: 25.487457}
+  - cluster: 1
+    id: 166
+    position: {x: -32.136097, y: 38.42822, z: -5.284726}
+  - cluster: 1
+    id: 167
+    position: {x: -7.8852277, y: 37.295433, z: 30.81327}
+  - cluster: 2
+    id: 168
+    position: {x: -15.4081545, y: 38.191612, z: -28.810818}
+  - cluster: 3
+    id: 169
+    position: {x: 30.2398, y: 37.352654, z: 10.631143}
+  - cluster: 1
+    id: 170
+    position: {x: -30.232136, y: 38.188026, z: 12.909148}
+  - cluster: 2
+    id: 171
+    position: {x: 13.502805, y: 37.875145, z: -29.787157}
+  - cluster: 0
+    id: 172
+    position: {x: -28.806833, y: 38.057083, z: -16.232336}
+  - cluster: 1
+    id: 173
+    position: {x: -18.690361, y: 37.827263, z: 27.279902}
+  - cluster: 3
+    id: 174
+    position: {x: 25.737358, y: 37.884773, z: 21.164894}
+  - cluster: 1
+    id: 175
+    position: {x: -33.247585, y: 37.738678, z: 1.777549}
+  - cluster: 2
+    id: 176
+    position: {x: 23.17039, y: 37.39053, z: -23.621677}
+  - cluster: 2
+    id: 177
+    position: {x: -21.775831, y: 37.631313, z: -25.462885}
+  - cluster: 1
+    id: 178
+    position: {x: -27.40023, y: 37.584236, z: 19.5599}
+  - cluster: 2
+    id: 179
+    position: {x: 6.7447934, y: 36.148586, z: -31.769142}
+  - cluster: 3
+    id: 180
+    position: {x: 16.87657, y: 36.89307, z: 28.643946}
+  - cluster: 1
+    id: 181
+    position: {x: -32.313194, y: 37.384346, z: -9.880265}
+  - cluster: 1
+    id: 182
+    position: {x: -12.459259, y: 36.550434, z: 30.810835}
+  - cluster: 2
+    id: 183
+    position: {x: -11.735575, y: 36.78702, z: -31.430273}
+  - cluster: 3
+    id: 184
+    position: {x: 30.161032, y: 37.01723, z: 15.389647}
+  - cluster: 1
+    id: 185
+    position: {x: -32.798603, y: 37.09193, z: 9.070778}
+  - cluster: 2
+    id: 186
+    position: {x: 18.03347, y: 36.932884, z: -28.80534}
+  - cluster: 0
+    id: 187
+    position: {x: -27.324171, y: 36.993412, z: -20.638142}
+  - cluster: 1
+    id: 188
+    position: {x: -23.007732, y: 36.871643, z: 25.481432}
+  - cluster: 3
+    id: 189
+    position: {x: 23.457846, y: 36.7896, z: 25.239323}
+  - cluster: 1
+    id: 190
+    position: {x: -34.334465, y: 36.6696, z: -2.7642207}
+  - cluster: 2
+    id: 191
+    position: {x: 26.680235, y: 35.884415, z: -20.762033}
+  - cluster: 2
+    id: 192
+    position: {x: -18.800089, y: 36.550663, z: -29.089668}
+  - cluster: 1
+    id: 193
+    position: {x: -30.747074, y: 36.487206, z: 16.25107}
+  - cluster: 2
+    id: 194
+    position: {x: 11.483366, y: 35.72468, z: -32.16107}
+  - cluster: 3
+    id: 195
+    position: {x: 13.054722, y: 35.07782, z: 30.991259}
+  - cluster: 4
+    id: 196
+    position: {x: -31.747528, y: 36.33515, z: -14.57878}
+  - cluster: 1
+    id: 197
+    position: {x: -17.148743, y: 35.81333, z: 30.088608}
+  - cluster: 3
+    id: 198
+    position: {x: 28.907999, y: 36.150494, z: 20.013971}
+  - cluster: 1
+    id: 199
+    position: {x: -34.754623, y: 35.963654, z: 4.7583685}
+  - cluster: 2
+    id: 200
+    position: {x: 22.423063, y: 35.87729, z: -26.997498}
+  - cluster: 2
+    id: 201
+    position: {x: -25.111633, y: 35.927273, z: -24.87367}
+  - cluster: 1
+    id: 202
+    position: {x: -27.094282, y: 35.88262, z: 22.94286}
+  - cluster: 3
+    id: 203
+    position: {x: 20.42281, y: 35.568794, z: 28.906517}
+  - cluster: 1
+    id: 204
+    position: {x: -34.74139, y: 35.62826, z: -7.5533166}
+  - cluster: 2
+    id: 205
+    position: {x: -15.168488, y: 35.385265, z: -32.219223}
+  - cluster: 3
+    id: 206
+    position: {x: 32.808662, y: 35.135857, z: 13.453929}
+  - cluster: 1
+    id: 207
+    position: {x: -33.596516, y: 35.370213, z: 12.357805}
+  - cluster: 2
+    id: 208
+    position: {x: 16.32393, y: 35.052925, z: -31.609793}
+  - cluster: 4
+    id: 209
+    position: {x: -30.425774, y: 35.27901, z: -19.255405}
+  - cluster: 1
+    id: 210
+    position: {x: -21.794027, y: 35.005577, z: 28.563402}
+  - cluster: 3
+    id: 211
+    position: {x: 26.782722, y: 35.117615, z: 24.421183}
+  - cluster: 1
+    id: 212
+    position: {x: -36.071564, y: 34.852325, z: 0.08364169}
+  - cluster: 2
+    id: 213
+    position: {x: 26.494305, y: 34.69363, z: -24.384176}
+  - cluster: 2
+    id: 214
+    position: {x: -22.204847, y: 34.863075, z: -28.82365}
+  - cluster: 1
+    id: 215
+    position: {x: -30.75234, y: 34.781017, z: 19.6624}
+  - cluster: 3
+    id: 216
+    position: {x: 16.673912, y: 34.12946, z: 31.923498}
+  - cluster: 4
+    id: 217
+    position: {x: -34.415527, y: 34.59502, z: -12.478176}
+  - cluster: 2
+    id: 218
+    position: {x: -10.898846, y: 33.880882, z: -34.46736}
+  - cluster: 3
+    id: 219
+    position: {x: 31.868456, y: 34.3809, z: 18.369915}
+  - cluster: 1
+    id: 220
+    position: {x: -35.799183, y: 34.183266, z: 7.957344}
+  - cluster: 2
+    id: 221
+    position: {x: 21.071484, y: 34.169796, z: -30.120092}
+  - cluster: 2
+    id: 222
+    position: {x: -28.35764, y: 34.218697, z: -23.78772}
+  - cluster: 1
+    id: 223
+    position: {x: -26.219273, y: 34.0888, z: 26.212822}
+  - cluster: 3
+    id: 224
+    position: {x: 23.882473, y: 33.992146, z: 28.484829}
+  - cluster: 1
+    id: 225
+    position: {x: -36.74628, y: 33.803066, z: -4.8575544}
+  - cluster: 2
+    id: 226
+    position: {x: 30.078232, y: 33.379955, z: -21.031176}
+  - cluster: 2
+    id: 227
+    position: {x: -18.642927, y: 33.782543, z: -32.360497}
+  - cluster: 3
+    id: 228
+    position: {x: 35.14538, y: 33.255333, z: 11.122758}
+  - cluster: 1
+    id: 229
+    position: {x: -33.92931, y: 33.662346, z: 15.771613}
+  - cluster: 2
+    id: 230
+    position: {x: 14.067375, y: 32.87618, z: -33.832962}
+  - cluster: 3
+    id: 231
+    position: {x: 12.336928, y: 32.40899, z: 34.052113}
+  - cluster: 4
+    id: 232
+    position: {x: -33.323536, y: 33.554882, z: -17.415606}
+  - cluster: 1
+    id: 233
+    position: {x: -19.926613, y: 32.82152, z: 31.148682}
+  - cluster: 3
+    id: 234
+    position: {x: 29.950642, y: 33.38465, z: 23.084791}
+  - cluster: 1
+    id: 235
+    position: {x: -37.270653, y: 32.934856, z: 3.1746385}
+  - cluster: 2
+    id: 236
+    position: {x: 25.572, y: 33.15011, z: -27.771194}
+  - cluster: 2
+    id: 237
+    position: {x: -25.56918, y: 33.154175, z: -28.055593}
+  - cluster: 1
+    id: 238
+    position: {x: -30.253563, y: 33.053474, z: 23.071854}
+  - cluster: 3
+    id: 239
+    position: {x: 20.290174, y: 32.7989, z: 32.07831}
+  - cluster: 4
+    id: 240
+    position: {x: -36.734997, y: 32.80521, z: -9.976267}
+  - cluster: 2
+    id: 241
+    position: {x: 33.06055, y: 31.977255, z: -17.06282}
+  - cluster: 2
+    id: 242
+    position: {x: -14.457735, y: 32.597645, z: -35.28127}
+  - cluster: 3
+    id: 243
+    position: {x: 34.60044, y: 32.612335, z: 16.299942}
+  - cluster: 1
+    id: 244
+    position: {x: -36.41639, y: 32.43004, z: 11.319815}
+  - cluster: 2
+    id: 245
+    position: {x: 19.171333, y: 32.285683, z: -32.88652}
+  - cluster: 4
+    id: 246
+    position: {x: -31.459408, y: 32.50183, z: -22.238064}
+  - cluster: 1
+    id: 247
+    position: {x: -24.787907, y: 32.179966, z: 29.258575}
+  - cluster: 3
+    id: 248
+    position: {x: 27.234901, y: 32.312912, z: 27.508995}
+  - cluster: 1
+    id: 249
+    position: {x: -38.16938, y: 31.814981, z: -1.8632134}
+  - cluster: 2
+    id: 250
+    position: {x: 29.676628, y: 32.025635, z: -24.635904}
+  - cluster: 2
+    id: 251
+    position: {x: -22.111362, y: 32.095192, z: -31.954258}
+  - cluster: 3
+    id: 252
+    position: {x: 37.22417, y: 31.448807, z: 8.474702}
+  - cluster: 1
+    id: 253
+    position: {x: -33.799496, y: 31.958696, z: 19.252703}
+  - cluster: 3
+    id: 254
+    position: {x: 16.042486, y: 31.434755, z: 34.957657}
+  - cluster: 4
+    id: 255
+    position: {x: -35.955643, y: 31.805656, z: -15.156334}
+  - cluster: 2
+    id: 256
+    position: {x: -9.7068815, y: 31.100916, z: -37.212402}
+  - cluster: 3
+    id: 257
+    position: {x: 32.94637, y: 31.645655, z: 21.304102}
+  - cluster: 1
+    id: 258
+    position: {x: -37.971832, y: 30.98121, z: 6.425399}
+  - cluster: 2
+    id: 259
+    position: {x: 24.07918, y: 31.44871, z: -30.92722}
+  - cluster: 2
+    id: 260
+    position: {x: -28.847933, y: 31.441175, z: -26.824982}
+  - cluster: 1
+    id: 261
+    position: {x: -29.248566, y: 31.281109, z: 26.39609}
+  - cluster: 3
+    id: 262
+    position: {x: 23.805056, y: 31.20547, z: 31.533184}
+  - cluster: 4
+    id: 263
+    position: {x: -38.549572, y: 30.880352, z: -7.11542}
+  - cluster: 2
+    id: 264
+    position: {x: 33.288567, y: 30.85231, z: -20.828773}
+  - cluster: 2
+    id: 265
+    position: {x: -18.027405, y: 31.012075, z: -35.346737}
+  - cluster: 3
+    id: 266
+    position: {x: 37.075832, y: 30.853317, z: 13.851359}
+  - cluster: 1
+    id: 267
+    position: {x: -36.6477, y: 30.733027, z: 14.811668}
+  - cluster: 2
+    id: 268
+    position: {x: 16.765501, y: 30.198423, z: -35.148018}
+  - cluster: 4
+    id: 269
+    position: {x: -34.367897, y: 30.775448, z: -20.25761}
+  - cluster: 1
+    id: 270
+    position: {x: -22.627817, y: 29.879747, z: 31.685467}
+  - cluster: 3
+    id: 271
+    position: {x: 30.45712, y: 30.599463, z: 26.056664}
+  - cluster: 1
+    id: 272
+    position: {x: -38.893444, y: 29.631592, z: 1.3205309}
+  - cluster: 2
+    id: 273
+    position: {x: 28.600283, y: 30.419619, z: -28.043491}
+  - cluster: 2
+    id: 274
+    position: {x: -25.543032, y: 30.389061, z: -31.073055}
+  - cluster: 3
+    id: 275
+    position: {x: 39.06095, y: 29.729052, z: 5.549806}
+  - cluster: 1
+    id: 276
+    position: {x: -33.194496, y: 30.2377, z: 22.733622}
+  - cluster: 3
+    id: 277
+    position: {x: 19.71699, y: 30.038618, z: 35.006035}
+  - cluster: 4
+    id: 278
+    position: {x: -38.21674, y: 29.985426, z: -12.504141}
+  - cluster: 5
+    id: 279
+    position: {x: 36.284496, y: 29.628372, z: -16.44001}
+  - cluster: 2
+    id: 280
+    position: {x: -13.366845, y: 29.836082, z: -38.04389}
+  - cluster: 3
+    id: 281
+    position: {x: 35.739418, y: 29.913248, z: 19.122114}
+  - cluster: 1
+    id: 282
+    position: {x: -38.338467, y: 29.127806, z: 9.8033905}
+  - cluster: 2
+    id: 283
+    position: {x: 22.087055, y: 29.64202, z: -33.7986}
+  - cluster: 4
+    id: 284
+    position: {x: -31.992826, y: 29.724766, z: -25.157583}
+  - cluster: 5
+    id: 285
+    position: {x: 39.23637, y: 28.662918, z: -2.958773}
+  - cluster: 1
+    id: 286
+    position: {x: -27.674305, y: 29.375275, z: 29.47497}
+  - cluster: 3
+    id: 287
+    position: {x: 27.222328, y: 29.526234, z: 30.458134}
+  - cluster: 4
+    id: 288
+    position: {x: -39.546265, y: 28.65201, z: -3.960232}
+  - cluster: 2
+    id: 289
+    position: {x: 32.675846, y: 29.332153, z: -24.421175}
+  - cluster: 2
+    id: 290
+    position: {x: -21.579039, y: 29.326942, z: -34.860386}
+  - cluster: 3
+    id: 291
+    position: {x: 39.26904, y: 29.109571, z: 11.074813}
+  - cluster: 1
+    id: 292
+    position: {x: -36.482613, y: 29.070593, z: 18.382767}
+  - cluster: 3
+    id: 293
+    position: {x: 14.985624, y: 28.65743, z: 37.60569}
+  - cluster: 4
+    id: 294
+    position: {x: -37.0194, y: 29.027775, z: -17.880587}
+  - cluster: 5
+    id: 295
+    position: {x: 38.649017, y: 28.418524, z: -11.603654}
+  - cluster: 2
+    id: 296
+    position: {x: -8.227248, y: 28.433443, z: -39.742313}
+  - cluster: 3
+    id: 297
+    position: {x: 33.51155, y: 28.877455, z: 24.18299}
+  - cluster: 2
+    id: 298
+    position: {x: 27.02077, y: 28.728334, z: -31.269695}
+  - cluster: 2
+    id: 299
+    position: {x: -28.883633, y: 28.674622, z: -29.74995}
+  - cluster: 3
+    id: 300
+    position: {x: 40.67984, y: 28.106827, z: 2.3817515}
+  - cluster: 1
+    id: 301
+    position: {x: -32.1084, y: 28.47902, z: 26.129135}
+  - cluster: 3
+    id: 302
+    position: {x: 23.300974, y: 28.427645, z: 34.386406}
+  - cluster: 4
+    id: 303
+    position: {x: -39.83875, y: 27.953188, z: -9.477601}
+  - cluster: 5
+    id: 304
+    position: {x: 36.221622, y: 28.225395, z: -20.16639}
+  - cluster: 2
+    id: 305
+    position: {x: -17.022131, y: 28.244265, z: -38.068916}
+  - cluster: 3
+    id: 306
+    position: {x: 38.29255, y: 28.18908, z: 16.580942}
+  - cluster: 1
+    id: 307
+    position: {x: -38.552513, y: 27.485338, z: 13.331756}
+  - cluster: 2
+    id: 308
+    position: {x: 19.639032, y: 27.723392, z: -36.278496}
+  - cluster: 4
+    id: 309
+    position: {x: -34.949642, y: 28.001614, z: -23.083601}
+  - cluster: 5
+    id: 310
+    position: {x: 40.555637, y: 27.38301, z: -6.455814}
+  - cluster: 1
+    id: 311
+    position: {x: -25.3176, y: 27.072159, z: 31.874716}
+  - cluster: 2
+    id: 312
+    position: {x: -2.846094, y: 26.868877, z: -40.405655}
+  - cluster: 3
+    id: 313
+    position: {x: 30.512615, y: 27.818836, z: 28.930231}
+  - cluster: 2
+    id: 314
+    position: {x: -25.08735, y: 27.618534, z: -33.9113}
+  - cluster: 3
+    id: 315
+    position: {x: 41.181942, y: 27.398222, z: 8.018007}
+  - cluster: 1
+    id: 316
+    position: {x: -35.865025, y: 27.390938, z: 21.959387}
+  - cluster: 3
+    id: 317
+    position: {x: 18.746956, y: 27.258696, z: 37.661972}
+  - cluster: 4
+    id: 318
+    position: {x: -39.276806, y: 27.197277, z: -15.115173}
+  - cluster: 5
+    id: 319
+    position: {x: 39.140907, y: 27.105646, z: -15.376319}
+  - cluster: 2
+    id: 320
+    position: {x: -11.95283, y: 27.094202, z: -40.52969}
+  - cluster: 3
+    id: 321
+    position: {x: 36.368973, y: 27.157259, z: 21.92157}
+  - cluster: 2
+    id: 322
+    position: {x: 24.995901, y: 26.992434, z: -34.28395}
+  - cluster: 4
+    id: 323
+    position: {x: -32.091057, y: 26.95528, z: -28.005424}
+  - cluster: 5
+    id: 324
+    position: {x: 42.03708, y: 26.541763, z: -1.0163261}
+  - cluster: 1
+    id: 325
+    position: {x: -30.461672, y: 26.602892, z: 29.286997}
+  - cluster: 3
+    id: 326
+    position: {x: 26.796131, y: 26.747585, z: 33.25849}
+  - cluster: 5
+    id: 327
+    position: {x: 35.46491, y: 26.600832, z: -23.7799}
+  - cluster: 2
+    id: 328
+    position: {x: -20.662832, y: 26.557215, z: -37.54354}
+  - cluster: 3
+    id: 329
+    position: {x: 40.56298, y: 26.465109, z: 13.711835}
+  - cluster: 1
+    id: 330
+    position: {x: -38.528126, y: 25.960955, z: 17.002174}
+  - cluster: 2
+    id: 331
+    position: {x: 16.840113, y: 25.766989, z: -38.37602}
+  - cluster: 3
+    id: 332
+    position: {x: 13.537848, y: 25.76589, z: 39.776337}
+  - cluster: 4
+    id: 333
+    position: {x: -37.653103, y: 26.256632, z: -20.621567}
+  - cluster: 5
+    id: 334
+    position: {x: 41.390453, y: 25.996542, z: -10.151476}
+  - cluster: 2
+    id: 335
+    position: {x: -6.4828763, y: 25.815466, z: -42.047302}
+  - cluster: 3
+    id: 336
+    position: {x: 33.642567, y: 26.102884, z: 26.990784}
+  - cluster: 2
+    id: 337
+    position: {x: 29.844255, y: 25.978905, z: -31.170332}
+  - cluster: 2
+    id: 338
+    position: {x: -28.509026, y: 25.902946, z: -32.531776}
+  - cluster: 3
+    id: 339
+    position: {x: 42.780933, y: 25.705095, z: 4.709273}
+  - cluster: 1
+    id: 340
+    position: {x: -34.75794, y: 25.661547, z: 25.451979}
+  - cluster: 3
+    id: 341
+    position: {x: 22.422771, y: 25.648281, z: 37.026703}
+  - cluster: 4
+    id: 342
+    position: {x: -40.76431, y: 25.10007, z: -11.930242}
+  - cluster: 5
+    id: 343
+    position: {x: 38.86119, y: 25.522993, z: -19.107655}
+  - cluster: 2
+    id: 344
+    position: {x: -15.691534, y: 25.476274, z: -40.52372}
+  - cluster: 3
+    id: 345
+    position: {x: 38.992294, y: 25.441017, z: 19.30841}
+  - cluster: 2
+    id: 346
+    position: {x: 22.559235, y: 25.211868, z: -37.016792}
+  - cluster: 4
+    id: 347
+    position: {x: -35.11777, y: 25.232306, z: -25.867435}
+  - cluster: 5
+    id: 348
+    position: {x: 43.054203, y: 24.9832, z: -4.6168976}
+  - cluster: 1
+    id: 349
+    position: {x: -28.032236, y: 24.39624, z: 31.806877}
+  - cluster: 2
+    id: 350
+    position: {x: -0.8228432, y: 24.483618, z: -42.65447}
+  - cluster: 3
+    id: 351
+    position: {x: 30.170313, y: 25.043123, z: 31.68873}
+  - cluster: 5
+    id: 352
+    position: {x: 34.20917, y: 24.91245, z: -27.28765}
+  - cluster: 2
+    id: 353
+    position: {x: -24.259205, y: 24.847729, z: -36.564533}
+  - cluster: 3
+    id: 354
+    position: {x: 42.53984, y: 24.753365, z: 10.560238}
+  - cluster: 1
+    id: 355
+    position: {x: -38.082287, y: 24.417776, z: 20.717672}
+  - cluster: 2
+    id: 356
+    position: {x: 13.8407955, y: 23.932405, z: -40.294724}
+  - cluster: 3
+    id: 357
+    position: {x: 17.423145, y: 24.447104, z: 40.00994}
+  - cluster: 4
+    id: 358
+    position: {x: -39.957447, y: 24.43201, z: -17.767284}
+  - cluster: 5
+    id: 359
+    position: {x: 41.589108, y: 24.439735, z: -13.934206}
+  - cluster: 2
+    id: 360
+    position: {x: -10.264925, y: 24.355875, z: -42.731503}
+  - cluster: 3
+    id: 361
+    position: {x: 36.577164, y: 24.38685, z: 24.675018}
+  - cluster: 2
+    id: 362
+    position: {x: 27.79132, y: 24.26674, z: -34.295906}
+  - cluster: 4
+    id: 363
+    position: {x: -31.801046, y: 24.186037, z: -30.747221}
+  - cluster: 3
+    id: 364
+    position: {x: 44.050304, y: 24.028763, z: 1.1835274}
+  - cluster: 1
+    id: 365
+    position: {x: -33.090515, y: 23.82541, z: 28.71418}
+  - cluster: 2
+    id: 366
+    position: {x: 4.9007273, y: 23.283869, z: -42.65188}
+  - cluster: 3
+    id: 367
+    position: {x: 26.00953, y: 23.971237, z: 35.885693}
+  - cluster: 5
+    id: 368
+    position: {x: 38.01903, y: 23.839172, z: -22.770695}
+  - cluster: 2
+    id: 369
+    position: {x: -19.420202, y: 23.783728, z: -39.988888}
+  - cluster: 3
+    id: 370
+    position: {x: 41.342438, y: 23.724348, z: 16.369638}
+  - cluster: 2
+    id: 371
+    position: {x: 19.76091, y: 23.404984, z: -39.432816}
+  - cluster: 4
+    id: 372
+    position: {x: -37.907257, y: 23.495989, z: -23.350172}
+  - cluster: 5
+    id: 373
+    position: {x: 43.62937, y: 23.380432, z: -8.367288}
+  - cluster: 2
+    id: 374
+    position: {x: -4.5080113, y: 23.18605, z: -44.06777}
+  - cluster: 3
+    id: 375
+    position: {x: 33.389214, y: 23.3292, z: 29.710463}
+  - cluster: 5
+    id: 376
+    position: {x: 32.526012, y: 23.208359, z: -30.673553}
+  - cluster: 2
+    id: 377
+    position: {x: -27.774723, y: 23.132465, z: -35.161938}
+  - cluster: 3
+    id: 378
+    position: {x: 44.184563, y: 23.044228, z: 7.16089}
+  - cluster: 1
+    id: 379
+    position: {x: -37.056248, y: 22.759645, z: 24.332115}
+  - cluster: 2
+    id: 380
+    position: {x: 10.71503, y: 22.330723, z: -42.279297}
+  - cluster: 3
+    id: 381
+    position: {x: 21.209347, y: 22.860289, z: 39.432182}
+  - cluster: 4
+    id: 382
+    position: {x: -41.448082, y: 22.351406, z: -14.463642}
+  - cluster: 5
+    id: 383
+    position: {x: 41.182533, y: 22.759714, z: -17.700977}
+  - cluster: 2
+    id: 384
+    position: {x: -14.0793, y: 22.708447, z: -42.713528}
+  - cluster: 3
+    id: 385
+    position: {x: 39.27769, y: 22.671112, z: 22.012718}
+  - cluster: 2
+    id: 386
+    position: {x: 25.356508, y: 22.539707, z: -37.194275}
+  - cluster: 4
+    id: 387
+    position: {x: -34.916183, y: 22.466131, z: -28.577568}
+  - cluster: 5
+    id: 388
+    position: {x: 44.9505, y: 22.35386, z: -2.5105257}
+  - cluster: 1
+    id: 389
+    position: {x: -30.690725, y: 21.752207, z: 31.433962}
+  - cluster: 2
+    id: 390
+    position: {x: 1.4144766, y: 22.003845, z: -44.542706}
+  - cluster: 3
+    id: 391
+    position: {x: 29.475063, y: 22.268387, z: 34.30438}
+  - cluster: 5
+    id: 392
+    position: {x: 36.725674, y: 22.128658, z: -26.345722}
+  - cluster: 2
+    id: 393
+    position: {x: -23.107197, y: 22.073885, z: -39.01182}
+  - cluster: 3
+    id: 394
+    position: {x: 43.392277, y: 22.011944, z: 13.155032}
+  - cluster: 1
+    id: 395
+    position: {x: -39.46137, y: 21.186216, z: 18.926413}
+  - cluster: 2
+    id: 396
+    position: {x: 16.69025, y: 21.61808, z: -41.55806}
+  - cluster: 3
+    id: 397
+    position: {x: 15.7726345, y: 21.570463, z: 41.945282}
+  - cluster: 4
+    id: 398
+    position: {x: -40.32005, y: 21.700253, z: -20.452494}
+  - cluster: 5
+    id: 399
+    position: {x: 43.678043, y: 21.703703, z: -12.188686}
+  - cluster: 2
+    id: 400
+    position: {x: -8.335503, y: 21.611584, z: -44.641125}
+  - cluster: 3
+    id: 401
+    position: {x: 36.40979, y: 21.613525, z: 27.364744}
+  - cluster: 2
+    id: 402
+    position: {x: 30.455511, y: 21.498863, z: -33.89177}
+  - cluster: 4
+    id: 403
+    position: {x: -31.156109, y: 21.414782, z: -33.36265}
+  - cluster: 3
+    id: 404
+    position: {x: 45.473743, y: 21.336515, z: 3.554923}
+  - cluster: 1
+    id: 405
+    position: {x: -35.42598, y: 20.976402, z: 27.703411}
+  - cluster: 2
+    id: 406
+    position: {x: 7.402151, y: 20.890057, z: -44.30207}
+  - cluster: 3
+    id: 407
+    position: {x: 24.8937, y: 21.190666, z: 38.318058}
+  - cluster: 5
+    id: 408
+    position: {x: 40.270805, y: 21.028244, z: -21.407513}
+  - cluster: 2
+    id: 409
+    position: {x: -17.891342, y: 21.008154, z: -42.192207}
+  - cluster: 3
+    id: 410
+    position: {x: 41.7131, y: 20.957878, z: 19.038078}
+  - cluster: 2
+    id: 411
+    position: {x: 22.573437, y: 20.800581, z: -39.820946}
+  - cluster: 4
+    id: 412
+    position: {x: -37.79987, y: 20.736927, z: -26.040659}
+  - cluster: 5
+    id: 413
+    position: {x: 45.431602, y: 20.662342, z: -6.330368}
+  - cluster: 2
+    id: 414
+    position: {x: -2.329713, y: 20.501719, z: -45.722527}
+  - cluster: 3
+    id: 415
+    position: {x: 32.783104, y: 20.555683, z: 32.322193}
+  - cluster: 5
+    id: 416
+    position: {x: 35.03858, y: 20.41974, z: -29.809708}
+  - cluster: 2
+    id: 417
+    position: {x: -26.70992, y: 20.358536, z: -37.619915}
+  - cluster: 3
+    id: 418
+    position: {x: 45.110744, y: 20.29974, z: 9.695407}
+  - cluster: 1
+    id: 419
+    position: {x: -38.718758, y: 19.682901, z: 22.678917}
+  - cluster: 2
+    id: 420
+    position: {x: 13.441442, y: 19.941118, z: -43.569492}
+  - cluster: 3
+    id: 421
+    position: {x: 19.690628, y: 20.05877, z: 41.574234}
+  - cluster: 4
+    id: 422
+    position: {x: -41.94152, y: 19.688396, z: -17.08258}
+  - cluster: 5
+    id: 423
+    position: {x: 43.189655, y: 19.963987, z: -16.000242}
+  - cluster: 2
+    id: 424
+    position: {x: -12.219745, y: 19.93729, z: -44.63008}
+  - cluster: 3
+    id: 425
+    position: {x: 39.19547, y: 19.896, z: 24.674997}
+  - cluster: 2
+    id: 426
+    position: {x: 28.01794, y: 19.784258, z: -36.902283}
+  - cluster: 4
+    id: 427
+    position: {x: -34.363346, y: 19.694958, z: -31.18395}
+  - cluster: 5
+    id: 428
+    position: {x: 46.38202, y: 19.626633, z: -0.2150987}
+  - cluster: 1
+    id: 429
+    position: {x: -33.124416, y: 19.033436, z: 30.632153}
+  - cluster: 2
+    id: 430
+    position: {x: 3.8199995, y: 19.402727, z: -45.97386}
+  - cluster: 3
+    id: 431
+    position: {x: 28.45847, y: 19.49323, z: 36.760067}
+  - cluster: 5
+    id: 432
+    position: {x: 38.95612, y: 19.299875, z: -25.038525}
+  - cluster: 2
+    id: 433
+    position: {x: -21.664215, y: 19.295622, z: -41.23836}
+  - cluster: 3
+    id: 434
+    position: {x: 43.84987, y: 19.245424, z: 15.783873}
+  - cluster: 2
+    id: 435
+    position: {x: 19.491138, y: 19.063015, z: -42.159466}
+  - cluster: 3
+    id: 436
+    position: {x: 13.799845, y: 18.588142, z: 43.28311}
+  - cluster: 4
+    id: 437
+    position: {x: -40.350155, y: 18.972185, z: -23.134531}
+  - cluster: 5
+    id: 438
+    position: {x: 45.462257, y: 18.948103, z: -10.21882}
+  - cluster: 2
+    id: 439
+    position: {x: -6.2141953, y: 18.85854, z: -46.2492}
+  - cluster: 3
+    id: 440
+    position: {x: 35.896393, y: 18.839455, z: 29.970055}
+  - cluster: 5
+    id: 441
+    position: {x: 32.975746, y: 18.712223, z: -33.120872}
+  - cluster: 2
+    id: 442
+    position: {x: -30.182762, y: 18.639736, z: -35.83016}
+  - cluster: 3
+    id: 443
+    position: {x: 46.469532, y: 18.585514, z: 6.030406}
+  - cluster: 1
+    id: 444
+    position: {x: -37.259827, y: 18.005054, z: 26.181507}
+  - cluster: 2
+    id: 445
+    position: {x: 9.99818, y: 18.337269, z: -45.43817}
+  - cluster: 3
+    id: 446
+    position: {x: 23.483751, y: 18.409254, z: 40.54557}
+  - cluster: 5
+    id: 447
+    position: {x: 42.1236, y: 18.155281, z: -19.699532}
+  - cluster: 2
+    id: 448
+    position: {x: -16.110674, y: 18.231857, z: -44.14841}
+  - cluster: 3
+    id: 449
+    position: {x: 41.72541, y: 18.183792, z: 21.680347}
+  - cluster: 2
+    id: 450
+    position: {x: 25.242876, y: 18.066288, z: -39.666527}
+  - cluster: 4
+    id: 451
+    position: {x: -37.35451, y: 17.973251, z: -28.649963}
+  - cluster: 5
+    id: 452
+    position: {x: 46.891212, y: 17.913284, z: -4.1036386}
+  - cluster: 2
+    id: 453
+    position: {x: 0.0115760015, y: 17.781643, z: -47.02703}
+  - cluster: 3
+    id: 454
+    position: {x: 31.866379, y: 17.783619, z: 34.798454}
+  - cluster: 5
+    id: 455
+    position: {x: 37.28984, y: 17.592417, z: -28.578438}
+  - cluster: 2
+    id: 456
+    position: {x: -25.355648, y: 17.57983, z: -39.87633}
+  - cluster: 3
+    id: 457
+    position: {x: 45.658672, y: 17.532759, z: 12.286094}
+  - cluster: 2
+    id: 458
+    position: {x: 16.16756, y: 17.350239, z: -44.23666}
+  - cluster: 3
+    id: 459
+    position: {x: 17.896967, y: 17.230026, z: 43.37952}
+  - cluster: 4
+    id: 460
+    position: {x: -42.183937, y: 17.046429, z: -19.753063}
+  - cluster: 5
+    id: 461
+    position: {x: 44.908176, y: 17.166374, z: -14.076719}
+  - cluster: 2
+    id: 462
+    position: {x: -10.161974, y: 17.163206, z: -46.264156}
+  - cluster: 3
+    id: 463
+    position: {x: 38.777657, y: 17.121763, z: 27.276577}
+  - cluster: 5
+    id: 464
+    position: {x: 30.554752, y: 17.00367, z: -36.23554}
+  - cluster: 4
+    id: 465
+    position: {x: -33.488018, y: 16.921654, z: -33.66854}
+  - cluster: 5
+    id: 466
+    position: {x: 47.448135, y: 16.869184, z: 2.202977}
+  - cluster: 2
+    id: 467
+    position: {x: 6.3263745, y: 16.712492, z: -46.952385}
+  - cluster: 3
+    id: 468
+    position: {x: 27.146189, y: 16.71608, z: 39.03658}
+  - cluster: 5
+    id: 469
+    position: {x: 40.66578, y: 16.363619, z: -23.288902}
+  - cluster: 2
+    id: 470
+    position: {x: -19.964525, y: 16.51709, z: -43.239277}
+  - cluster: 3
+    id: 471
+    position: {x: 43.958443, y: 16.471262, z: 18.406668}
+  - cluster: 2
+    id: 472
+    position: {x: 22.167086, y: 16.349424, z: -42.157677}
+  - cluster: 4
+    id: 473
+    position: {x: -40.03533, y: 16.227604, z: -25.753128}
+  - cluster: 5
+    id: 474
+    position: {x: 46.959938, y: 16.18617, z: -8.058369}
+  - cluster: 2
+    id: 475
+    position: {x: -3.9270484, y: 16.094694, z: -47.54583}
+  - cluster: 3
+    id: 476
+    position: {x: 35.076054, y: 16.066862, z: 32.46106}
+  - cluster: 5
+    id: 477
+    position: {x: 35.28574, y: 15.901693, z: -31.997179}
+  - cluster: 2
+    id: 478
+    position: {x: -28.920393, y: 15.861769, z: -38.120186}
+  - cluster: 3
+    id: 479
+    position: {x: 47.10993, y: 15.817788, z: 8.582568}
+  - cluster: 2
+    id: 480
+    position: {x: 12.635243, y: 15.664949, z: -46.058556}
+  - cluster: 3
+    id: 481
+    position: {x: 21.811338, y: 15.618924, z: 42.522068}
+  - cluster: 5
+    id: 482
+    position: {x: 43.598946, y: 15.27396, z: -17.738834}
+  - cluster: 2
+    id: 483
+    position: {x: -14.121727, y: 15.451843, z: -45.83483}
+  - cluster: 3
+    id: 484
+    position: {x: 41.403343, y: 15.407732, z: 24.278751}
+  - cluster: 2
+    id: 485
+    position: {x: 27.801512, y: 15.294376, z: -39.116573}
+  - cluster: 4
+    id: 486
+    position: {x: -36.580353, y: 15.2018, z: -31.15244}
+  - cluster: 5
+    id: 487
+    position: {x: 48.028732, y: 15.150289, z: -1.7422024}
+  - cluster: 2
+    id: 488
+    position: {x: 2.4622922, y: 15.032598, z: -47.97498}
+  - cluster: 3
+    id: 489
+    position: {x: 30.654606, y: 15.009579, z: 37.120132}
+  - cluster: 5
+    id: 490
+    position: {x: 39.013016, y: 14.656657, z: -26.848091}
+  - cluster: 2
+    id: 491
+    position: {x: -23.73818, y: 14.799716, z: -41.92372}
+  - cluster: 3
+    id: 492
+    position: {x: 45.868637, y: 14.758999, z: 14.890116}
+  - cluster: 2
+    id: 493
+    position: {x: 18.822666, y: 14.632759, z: -44.342815}
+  - cluster: 3
+    id: 494
+    position: {x: 15.802551, y: 14.334159, z: 44.653633}
+  - cluster: 4
+    id: 495
+    position: {x: -42.148243, y: 14.393335, z: -22.425552}
+  - cluster: 5
+    id: 496
+    position: {x: 46.431316, y: 14.402067, z: -11.984532}
+  - cluster: 2
+    id: 497
+    position: {x: -7.931528, y: 14.387617, z: -47.6146}
+  - cluster: 3
+    id: 498
+    position: {x: 38.058636, y: 14.349799, z: 29.784885}
+  - cluster: 5
+    id: 499
+    position: {x: 32.921402, y: 14.207017, z: -35.226814}
+  - cluster: 4
+    id: 500
+    position: {x: -32.32231, y: 14.145311, z: -35.996}
+  - cluster: 5
+    id: 501
+    position: {x: 48.182438, y: 14.100637, z: 4.7152257}
+  - cluster: 2
+    id: 502
+    position: {x: 8.899066, y: 13.974784, z: -47.52962}
+  - cluster: 3
+    id: 503
+    position: {x: 25.579632, y: 13.938351, z: 41.109943}
+  - cluster: 5
+    id: 504
+    position: {x: 41.7426, y: 13.366174, z: -21.15466}
+  - cluster: 2
+    id: 505
+    position: {x: -18.048437, y: 13.735967, z: -44.98805}
+  - cluster: 3
+    id: 506
+    position: {x: 43.739918, y: 13.695267, z: 21.004976}
+  - cluster: 2
+    id: 507
+    position: {x: 24.740353, y: 13.581939, z: -41.722225}
+  - cluster: 4
+    id: 508
+    position: {x: -39.382828, y: 13.4676285, z: -28.281246}
+  - cluster: 2
+    id: 509
+    position: {x: -1.5233117, y: 13.325707, z: -48.53645}
+  - cluster: 3
+    id: 510
+    position: {x: 33.964916, y: 13.294218, z: 34.82172}
+  - cluster: 5
+    id: 511
+    position: {x: 37.161846, y: 13.012206, z: -30.385025}
+  - cluster: 2
+    id: 512
+    position: {x: -27.391071, y: 13.082815, z: -40.221222}
+  - cluster: 3
+    id: 513
+    position: {x: 47.423733, y: 13.044367, z: 11.1659355}
+  - cluster: 2
+    id: 514
+    position: {x: 15.25314, y: 12.922647, z: -46.21714}
+  - cluster: 3
+    id: 515
+    position: {x: 19.88614, y: 12.815137, z: 44.198772}
+  - cluster: 5
+    id: 516
+    position: {x: 44.963398, y: 12.484467, z: -15.665514}
+  - cluster: 2
+    id: 517
+    position: {x: -11.950689, y: 12.672078, z: -47.252625}
+  - cluster: 3
+    id: 518
+    position: {x: 40.780674, y: 12.63327, z: 26.799292}
+  - cluster: 5
+    id: 519
+    position: {x: 30.2186, y: 12.507778, z: -38.226707}
+  - cluster: 4
+    id: 520
+    position: {x: -35.519073, y: 12.428784, z: -33.521}
+  - cluster: 5
+    id: 521
+    position: {x: 48.859947, y: 12.381758, z: 0.7279281}
+  - cluster: 2
+    id: 522
+    position: {x: 4.994464, y: 12.268826, z: -48.586765}
+  - cluster: 3
+    id: 523
+    position: {x: 29.180851, y: 12.232616, z: 39.253925}
+  - cluster: 2
+    id: 524
+    position: {x: -21.898691, y: 12.019234, z: -43.73917}
+  - cluster: 3
+    id: 525
+    position: {x: 45.757877, y: 11.983144, z: 17.487627}
+  - cluster: 2
+    id: 526
+    position: {x: 21.408485, y: 11.869281, z: -44.027863}
+  - cluster: 4
+    id: 527
+    position: {x: -41.670254, y: 11.673729, z: -24.985407}
+  - cluster: 5
+    id: 528
+    position: {x: 47.765522, y: 11.660505, z: -9.760474}
+  - cluster: 2
+    id: 529
+    position: {x: -5.57373, y: 11.609898, z: -48.668007}
+  - cluster: 3
+    id: 530
+    position: {x: 37.053276, y: 11.577548, z: 32.176907}
+  - cluster: 5
+    id: 531
+    position: {x: 34.996838, y: 11.374813, z: -33.812042}
+  - cluster: 4
+    id: 532
+    position: {x: -30.893661, y: 11.369054, z: -38.153217}
+  - cluster: 3
+    id: 533
+    position: {x: 48.60298, y: 11.327904, z: 7.275275}
+  - cluster: 2
+    id: 534
+    position: {x: 11.488624, y: 11.213928, z: -47.74775}
+  - cluster: 3
+    id: 535
+    position: {x: 23.767784, y: 11.153118, z: 42.93668}
+  - cluster: 2
+    id: 536
+    position: {x: -15.942919, y: 10.953476, z: -46.47064}
+  - cluster: 3
+    id: 537
+    position: {x: 43.220848, y: 10.919831, z: 23.540756}
+  - cluster: 5
+    id: 538
+    position: {x: 27.202969, y: 10.803627, z: -40.957718}
+  - cluster: 4
+    id: 539
+    position: {x: -38.450485, y: 10.705848, z: -30.701805}
+  - cluster: 5
+    id: 540
+    position: {x: 49.110004, y: 10.657281, z: -3.3386683}
+  - cluster: 2
+    id: 541
+    position: {x: 0.9675365, y: 10.551072, z: -49.21022}
+  - cluster: 3
+    id: 542
+    position: {x: 32.592415, y: 10.520064, z: 37.017822}
+  - cluster: 2
+    id: 543
+    position: {x: -25.629765, y: 10.302672, z: -42.10176}
+  - cluster: 3
+    id: 544
+    position: {x: 47.424805, y: 10.268741, z: 13.753949}
+  - cluster: 2
+    id: 545
+    position: {x: 17.836163, y: 10.157095, z: -46.011658}
+  - cluster: 3
+    id: 546
+    position: {x: 17.703196, y: 9.9791, z: 45.405907}
+  - cluster: 4
+    id: 547
+    position: {x: -42.9435, y: 9.749528, z: -21.134632}
+  - cluster: 5
+    id: 548
+    position: {x: 46.39389, y: 9.793984, z: -13.553023}
+  - cluster: 2
+    id: 549
+    position: {x: -9.635011, y: 9.886183, z: -48.354244}
+  - cluster: 3
+    id: 550
+    position: {x: 39.877365, y: 9.860621, z: 29.223442}
+  - cluster: 5
+    id: 551
+    position: {x: 32.43688, y: 9.707621, z: -36.98622}
+  - cluster: 4
+    id: 552
+    position: {x: -34.18977, y: 9.654547, z: -35.73542}
+  - cluster: 5
+    id: 553
+    position: {x: 49.38927, y: 9.610025, z: 3.260986}
+  - cluster: 2
+    id: 554
+    position: {x: 7.561145, y: 9.498779, z: -48.881042}
+  - cluster: 3
+    id: 555
+    position: {x: 27.468609, y: 9.454385, z: 41.183323}
+  - cluster: 2
+    id: 556
+    position: {x: -19.853716, y: 9.235543, z: -45.289127}
+  - cluster: 3
+    id: 557
+    position: {x: 45.34781, y: 9.207256, z: 20.03833}
+  - cluster: 2
+    id: 558
+    position: {x: 23.906141, y: 9.095313, z: -43.385925}
+  - cluster: 4
+    id: 559
+    position: {x: -40.961372, y: 8.954377, z: -27.494617}
+  - cluster: 5
+    id: 560
+    position: {x: 48.859344, y: 8.917869, z: -7.411013}
+  - cluster: 2
+    id: 561
+    position: {x: -3.1151183, y: 8.82567, z: -49.384518}
+  - cluster: 3
+    id: 562
+    position: {x: 35.776573, y: 8.804045, z: 34.430855}
+  - cluster: 5
+    id: 563
+    position: {x: 36.397667, y: 8.460787, z: -31.732187}
+  - cluster: 4
+    id: 564
+    position: {x: -29.210453, y: 8.589653, z: -40.10603}
+  - cluster: 3
+    id: 565
+    position: {x: 48.717823, y: 8.553071, z: 9.856218}
+  - cluster: 2
+    id: 566
+    position: {x: 14.068418, y: 8.443655, z: -47.638226}
+  - cluster: 3
+    id: 567
+    position: {x: 21.726675, y: 8.362496, z: 44.4755}
+  - cluster: 2
+    id: 568
+    position: {x: -13.660964, y: 8.164005, z: -47.626297}
+  - cluster: 3
+    id: 569
+    position: {x: 42.416912, y: 8.145263, z: 25.992558}
+  - cluster: 5
+    id: 570
+    position: {x: 29.52077, y: 8.019842, z: -39.8732}
+  - cluster: 4
+    id: 571
+    position: {x: -37.243744, y: 7.938893, z: -32.985886}
+  - cluster: 5
+    id: 572
+    position: {x: 49.75231, y: 7.888522, z: -0.8321153}
+  - cluster: 2
+    id: 573
+    position: {x: 3.5157864, y: 7.7743216, z: -49.56504}
+  - cluster: 3
+    id: 574
+    position: {x: 30.973463, y: 7.743489, z: 39.025063}
+  - cluster: 2
+    id: 575
+    position: {x: -23.649862, y: 7.520286, z: -43.726223}
+  - cluster: 3
+    id: 576
+    position: {x: 47.126163, y: 7.492986, z: 16.322575}
+  - cluster: 2
+    id: 577
+    position: {x: 20.364388, y: 7.384132, z: -45.483547}
+  - cluster: 3
+    id: 578
+    position: {x: 15.234393, y: 7.1130285, z: 45.878616}
+  - cluster: 4
+    id: 579
+    position: {x: -42.757614, y: 7.152126, z: -23.832888}
+  - cluster: 5
+    id: 580
+    position: {x: 47.786976, y: 7.125538, z: -11.349782}
+  - cluster: 2
+    id: 581
+    position: {x: -7.193323, y: 7.0939617, z: -49.07991}
+  - cluster: 3
+    id: 582
+    position: {x: 38.701633, y: 7.087239, z: 31.526257}
+  - cluster: 5
+    id: 583
+    position: {x: 34.226997, y: 6.872383, z: -35.227486}
+  - cluster: 4
+    id: 584
+    position: {x: -32.601345, y: 6.8779125, z: -37.76536}
+  - cluster: 5
+    id: 585
+    position: {x: 49.61529, y: 6.835614, z: 5.8298063}
+  - cluster: 2
+    id: 586
+    position: {x: 10.143176, y: 6.727603, z: -48.876118}
+  - cluster: 3
+    id: 587
+    position: {x: 25.52788, y: 6.673478, z: 42.87163}
+  - cluster: 2
+    id: 588
+    position: {x: -17.611105, y: 6.446958, z: -46.50686}
+  - cluster: 3
+    id: 589
+    position: {x: 44.65031, y: 6.4316983, z: 22.519012}
+  - cluster: 5
+    id: 590
+    position: {x: 26.294924, y: 6.3179693, z: -42.432095}
+  - cluster: 4
+    id: 591
+    position: {x: -39.965416, y: 6.214311, z: -29.8923}
+  - cluster: 5
+    id: 592
+    position: {x: 49.665707, y: 6.163818, z: -4.9580984}
+  - cluster: 2
+    id: 593
+    position: {x: -0.5889265, y: 6.040953, z: -49.738358}
+  - cluster: 3
+    id: 594
+    position: {x: 34.25571, y: 6.0290704, z: 36.511684}
+  - cluster: 7
+    id: 595
+    position: {x: -27.298264, y: 5.808713, z: -41.806812}
+  - cluster: 3
+    id: 596
+    position: {x: 48.534, y: 5.777304, z: 12.426446}
+  - cluster: 2
+    id: 597
+    position: {x: 16.61756, y: 5.6715994, z: -47.230724}
+  - cluster: 3
+    id: 598
+    position: {x: 19.440538, y: 5.5596623, z: 45.551434}
+  - cluster: 2
+    id: 599
+    position: {x: -11.230941, y: 5.368278, z: -48.335342}
+  - cluster: 3
+    id: 600
+    position: {x: 41.34718, y: 5.3715606, z: 28.33586}
+  - cluster: 5
+    id: 601
+    position: {x: 31.56665, y: 5.223185, z: -38.367046}
+  - cluster: 4
+    id: 602
+    position: {x: -35.766403, y: 5.16573, z: -35.0918}
+  - cluster: 5
+    id: 603
+    position: {x: 50.104225, y: 5.117596, z: 1.7258619}
+  - cluster: 2
+    id: 604
+    position: {x: 6.078148, y: 5.0030227, z: -49.63611}
+  - cluster: 3
+    id: 605
+    position: {x: 29.131632, y: 4.9662757, z: 40.819378}
+  - cluster: 7
+    id: 606
+    position: {x: -21.447874, y: 4.734394, z: -45.000183}
+  - cluster: 3
+    id: 607
+    position: {x: 46.53724, y: 4.717146, z: 18.83532}
+  - cluster: 5
+    id: 608
+    position: {x: 22.800737, y: 4.610209, z: -44.665043}
+  - cluster: 4
+    id: 609
+    position: {x: -42.20352, y: 4.4774423, z: -26.439402}
+  - cluster: 5
+    id: 610
+    position: {x: 48.92898, y: 4.4225345, z: -9.006329}
+  - cluster: 2
+    id: 611
+    position: {x: -4.6815896, y: 4.304693, z: -49.33209}
+  - cluster: 3
+    id: 612
+    position: {x: 37.276325, y: 4.313223, z: 33.67839}
+  - cluster: 7
+    id: 613
+    position: {x: -30.75953, y: 4.099286, z: -39.552574}
+  - cluster: 5
+    id: 614
+    position: {x: 49.547512, y: 4.060829, z: 8.40927}
+  - cluster: 2
+    id: 615
+    position: {x: 12.693641, y: 3.956426, z: -48.588802}
+  - cluster: 3
+    id: 616
+    position: {x: 23.37183, y: 3.892162, z: 44.252472}
+  - cluster: 2
+    id: 617
+    position: {x: -15.169846, y: 3.657198, z: -47.22145}
+  - cluster: 3
+    id: 618
+    position: {x: 43.67836, y: 3.6568613, z: 24.90835}
+  - cluster: 5
+    id: 619
+    position: {x: 28.498573, y: 3.5395775, z: -41.15217}
+  - cluster: 4
+    id: 620
+    position: {x: -38.637573, y: 3.4510436, z: -32.10693}
+  - cluster: 5
+    id: 621
+    position: {x: 50.168396, y: 3.3997858, z: -2.4272506}
+  - cluster: 2
+    id: 622
+    position: {x: 1.9575894, y: 3.2708664, z: -49.766144}
+  - cluster: 3
+    id: 623
+    position: {x: 32.49992, y: 3.2532034, z: 38.399826}
+  - cluster: 7
+    id: 624
+    position: {x: -25.11423, y: 3.026548, z: -43.12974}
+  - cluster: 3
+    id: 625
+    position: {x: 48.062145, y: 3.0018945, z: 14.962561}
+  - cluster: 2
+    id: 626
+    position: {x: 19.097801, y: 2.898367, z: -46.531025}
+  - cluster: 3
+    id: 627
+    position: {x: 16.87132, y: 2.768908, z: 45.902042}
+  - cluster: 4
+    id: 628
+    position: {x: -43.837208, y: 2.7441032, z: -22.648699}
+  - cluster: 5
+    id: 629
+    position: {x: 46.90106, y: 2.653697, z: -12.71846}
+  - cluster: 2
+    id: 630
+    position: {x: -8.662424, y: 2.585551, z: -48.386726}
+  - cluster: 3
+    id: 631
+    position: {x: 40.026733, y: 2.5980113, z: 30.552338}
+  - cluster: 5
+    id: 632
+    position: {x: 32.99392, y: 2.4273148, z: -36.162125}
+  - cluster: 4
+    id: 633
+    position: {x: -34.02726, y: 2.3911192, z: -36.985615}
+  - cluster: 5
+    id: 634
+    position: {x: 50.166534, y: 2.3449752, z: 4.2917924}
+  - cluster: 2
+    id: 635
+    position: {x: 8.6446085, y: 2.2380433, z: -49.46847}
+  - cluster: 3
+    id: 636
+    position: {x: 27.075977, y: 2.1902575, z: 42.364582}
+  - cluster: 7
+    id: 637
+    position: {x: -18.996883, y: 1.959028, z: -45.7444}
+  - cluster: 3
+    id: 638
+    position: {x: 45.680595, y: 1.9421668, z: 21.254618}
+  - cluster: 5
+    id: 639
+    position: {x: 25.113623, y: 1.8368499, z: -43.542778}
+  - cluster: 4
+    id: 640
+    position: {x: -41.16388, y: 1.7352315, z: -28.805138}
+  - cluster: 5
+    id: 641
+    position: {x: 49.712124, y: 1.6815058, z: -6.543547}
+  - cluster: 2
+    id: 642
+    position: {x: -2.1369507, y: 1.5508792, z: -49.13877}
+  - cluster: 3
+    id: 643
+    position: {x: 35.62822, y: 1.5386345, z: 35.645832}
+  - cluster: 7
+    id: 644
+    position: {x: -28.613968, y: 1.3246248, z: -40.93375}
+  - cluster: 3
+    id: 645
+    position: {x: 49.19674, y: 1.2863538, z: 10.963886}
+  - cluster: 2
+    id: 646
+    position: {x: 15.2044, y: 1.184415, z: -48.011543}
+  - cluster: 3
+    id: 647
+    position: {x: 20.96994, y: 1.1204745, z: 45.12707}
+  - cluster: 4
+    id: 648
+    position: {x: -44.973328, y: 1.0480782, z: -18.71562}
+  - cluster: 7
+    id: 649
+    position: {x: -12.534634, y: 0.90287864, z: -47.133217}
+  - cluster: 3
+    id: 650
+    position: {x: 42.4566, y: 0.8827669, z: 27.17896}
+  - cluster: 5
+    id: 651
+    position: {x: 30.34698, y: 0.77081287, z: -39.357662}
+  - cluster: 4
+    id: 652
+    position: {x: -37.01831, y: 0.67993546, z: -34.10786}
+  - cluster: 5
+    id: 653
+    position: {x: 50.36593, y: 0.62994087, z: 0.14158247}
+  - cluster: 2
+    id: 654
+    position: {x: 4.491102, y: 0.5236456, z: -49.640568}
+  - cluster: 3
+    id: 655
+    position: {x: 30.536446, y: 0.47884464, z: 40.067223}
+  - cluster: 7
+    id: 656
+    position: {x: -22.62636, y: 0.2716439, z: -43.87339}
+  - cluster: 3
+    id: 657
+    position: {x: 47.316776, y: 0.22703207, z: 17.430979}
+  - cluster: 5
+    id: 658
+    position: {x: 21.466415, y: 0.12595706, z: -45.552826}
+  - cluster: 5
+    id: 659
+    position: {x: 48.34445, y: -0.024747286, z: -10.489002}
+  - cluster: 3
+    id: 660
+    position: {x: 38.461086, y: -0.17655423, z: 32.60056}
+  - cluster: 7
+    id: 661
+    position: {x: -31.959623, y: -0.375578, z: -38.518135}
+  - cluster: 5
+    id: 662
+    position: {x: 49.937077, y: -0.42868042, z: 6.858991}
+  - cluster: 2
+    id: 663
+    position: {x: 11.180925, y: -0.52844113, z: -49.041332}
+  - cluster: 3
+    id: 664
+    position: {x: 24.799973, y: -0.5767955, z: 43.56304}
+  - cluster: 3
+    id: 665
+    position: {x: 44.563534, y: -0.83240646, z: 23.57822}
+  - cluster: 4
+    id: 666
+    position: {x: -39.70306, y: -1.0323958, z: -30.923645}
+  - cluster: 5
+    id: 667
+    position: {x: 50.123146, y: -1.0818933, z: -4.0166683}
+  - cluster: 2
+    id: 668
+    position: {x: 0.3757585, y: -1.1484829, z: -48.83223}
+  - cluster: 3
+    id: 669
+    position: {x: 33.74665, y: -1.2353001, z: 37.40738}
+  - cluster: 6
+    id: 670
+    position: {x: -8.961844, y: -1.3571467, z: 48.486168}
+  - cluster: 7
+    id: 671
+    position: {x: -26.06159, y: -1.4019797, z: -41.668808}
+  - cluster: 3
+    id: 672
+    position: {x: 48.571686, y: -1.4881953, z: 13.452337}
+  - cluster: 5
+    id: 673
+    position: {x: 17.636177, y: -1.5876746, z: -47.162426}
+  - cluster: 3
+    id: 674
+    position: {x: 18.275816, y: -1.5877061, z: 45.250908}
+  - cluster: 4
+    id: 675
+    position: {x: -44.88138, y: -1.6677308, z: -21.418482}
+  - cluster: 3
+    id: 676
+    position: {x: 40.99778, y: -1.8917328, z: 29.289549}
+  - cluster: 7
+    id: 677
+    position: {x: -35.10537, y: -2.0841138, z: -35.81563}
+  - cluster: 5
+    id: 678
+    position: {x: 50.269688, y: -2.1425567, z: 2.703207}
+  - cluster: 2
+    id: 679
+    position: {x: 7.0312867, y: -2.2238016, z: -49.400673}
+  - cluster: 3
+    id: 680
+    position: {x: 28.37053, y: -2.2886357, z: 41.441673}
+  - cluster: 6
+    id: 681
+    position: {x: -15.308732, y: -2.389832, z: 46.749527}
+  - cluster: 3
+    id: 682
+    position: {x: 46.31356, y: -2.547996, z: 19.792868}
+  - cluster: 5
+    id: 683
+    position: {x: 23.69949, y: -2.6411517, z: -44.26838}
+  - cluster: 4
+    id: 684
+    position: {x: -42.02951, y: -2.7420125, z: -27.473318}
+  - cluster: 5
+    id: 685
+    position: {x: 49.24472, y: -2.7752345, z: -8.073312}
+  - cluster: 3
+    id: 686
+    position: {x: 36.681087, y: -2.9503188, z: 34.44875}
+  - cluster: 6
+    id: 687
+    position: {x: -4.9021115, y: -3.0272532, z: 48.860485}
+  - cluster: 7
+    id: 688
+    position: {x: -29.419592, y: -3.0794995, z: -39.37398}
+  - cluster: 5
+    id: 689
+    position: {x: 49.427174, y: -3.2027783, z: 9.3856325}
+  - cluster: 2
+    id: 690
+    position: {x: 13.641578, y: -3.298417, z: -48.33603}
+  - cluster: 3
+    id: 691
+    position: {x: 22.268179, y: -3.3006477, z: 44.20729}
+  - cluster: 4
+    id: 692
+    position: {x: -46.1485, y: -3.3411138, z: -17.514383}
+  - cluster: 3
+    id: 693
+    position: {x: 43.19874, y: -3.6074378, z: 25.765884}
+  - cluster: 5
+    id: 694
+    position: {x: 28.79759, y: -3.6280828, z: -39.89579}
+  - cluster: 4
+    id: 695
+    position: {x: -37.934677, y: -3.798787, z: -32.796417}
+  - cluster: 5
+    id: 696
+    position: {x: 50.18646, y: -3.8540854, z: -1.4462568}
+  - cluster: 2
+    id: 697
+    position: {x: 2.8543725, y: -3.8392613, z: -48.648663}
+  - cluster: 3
+    id: 698
+    position: {x: 31.661974, y: -4.003795, z: 38.92692}
+  - cluster: 6
+    id: 699
+    position: {x: -11.496599, y: -4.1120687, z: 48.29892}
+  - cluster: 3
+    id: 700
+    position: {x: 47.674046, y: -4.263173, z: 15.86968}
+  - cluster: 5
+    id: 701
+    position: {x: 19.937485, y: -4.357456, z: -46.02859}
+  - cluster: 4
+    id: 702
+    position: {x: -43.96689, y: -4.4448895, z: -23.815071}
+  - cluster: 5
+    id: 703
+    position: {x: 47.087902, y: -4.3640947, z: -11.786718}
+  - cluster: 3
+    id: 704
+    position: {x: 39.30183, y: -4.6659136, z: 31.232628}
+  - cluster: 7
+    id: 705
+    position: {x: -32.735905, y: -4.7926836, z: -37.007427}
+  - cluster: 5
+    id: 706
+    position: {x: 49.88742, y: -4.916794, z: 5.251351}
+  - cluster: 2
+    id: 707
+    position: {x: 9.53666, y: -4.9862065, z: -48.917847}
+  - cluster: 3
+    id: 708
+    position: {x: 25.973043, y: -5.0288844, z: 42.443775}
+  - cluster: 4
+    id: 709
+    position: {x: -47.164246, y: -5.0094814, z: -13.559897}
+  - cluster: 6
+    id: 710
+    position: {x: -17.541224, y: -5.0815196, z: 45.547447}
+  - cluster: 3
+    id: 711
+    position: {x: 45.05411, y: -5.324033, z: 22.043737}
+  - cluster: 5
+    id: 712
+    position: {x: 25.662249, y: -5.375599, z: -42.551247}
+  - cluster: 4
+    id: 713
+    position: {x: -40.408752, y: -5.5123377, z: -29.469086}
+  - cluster: 5
+    id: 714
+    position: {x: 49.612717, y: -5.5533156, z: -5.559171}
+  - cluster: 3
+    id: 715
+    position: {x: 34.679737, y: -5.7198577, z: 36.07966}
+  - cluster: 6
+    id: 716
+    position: {x: -7.440365, y: -5.799038, z: 48.849754}
+  - cluster: 8
+    id: 717
+    position: {x: 48.64725, y: -5.977855, z: 11.830843}
+  - cluster: 5
+    id: 718
+    position: {x: 16.01551, y: -6.0692887, z: -47.339397}
+  - cluster: 4
+    id: 719
+    position: {x: -45.533978, y: -6.1410074, z: -19.987904}
+  - cluster: 3
+    id: 720
+    position: {x: 41.608772, y: -6.3834634, z: 27.7821}
+  - cluster: 7
+    id: 721
+    position: {x: -35.821133, y: -6.531792, z: -34.305717}
+  - cluster: 5
+    id: 722
+    position: {x: 49.935295, y: -6.6290402, z: 1.1160275}
+  - cluster: 6
+    id: 723
+    position: {x: -36.409348, y: -6.4735265, z: 31.891273}
+  - cluster: 7
+    id: 724
+    position: {x: 5.342701, y: -6.57341, z: -48.47993}
+  - cluster: 4
+    id: 725
+    position: {x: -47.965813, y: -6.693222, z: -9.594443}
+  - cluster: 6
+    id: 726
+    position: {x: -13.887206, y: -6.863976, z: 47.429207}
+  - cluster: 3
+    id: 727
+    position: {x: 46.521782, y: -7.040008, z: 18.177849}
+  - cluster: 5
+    id: 728
+    position: {x: 22.083439, y: -7.115102, z: -44.5824}
+  - cluster: 4
+    id: 729
+    position: {x: -42.50935, y: -7.22312, z: -25.920927}
+  - cluster: 5
+    id: 730
+    position: {x: 48.266533, y: -7.187076, z: -9.488886}
+  - cluster: 3
+    id: 731
+    position: {x: 37.390366, y: -7.4379954, z: 32.969463}
+  - cluster: 6
+    id: 732
+    position: {x: -3.2999637, y: -7.356893, z: 48.18866}
+  - cluster: 5
+    id: 733
+    position: {x: 49.215866, y: -7.6915774, z: 7.742243}
+  - cluster: 5
+    id: 734
+    position: {x: 11.953929, y: -7.7588696, z: -48.1285}
+  - cluster: 3
+    id: 735
+    position: {x: 23.294882, y: -7.680746, z: 42.84472}
+  - cluster: 4
+    id: 736
+    position: {x: -46.74158, y: -7.8357363, z: -16.068079}
+  - cluster: 6
+    id: 737
+    position: {x: -19.533836, y: -7.719644, z: 43.91561}
+  - cluster: 3
+    id: 738
+    position: {x: 43.558228, y: -8.10262, z: 24.146929}
+  - cluster: 5
+    id: 739
+    position: {x: 27.038652, y: -7.9650774, z: -40.070198}
+  - cluster: 7
+    id: 740
+    position: {x: -38.47757, y: -8.265247, z: -31.195587}
+  - cluster: 5
+    id: 741
+    position: {x: 49.553303, y: -8.335238, z: -2.99818}
+  - cluster: 6
+    id: 742
+    position: {x: -33.318295, y: -8.097029, z: 34.451694}
+  - cluster: 3
+    id: 743
+    position: {x: 32.465813, y: -8.474683, z: 37.43253}
+  - cluster: 4
+    id: 744
+    position: {x: -48.39491, y: -8.38269, z: -5.572675}
+  - cluster: 6
+    id: 745
+    position: {x: -9.892923, y: -8.575415, z: 48.232082}
+  - cluster: 8
+    id: 746
+    position: {x: 47.59861, y: -8.754726, z: 14.189553}
+  - cluster: 5
+    id: 747
+    position: {x: 18.256195, y: -8.836559, z: -46.05748}
+  - cluster: 4
+    id: 748
+    position: {x: -44.249527, y: -8.9328, z: -22.188334}
+  - cluster: 3
+    id: 749
+    position: {x: 39.778778, y: -9.157117, z: 29.609112}
+  - cluster: 7
+    id: 750
+    position: {x: -33.152588, y: -9.129034, z: -35.1721}
+  - cluster: 5
+    id: 751
+    position: {x: 49.387447, y: -9.405332, z: 3.6244624}
+  - cluster: 6
+    id: 752
+    position: {x: -37.930695, y: -9.228888, z: 29.939106}
+  - cluster: 7
+    id: 753
+    position: {x: 7.8024096, y: -9.351812, z: -48.067966}
+  - cluster: 3
+    id: 754
+    position: {x: 26.819016, y: -9.438582, z: 40.865543}
+  - cluster: 4
+    id: 755
+    position: {x: -47.600098, y: -9.534246, z: -12.069794}
+  - cluster: 6
+    id: 756
+    position: {x: -16.099766, y: -9.584032, z: 46.1002}
+  - cluster: 8
+    id: 757
+    position: {x: 45.13133, y: -9.820839, z: 20.339184}
+  - cluster: 5
+    id: 758
+    position: {x: 23.92726, y: -9.809039, z: -42.669212}
+  - cluster: 4
+    id: 759
+    position: {x: -40.720913, y: -9.987411, z: -27.768126}
+  - cluster: 5
+    id: 760
+    position: {x: 48.64203, y: -10.010446, z: -7.001751}
+  - cluster: 3
+    id: 761
+    position: {x: 35.270466, y: -10.19973, z: 34.445076}
+  - cluster: 4
+    id: 762
+    position: {x: -48.138382, y: -10.015911, z: -1.5464027}
+  - cluster: 6
+    id: 763
+    position: {x: -5.7592826, y: -10.147021, z: 47.95355}
+  - cluster: 8
+    id: 764
+    position: {x: 48.267426, y: -10.467547, z: 10.14606}
+  - cluster: 5
+    id: 765
+    position: {x: 14.268446, y: -10.534049, z: -47.02321}
+  - cluster: 4
+    id: 766
+    position: {x: -45.604862, y: -10.641954, z: -18.335}
+  - cluster: 3
+    id: 767
+    position: {x: 41.82106, y: -10.88077, z: 26.064968}
+  - cluster: 7
+    id: 768
+    position: {x: -36.142857, y: -10.941855, z: -32.502426}
+  - cluster: 5
+    id: 769
+    position: {x: 49.14414, y: -11.116048, z: -0.455826}
+  - cluster: 6
+    id: 770
+    position: {x: -35.17031, y: -10.93369, z: 32.828014}
+  - cluster: 3
+    id: 771
+    position: {x: 30.00498, y: -11.179956, z: 38.398262}
+  - cluster: 4
+    id: 772
+    position: {x: -48.06701, y: -11.233595, z: -8.043373}
+  - cluster: 6
+    id: 773
+    position: {x: -12.215107, y: -11.344621, z: 47.20437}
+  - cluster: 8
+    id: 774
+    position: {x: 46.28836, y: -11.533675, z: 16.419542}
+  - cluster: 5
+    id: 775
+    position: {x: 20.300066, y: -11.584368, z: -44.463554}
+  - cluster: 4
+    id: 776
+    position: {x: -42.56784, y: -11.704974, z: -24.144423}
+  - cluster: 5
+    id: 777
+    position: {x: 46.857616, y: -11.551325, z: -10.760987}
+  - cluster: 3
+    id: 778
+    position: {x: 37.733902, y: -11.925235, z: 31.208366}
+  - cluster: 8
+    id: 779
+    position: {x: 48.54604, y: -12.182047, z: 6.071087}
+  - cluster: 6
+    id: 780
+    position: {x: -39.04059, y: -11.973422, z: 27.711302}
+  - cluster: 7
+    id: 781
+    position: {x: 10.185443, y: -12.155104, z: -47.305977}
+  - cluster: 3
+    id: 782
+    position: {x: 23.99814, y: -11.98412, z: 40.99415}
+  - cluster: 4
+    id: 783
+    position: {x: -46.571, y: -12.350132, z: -14.379976}
+  - cluster: 6
+    id: 784
+    position: {x: -18.104908, y: -12.256209, z: 44.404728}
+  - cluster: 8
+    id: 785
+    position: {x: 43.50704, y: -12.608866, z: 22.350449}
+  - cluster: 5
+    id: 786
+    position: {x: 25.236189, y: -12.30833, z: -40.05419}
+  - cluster: 7
+    id: 787
+    position: {x: -38.602974, y: -12.710891, z: -29.324175}
+  - cluster: 5
+    id: 788
+    position: {x: 48.452717, y: -12.8121395, z: -4.47277}
+  - cluster: 6
+    id: 789
+    position: {x: -31.915974, y: -12.552596, z: 35.143993}
+  - cluster: 3
+    id: 790
+    position: {x: 32.906883, y: -12.926296, z: 35.60179}
+  - cluster: 4
+    id: 791
+    position: {x: -47.931767, y: -12.877544, z: -3.988673}
+  - cluster: 6
+    id: 792
+    position: {x: -8.146011, y: -12.946805, z: 47.26126}
+  - cluster: 8
+    id: 793
+    position: {x: 47.049324, y: -13.244883, z: 12.420457}
+  - cluster: 5
+    id: 794
+    position: {x: 16.432047, y: -13.304963, z: -45.61535}
+  - cluster: 4
+    id: 795
+    position: {x: -44.03751, y: -13.422667, z: -20.366028}
+  - cluster: 8
+    id: 796
+    position: {x: 39.852165, y: -13.651997, z: 27.749804}
+  - cluster: 7
+    id: 797
+    position: {x: -33.209827, y: -13.386663, z: -33.072517}
+  - cluster: 5
+    id: 798
+    position: {x: 48.415268, y: -13.895061, z: 2.0288374}
+  - cluster: 6
+    id: 799
+    position: {x: -36.58107, y: -13.7662525, z: 30.799925}
+  - cluster: 7
+    id: 800
+    position: {x: 6.057262, y: -13.576899, z: -46.58664}
+  - cluster: 3
+    id: 801
+    position: {x: 27.264427, y: -13.761017, z: 38.8112}
+  - cluster: 4
+    id: 802
+    position: {x: -47.116955, y: -14.052702, z: -10.38577}
+  - cluster: 6
+    id: 803
+    position: {x: -14.379584, y: -14.08349, z: 45.7755}
+  - cluster: 8
+    id: 804
+    position: {x: 44.734085, y: -14.316691, z: 18.481703}
+  - cluster: 5
+    id: 805
+    position: {x: 22.064722, y: -14.257094, z: -42.439632}
+  - cluster: 7
+    id: 806
+    position: {x: -40.589767, y: -14.450863, z: -25.837477}
+  - cluster: 5
+    id: 807
+    position: {x: 47.220272, y: -14.455528, z: -8.328657}
+  - cluster: 6
+    id: 808
+    position: {x: -28.46794, y: -14.151031, z: 37.098267}
+  - cluster: 3
+    id: 809
+    position: {x: 35.484573, y: -14.676976, z: 32.52695}
+  - cluster: 4
+    id: 810
+    position: {x: -46.90432, y: -14.354823, z: -0.023092689}
+  - cluster: 8
+    id: 811
+    position: {x: 47.414467, y: -14.958343, z: 8.4110565}
+  - cluster: 6
+    id: 812
+    position: {x: -39.66254, y: -14.65187, z: 25.205997}
+  - cluster: 7
+    id: 813
+    position: {x: 12.429941, y: -14.962564, z: -46.17041}
+  - cluster: 4
+    id: 814
+    position: {x: -45.0939, y: -15.136177, z: -16.493446}
+  - cluster: 6
+    id: 815
+    position: {x: -19.888668, y: -14.888683, z: 42.45981}
+  - cluster: 8
+    id: 816
+    position: {x: 41.59803, y: -15.382648, z: 24.134375}
+  - cluster: 7
+    id: 817
+    position: {x: -36.025925, y: -15.294896, z: -30.393179}
+  - cluster: 5
+    id: 818
+    position: {x: 47.864483, y: -15.600658, z: -1.9585488}
+  - cluster: 6
+    id: 819
+    position: {x: -33.552174, y: -15.464439, z: 33.364}
+  - cluster: 3
+    id: 820
+    position: {x: 30.252172, y: -15.550999, z: 36.288734}
+  - cluster: 4
+    id: 821
+    position: {x: -47.14849, y: -15.715648, z: -6.3646164}
+  - cluster: 6
+    id: 822
+    position: {x: -10.403245, y: -15.746223, z: 46.17604}
+  - cluster: 8
+    id: 823
+    position: {x: 45.55979, y: -16.02315, z: 14.556655}
+  - cluster: 5
+    id: 824
+    position: {x: 18.388105, y: -16.056469, z: -43.89882}
+  - cluster: 4
+    id: 825
+    position: {x: -42.14839, y: -16.179272, z: -22.17545}
+  - cluster: 5
+    id: 826
+    position: {x: 45.183086, y: -15.927211, z: -11.892011}
+  - cluster: 6
+    id: 827
+    position: {x: -25.00144, y: -15.805462, z: 38.856174}
+  - cluster: 8
+    id: 828
+    position: {x: 37.66293, y: -16.413622, z: 29.194586}
+  - cluster: 8
+    id: 829
+    position: {x: 47.37794, y: -16.67175, z: 4.4089403}
+  - cluster: 6
+    id: 830
+    position: {x: -37.44952, y: -16.524584, z: 28.404263}
+  - cluster: 7
+    id: 831
+    position: {x: 8.381686, y: -16.474302, z: -45.943153}
+  - cluster: 4
+    id: 832
+    position: {x: -45.733883, y: -16.842878, z: -12.552278}
+  - cluster: 6
+    id: 833
+    position: {x: -16.319363, y: -16.762684, z: 43.951393}
+  - cluster: 8
+    id: 834
+    position: {x: 42.910862, y: -17.0951, z: 20.356075}
+  - cluster: 5
+    id: 835
+    position: {x: 23.449486, y: -16.79033, z: -39.966618}
+  - cluster: 7
+    id: 836
+    position: {x: -38.24271, y: -17.115032, z: -27.187574}
+  - cluster: 5
+    id: 837
+    position: {x: 46.876354, y: -17.287027, z: -5.8270288}
+  - cluster: 6
+    id: 838
+    position: {x: -30.203302, y: -17.099356, z: 35.44815}
+  - cluster: 8
+    id: 839
+    position: {x: 32.966835, y: -17.365389, z: 33.4782}
+  - cluster: 4
+    id: 840
+    position: {x: -46.387783, y: -17.223635, z: -2.3866014}
+  - cluster: 6
+    id: 841
+    position: {x: -6.3572593, y: -17.117573, z: 45.419746}
+  - cluster: 8
+    id: 842
+    position: {x: 46.000607, y: -17.734068, z: 10.600038}
+  - cluster: 6
+    id: 843
+    position: {x: -39.643433, y: -17.16787, z: 22.43414}
+  - cluster: 5
+    id: 844
+    position: {x: 14.514478, y: -17.761126, z: -44.67405}
+  - cluster: 4
+    id: 845
+    position: {x: -43.290047, y: -17.898342, z: -18.382128}
+  - cluster: 6
+    id: 846
+    position: {x: -21.53573, y: -17.552639, z: 40.451824}
+  - cluster: 8
+    id: 847
+    position: {x: 39.454144, y: -18.1422, z: 25.659512}
+  - cluster: 8
+    id: 848
+    position: {x: 46.930958, y: -18.381702, z: 0.48151296}
+  - cluster: 6
+    id: 849
+    position: {x: -34.659393, y: -18.297693, z: 31.106716}
+  - cluster: 8
+    id: 850
+    position: {x: 27.324265, y: -17.993443, z: 36.39337}
+  - cluster: 4
+    id: 851
+    position: {x: -45.892902, y: -18.519417, z: -8.604313}
+  - cluster: 6
+    id: 852
+    position: {x: -12.496188, y: -18.514507, z: 44.673595}
+  - cluster: 8
+    id: 853
+    position: {x: 43.804104, y: -18.800503, z: 16.508535}
+  - cluster: 5
+    id: 854
+    position: {x: 20.098207, y: -18.757744, z: -41.838387}
+  - cluster: 7
+    id: 855
+    position: {x: -39.935455, y: -18.882586, z: -23.694126}
+  - cluster: 5
+    id: 856
+    position: {x: 45.387394, y: -18.914257, z: -9.494005}
+  - cluster: 6
+    id: 857
+    position: {x: -26.659332, y: -18.69745, z: 37.11452}
+  - cluster: 8
+    id: 858
+    position: {x: 35.258446, y: -19.14989, z: 30.340109}
+  - cluster: 8
+    id: 859
+    position: {x: 46.03605, y: -19.445915, z: 6.6729093}
+  - cluster: 6
+    id: 860
+    position: {x: -37.712685, y: -19.130465, z: 25.675877}
+  - cluster: 7
+    id: 861
+    position: {x: 10.5619135, y: -19.372616, z: -44.833405}
+  - cluster: 4
+    id: 862
+    position: {x: -44.001434, y: -19.60848, z: -14.5339}
+  - cluster: 6
+    id: 863
+    position: {x: -17.984629, y: -19.3663, z: 41.785522}
+  - cluster: 8
+    id: 864
+    position: {x: 40.827316, y: -19.861187, z: 21.992197}
+  - cluster: 5
+    id: 865
+    position: {x: 24.562029, y: -19.266544, z: -37.366108}
+  - cluster: 7
+    id: 866
+    position: {x: -35.324963, y: -19.521854, z: -27.938875}
+  - cluster: 5
+    id: 867
+    position: {x: 46.07707, y: -20.084694, z: -3.3472192}
+  - cluster: 6
+    id: 868
+    position: {x: -31.45834, y: -19.983068, z: 33.32519}
+  - cluster: 8
+    id: 869
+    position: {x: 30.146458, y: -19.9064, z: 33.921276}
+  - cluster: 4
+    id: 870
+    position: {x: -45.398323, y: -20.078556, z: -4.6724024}
+  - cluster: 6
+    id: 871
+    position: {x: -8.563788, y: -20.04523, z: 44.476402}
+  - cluster: 8
+    id: 872
+    position: {x: 44.303608, y: -20.508652, z: 12.626309}
+  - cluster: 5
+    id: 873
+    position: {x: 16.384455, y: -20.53941, z: -42.839706}
+  - cluster: 7
+    id: 874
+    position: {x: -41.154804, y: -20.614784, z: -20.01778}
+  - cluster: 5
+    id: 875
+    position: {x: 43.300117, y: -20.40792, z: -12.873234}
+  - cluster: 6
+    id: 876
+    position: {x: -23.051928, y: -20.30247, z: 38.424194}
+  - cluster: 8
+    id: 877
+    position: {x: 37.10731, y: -20.895643, z: 26.929838}
+  - cluster: 8
+    id: 878
+    position: {x: 45.66823, y: -21.15699, z: 2.7970572}
+  - cluster: 6
+    id: 879
+    position: {x: -35.20063, y: -20.998518, z: 28.48142}
+  - cluster: 7
+    id: 880
+    position: {x: 6.6561317, y: -20.877113, z: -44.392128}
+  - cluster: 4
+    id: 881
+    position: {x: -44.245155, y: -21.288223, z: -10.651666}
+  - cluster: 6
+    id: 882
+    position: {x: -14.326106, y: -21.17706, z: 42.671455}
+  - cluster: 8
+    id: 883
+    position: {x: 41.787544, y: -21.572302, z: 18.227894}
+  - cluster: 5
+    id: 884
+    position: {x: 21.55314, y: -21.434298, z: -39.54841}
+  - cluster: 7
+    id: 885
+    position: {x: -37.219154, y: -21.386507, z: -24.72658}
+  - cluster: 5
+    id: 886
+    position: {x: 44.808258, y: -21.7682, z: -7.003671}
+  - cluster: 6
+    id: 887
+    position: {x: -27.987211, y: -21.58344, z: 35.033073}
+  - cluster: 8
+    id: 888
+    position: {x: 32.61263, y: -21.811102, z: 31.088291}
+  - cluster: 4
+    id: 889
+    position: {x: -43.88042, y: -21.306427, z: -0.8789109}
+  - cluster: 8
+    id: 890
+    position: {x: 44.394165, y: -22.217916, z: 8.773013}
+  - cluster: 6
+    id: 891
+    position: {x: -37.316124, y: -21.506329, z: 22.703886}
+  - cluster: 7
+    id: 892
+    position: {x: 12.5543585, y: -22.235344, z: -43.248714}
+  - cluster: 4
+    id: 893
+    position: {x: -41.923775, y: -22.32871, z: -16.269278}
+  - cluster: 5
+    id: 894
+    position: {x: 40.744595, y: -21.772873, z: -15.874249}
+  - cluster: 6
+    id: 895
+    position: {x: -19.443077, y: -21.974707, z: 39.4819}
+  - cluster: 8
+    id: 896
+    position: {x: 38.521038, y: -22.622282, z: 23.366617}
+  - cluster: 5
+    id: 897
+    position: {x: 25.729084, y: -21.970572, z: -35.09096}
+  - cluster: 8
+    id: 898
+    position: {x: 44.898678, y: -22.865501, z: -0.95923156}
+  - cluster: 6
+    id: 899
+    position: {x: -32.191616, y: -22.741545, z: 30.784088}
+  - cluster: 7
+    id: 900
+    position: {x: 2.8824453, y: -22.357925, z: -43.573845}
+  - cluster: 8
+    id: 901
+    position: {x: 27.114756, y: -22.266134, z: 33.848274}
+  - cluster: 4
+    id: 902
+    position: {x: -43.912373, y: -22.87703, z: -6.8036356}
+  - cluster: 6
+    id: 903
+    position: {x: -10.5583515, y: -22.888765, z: 42.93499}
+  - cluster: 8
+    id: 904
+    position: {x: 42.330322, y: -23.281813, z: 14.441985}
+  - cluster: 5
+    id: 905
+    position: {x: 17.995283, y: -23.29741, z: -40.710617}
+  - cluster: 7
+    id: 906
+    position: {x: -38.541473, y: -23.162846, z: -21.24916}
+  - cluster: 5
+    id: 907
+    position: {x: 43.113914, y: -23.411974, z: -10.451349}
+  - cluster: 6
+    id: 908
+    position: {x: -24.331816, y: -23.099295, z: 36.239723}
+  - cluster: 8
+    id: 909
+    position: {x: 34.551464, y: -23.623306, z: 27.879972}
+  - cluster: 8
+    id: 910
+    position: {x: 44.082504, y: -23.928732, z: 4.9725575}
+  - cluster: 6
+    id: 911
+    position: {x: -35.104084, y: -23.486542, z: 25.560719}
+  - cluster: 7
+    id: 912
+    position: {x: 8.74617, y: -23.87732, z: -43.14927}
+  - cluster: 4
+    id: 913
+    position: {x: -42.217537, y: -24.005331, z: -12.478893}
+  - cluster: 6
+    id: 914
+    position: {x: -15.872695, y: -23.755104, z: 40.316936}
+  - cluster: 8
+    id: 915
+    position: {x: 39.51592, y: -24.338917, z: 19.700191}
+  - cluster: 5
+    id: 916
+    position: {x: 22.807518, y: -24.177546, z: -37.18855}
+  - cluster: 8
+    id: 917
+    position: {x: 43.730198, y: -24.565453, z: -4.570478}
+  - cluster: 6
+    id: 918
+    position: {x: -28.851614, y: -24.367798, z: 32.551662}
+  - cluster: 7
+    id: 919
+    position: {x: -0.70099205, y: -23.897984, z: -42.538483}
+  - cluster: 8
+    id: 920
+    position: {x: 29.695639, y: -24.324768, z: 31.358582}
+  - cluster: 4
+    id: 921
+    position: {x: -42.690193, y: -24.16989, z: -3.0334566}
+  - cluster: 6
+    id: 922
+    position: {x: -6.793696, y: -24.423744, z: 42.476154}
+  - cluster: 8
+    id: 923
+    position: {x: 42.460827, y: -24.990412, z: 10.661921}
+  - cluster: 7
+    id: 924
+    position: {x: 14.293043, y: -25.045065, z: -41.233723}
+  - cluster: 7
+    id: 925
+    position: {x: -39.373634, y: -24.89165, z: -17.634655}
+  - cluster: 5
+    id: 926
+    position: {x: 41.041103, y: -25.015236, z: -13.616838}
+  - cluster: 6
+    id: 927
+    position: {x: -20.687527, y: -24.635962, z: 37.093185}
+  - cluster: 8
+    id: 928
+    position: {x: 36.00506, y: -25.373323, z: 24.430206}
+  - cluster: 5
+    id: 929
+    position: {x: 26.857634, y: -24.923176, z: -32.953873}
+  - cluster: 8
+    id: 930
+    position: {x: 43.36115, y: -25.635582, z: 1.2922959}
+  - cluster: 6
+    id: 931
+    position: {x: -32.34855, y: -25.31564, z: 27.911322}
+  - cluster: 7
+    id: 932
+    position: {x: 5.021031, y: -25.50796, z: -42.641537}
+  - cluster: 4
+    id: 933
+    position: {x: -41.932995, y: -25.579254, z: -8.713049}
+  - cluster: 5
+    id: 934
+    position: {x: 35.87332, y: -24.998266, z: -21.348782}
+  - cluster: 6
+    id: 935
+    position: {x: -12.28386, y: -25.596495, z: 40.823235}
+  - cluster: 8
+    id: 936
+    position: {x: 40.082977, y: -26.05186, z: 16.007116}
+  - cluster: 5
+    id: 937
+    position: {x: 19.35101, y: -26.062626, z: -38.345352}
+  - cluster: 8
+    id: 938
+    position: {x: 42.183613, y: -26.256115, z: -7.9671416}
+  - cluster: 6
+    id: 939
+    position: {x: -25.251652, y: -25.84494, z: 33.743645}
+  - cluster: 7
+    id: 940
+    position: {x: -4.1068096, y: -25.48206, z: -41.240944}
+  - cluster: 8
+    id: 941
+    position: {x: 31.767303, y: -26.282469, z: 28.434639}
+  - cluster: 5
+    id: 942
+    position: {x: 30.395363, y: -25.822868, z: -28.503239}
+  - cluster: 6
+    id: 943
+    position: {x: -3.1513107, y: -25.849056, z: 41.482334}
+  - cluster: 8
+    id: 944
+    position: {x: 42.173584, y: -26.698288, z: 6.9566984}
+  - cluster: 7
+    id: 945
+    position: {x: 10.578952, y: -26.755009, z: -41.27596}
+  - cluster: 7
+    id: 946
+    position: {x: -39.66291, y: -26.542091, z: -13.965888}
+  - cluster: 5
+    id: 947
+    position: {x: 38.736053, y: -26.65099, z: -16.520586}
+  - cluster: 6
+    id: 948
+    position: {x: -17.137648, y: -26.316603, z: 37.76842}
+  - cluster: 8
+    id: 949
+    position: {x: 37.006916, y: -27.102089, z: 20.877012}
+  - cluster: 5
+    id: 950
+    position: {x: 23.818344, y: -27.006384, z: -34.736958}
+  - cluster: 8
+    id: 951
+    position: {x: 42.245647, y: -27.339544, z: -2.2403474}
+  - cluster: 6
+    id: 952
+    position: {x: -29.139599, y: -26.952435, z: 29.685163}
+  - cluster: 7
+    id: 953
+    position: {x: 1.4395843, y: -27.164745, z: -41.79069}
+  - cluster: 8
+    id: 954
+    position: {x: 26.694382, y: -26.767, z: 31.245363}
+  - cluster: 4
+    id: 955
+    position: {x: -40.846478, y: -26.87423, z: -5.0120277}
+  - cluster: 5
+    id: 956
+    position: {x: 33.607414, y: -27.028395, z: -23.97218}
+  - cluster: 6
+    id: 957
+    position: {x: -8.670338, y: -27.366371, z: 40.776722}
+  - cluster: 8
+    id: 958
+    position: {x: 40.22687, y: -27.761942, z: 12.318971}
+  - cluster: 7
+    id: 959
+    position: {x: 15.739459, y: -27.828463, z: -38.887928}
+  - cluster: 7
+    id: 960
+    position: {x: -36.036034, y: -26.982048, z: -18.406952}
+  - cluster: 8
+    id: 961
+    position: {x: 40.27837, y: -27.935661, z: -11.123327}
+  - cluster: 6
+    id: 962
+    position: {x: -21.604582, y: -27.276766, z: 34.48585}
+  - cluster: 7
+    id: 963
+    position: {x: -7.3027806, y: -27.146425, z: -39.72899}
+  - cluster: 8
+    id: 964
+    position: {x: 33.270424, y: -28.102024, z: 25.151934}
+  - cluster: 5
+    id: 965
+    position: {x: 27.684774, y: -27.97008, z: -30.642277}
+  - cluster: 6
+    id: 966
+    position: {x: 0.27008364, y: -27.332745, z: 40.249657}
+  - cluster: 8
+    id: 967
+    position: {x: 41.47239, y: -28.401823, z: 3.3543408}
+  - cluster: 6
+    id: 968
+    position: {x: -31.760878, y: -27.53613, z: 24.699926}
+  - cluster: 7
+    id: 969
+    position: {x: 6.9491024, y: -28.45509, z: -40.88318}
+  - cluster: 7
+    id: 970
+    position: {x: -39.356674, y: -28.058998, z: -10.292131}
+  - cluster: 5
+    id: 971
+    position: {x: 36.291546, y: -28.38239, z: -19.167194}
+  - cluster: 6
+    id: 972
+    position: {x: -13.679881, y: -28.167591, z: 38.253296}
+  - cluster: 8
+    id: 973
+    position: {x: 37.570892, y: -28.819143, z: 17.269773}
+  - cluster: 5
+    id: 974
+    position: {x: 20.410978, y: -28.853848, z: -35.771473}
+  - cluster: 8
+    id: 975
+    position: {x: 40.750355, y: -29.040016, z: -5.5664244}
+  - cluster: 6
+    id: 976
+    position: {x: -25.6462, y: -28.39853, z: 30.84726}
+  - cluster: 7
+    id: 977
+    position: {x: -1.9541627, y: -28.84749, z: -40.59725}
+  - cluster: 8
+    id: 978
+    position: {x: 28.827625, y: -28.88439, z: 28.575602}
+  - cluster: 5
+    id: 979
+    position: {x: 31.00526, y: -29.049557, z: -26.228392}
+  - cluster: 6
+    id: 980
+    position: {x: -5.1268983, y: -29.034933, z: 40.159245}
+  - cluster: 8
+    id: 981
+    position: {x: 39.934425, y: -29.463799, z: 8.6953}
+  - cluster: 7
+    id: 982
+    position: {x: 12.134043, y: -29.558886, z: -38.94272}
+  - cluster: 5
+    id: 983
+    position: {x: 38.08105, y: -29.628891, z: -13.986074}
+  - cluster: 6
+    id: 984
+    position: {x: -18.068165, y: -28.810003, z: 34.950367}
+  - cluster: 7
+    id: 985
+    position: {x: -10.29596, y: -28.907291, z: -38.00479}
+  - cluster: 8
+    id: 986
+    position: {x: 34.265312, y: -29.854076, z: 21.700153}
+  - cluster: 5
+    id: 987
+    position: {x: 24.50425, y: -29.872816, z: -32.08673}
+  - cluster: 6
+    id: 988
+    position: {x: 3.488956, y: -28.962074, z: 38.88461}
+  - cluster: 8
+    id: 989
+    position: {x: 40.365074, y: -30.10086, z: -0.07372446}
+  - cluster: 6
+    id: 990
+    position: {x: -28.725079, y: -29.176435, z: 26.41441}
+  - cluster: 7
+    id: 991
+    position: {x: 3.4385874, y: -30.152676, z: -40.07729}
+  - cluster: 8
+    id: 992
+    position: {x: 23.831848, y: -29.36105, z: 30.955418}
+  - cluster: 5
+    id: 993
+    position: {x: 33.692795, y: -30.20462, z: -21.521997}
+  - cluster: 6
+    id: 994
+    position: {x: -10.221104, y: -30.04054, z: 38.31954}
+  - cluster: 8
+    id: 995
+    position: {x: 37.68122, y: -30.524649, z: 13.683223}
+  - cluster: 7
+    id: 996
+    position: {x: 16.882416, y: -30.614937, z: -36.260483}
+  - cluster: 8
+    id: 997
+    position: {x: 38.903214, y: -30.740698, z: -8.629692}
+  - cluster: 7
+    id: 998
+    position: {x: -5.143253, y: -30.562706, z: -39.07453}
+  - cluster: 8
+    id: 999
+    position: {x: 30.344887, y: -30.807798, z: 25.480175}
+  - cluster: 5
+    id: 1000
+    position: {x: 28.000397, y: -30.934372, z: -27.972786}
+  - cluster: 6
+    id: 1001
+    position: {x: -1.7305411, y: -30.690386, z: 39.125954}
+  - cluster: 8
+    id: 1002
+    position: {x: 39.2087, y: -31.157093, z: 5.2002735}
+  - cluster: 7
+    id: 1003
+    position: {x: 8.592008, y: -31.278982, z: -38.553368}
+  - cluster: 5
+    id: 1004
+    position: {x: 35.625874, y: -31.351194, z: -16.544203}
+  - cluster: 6
+    id: 1005
+    position: {x: -14.65545, y: -30.524881, z: 35.216595}
+  - cluster: 7
+    id: 1006
+    position: {x: -13.044509, y: -30.768122, z: -36.060585}
+  - cluster: 8
+    id: 1007
+    position: {x: 34.777317, y: -31.574564, z: 18.194487}
+  - cluster: 5
+    id: 1008
+    position: {x: 21.106773, y: -31.659437, z: -32.97101}
+  - cluster: 6
+    id: 1009
+    position: {x: 6.4897757, y: -30.74208, z: 37.35438}
+  - cluster: 8
+    id: 1010
+    position: {x: 38.86149, y: -31.790558, z: -3.2956514}
+  - cluster: 7
+    id: 1011
+    position: {x: 0.11888002, y: -31.86428, z: -38.88563}
+  - cluster: 8
+    id: 1012
+    position: {x: 25.86654, y: -31.564817, z: 28.406475}
+  - cluster: 5
+    id: 1013
+    position: {x: 30.83779, y: -32.02435, z: -23.502316}
+  - cluster: 6
+    id: 1014
+    position: {x: -6.8075576, y: -31.816208, z: 37.81113}
+  - cluster: 7
+    id: 1015
+    position: {x: -19.976463, y: -31.050423, z: -31.612503}
+  - cluster: 8
+    id: 1016
+    position: {x: 37.3335, y: -32.21026, z: 10.153648}
+  - cluster: 7
+    id: 1017
+    position: {x: 13.368666, y: -32.3464, z: -36.262024}
+  - cluster: 8
+    id: 1018
+    position: {x: 36.72277, y: -32.439964, z: -11.4026}
+  - cluster: 7
+    id: 1019
+    position: {x: -8.067513, y: -32.307243, z: -37.227867}
+  - cluster: 8
+    id: 1020
+    position: {x: 31.29118, y: -32.59544, z: 22.13653}
+  - cluster: 5
+    id: 1021
+    position: {x: 24.752575, y: -32.718716, z: -29.187725}
+  - cluster: 6
+    id: 1022
+    position: {x: 1.4482803, y: -32.396862, z: 37.765156}
+  - cluster: 8
+    id: 1023
+    position: {x: 38.046448, y: -32.828297, z: 1.8690056}
+  - cluster: 7
+    id: 1024
+    position: {x: 5.190957, y: -32.993134, z: -37.724026}
+  - cluster: 8
+    id: 1025
+    position: {x: 21.130346, y: -32.27785, z: 30.560717}
+  - cluster: 5
+    id: 1026
+    position: {x: 32.94094, y: -33.102093, z: -18.742191}
+  - cluster: 6
+    id: 1027
+    position: {x: -11.318148, y: -32.308613, z: 35.112934}
+  - cluster: 7
+    id: 1028
+    position: {x: -15.507427, y: -32.674843, z: -33.824757}
+  - cluster: 8
+    id: 1029
+    position: {x: 34.806744, y: -33.262417, z: 14.684717}
+  - cluster: 7
+    id: 1030
+    position: {x: 17.653677, y: -33.400402, z: -33.346115}
+  - cluster: 6
+    id: 1031
+    position: {x: 9.269183, y: -32.642673, z: 35.588367}
+  - cluster: 8
+    id: 1032
+    position: {x: 36.987724, y: -33.474926, z: -6.2401447}
+  - cluster: 7
+    id: 1033
+    position: {x: -2.9797595, y: -33.57332, z: -37.2991}
+  - cluster: 8
+    id: 1034
+    position: {x: 27.288895, y: -33.53521, z: 25.391014}
+  - cluster: 5
+    id: 1035
+    position: {x: 27.756405, y: -33.80731, z: -25.027748}
+  - cluster: 6
+    id: 1036
+    position: {x: -3.519166, y: -33.52498, z: 36.79342}
+  - cluster: 7
+    id: 1037
+    position: {x: -21.790108, y: -32.905838, z: -28.882664}
+  - cluster: 8
+    id: 1038
+    position: {x: 36.498493, y: -33.850887, z: 6.7554164}
+  - cluster: 7
+    id: 1039
+    position: {x: 9.925304, y: -34.067284, z: -35.80254}
+  - cluster: 8
+    id: 1040
+    position: {x: 16.436584, y: -33.28725, z: 32.257072}
+  - cluster: 8
+    id: 1041
+    position: {x: 34.2589, y: -34.15414, z: -13.826588}
+  - cluster: 7
+    id: 1042
+    position: {x: -10.698402, y: -34.072655, z: -35.058514}
+  - cluster: 8
+    id: 1043
+    position: {x: 31.696756, y: -34.30667, z: 18.70679}
+  - cluster: 5
+    id: 1044
+    position: {x: 21.3803, y: -34.45956, z: -29.911304}
+  - cluster: 6
+    id: 1045
+    position: {x: 4.387668, y: -34.13293, z: 36.05237}
+  - cluster: 8
+    id: 1046
+    position: {x: 36.439327, y: -34.455055, z: -1.2192482}
+  - cluster: 7
+    id: 1047
+    position: {x: 1.9700216, y: -34.70398, z: -36.46775}
+  - cluster: 8
+    id: 1048
+    position: {x: 22.913307, y: -34.405926, z: 27.90548}
+  - cluster: 8
+    id: 1049
+    position: {x: 30.029469, y: -34.864258, z: -20.546993}
+  - cluster: 6
+    id: 1050
+    position: {x: -8.041087, y: -34.029068, z: 34.491085}
+  - cluster: 7
+    id: 1051
+    position: {x: -17.572243, y: -34.53401, z: -31.238613}
+  - cluster: 8
+    id: 1052
+    position: {x: 34.299953, y: -34.874943, z: 11.241307}
+  - cluster: 7
+    id: 1053
+    position: {x: 14.214824, y: -35.124046, z: -33.238792}
+  - cluster: 8
+    id: 1054
+    position: {x: 11.754466, y: -34.603508, z: 33.514133}
+  - cluster: 8
+    id: 1055
+    position: {x: 34.759445, y: -35.148663, z: -8.872243}
+  - cluster: 7
+    id: 1056
+    position: {x: -5.7863946, y: -35.29354, z: -35.349728}
+  - cluster: 8
+    id: 1057
+    position: {x: 28.09039, y: -35.322395, z: 22.11129}
+  - cluster: 5
+    id: 1058
+    position: {x: 24.494677, y: -35.54432, z: -26.069107}
+  - cluster: 6
+    id: 1059
+    position: {x: -0.45312306, y: -35.20844, z: 35.33051}
+  - cluster: 7
+    id: 1060
+    position: {x: -22.979218, y: -34.47738, z: -25.736153}
+  - cluster: 8
+    id: 1061
+    position: {x: 35.14294, y: -35.39588, z: 3.5432518}
+  - cluster: 7
+    id: 1062
+    position: {x: 6.6317625, y: -35.7802, z: -34.877735}
+  - cluster: 8
+    id: 1063
+    position: {x: 18.416386, y: -35.392086, z: 29.78396}
+  - cluster: 8
+    id: 1064
+    position: {x: 31.527847, y: -35.878597, z: -15.871536}
+  - cluster: 7
+    id: 1065
+    position: {x: -12.971064, y: -35.842888, z: -32.57376}
+  - cluster: 8
+    id: 1066
+    position: {x: 31.52817, y: -35.908104, z: 15.254564}
+  - cluster: 9
+    id: 1067
+    position: {x: 17.982468, y: -36.18249, z: -30.132303}
+  - cluster: 6
+    id: 1068
+    position: {x: 7.0219, y: -35.905525, z: 34.00411}
+  - cluster: 8
+    id: 1069
+    position: {x: 34.415512, y: -36.038097, z: -4.017995}
+  - cluster: 7
+    id: 1070
+    position: {x: -1.0025841, y: -36.412758, z: -34.793007}
+  - cluster: 8
+    id: 1071
+    position: {x: 24.093039, y: -36.310726, z: 24.846195}
+  - cluster: 8
+    id: 1072
+    position: {x: 26.933935, y: -36.63024, z: -21.896227}
+  - cluster: 6
+    id: 1073
+    position: {x: -4.9159045, y: -35.638462, z: 33.31248}
+  - cluster: 7
+    id: 1074
+    position: {x: -19.16808, y: -36.28977, z: -28.309853}
+  - cluster: 8
+    id: 1075
+    position: {x: 33.17315, y: -36.30383, z: 7.9048386}
+  - cluster: 7
+    id: 1076
+    position: {x: 10.865997, y: -36.84015, z: -32.642284}
+  - cluster: 8
+    id: 1077
+    position: {x: 13.868588, y: -36.539555, z: 31.067436}
+  - cluster: 8
+    id: 1078
+    position: {x: 32.21836, y: -36.822872, z: -11.123602}
+  - cluster: 7
+    id: 1079
+    position: {x: -8.262852, y: -37.01699, z: -33.044594}
+  - cluster: 8
+    id: 1080
+    position: {x: 28.29302, y: -36.96737, z: 18.702078}
+  - cluster: 9
+    id: 1081
+    position: {x: 21.134525, y: -37.247574, z: -26.594688}
+  - cluster: 6
+    id: 1082
+    position: {x: 2.3358355, y: -36.882153, z: 33.454803}
+  - cluster: 8
+    id: 1083
+    position: {x: 33.239254, y: -36.780815, z: 0.58866966}
+  - cluster: 7
+    id: 1084
+    position: {x: 3.534232, y: -37.489166, z: -33.495716}
+  - cluster: 8
+    id: 1085
+    position: {x: 19.867128, y: -37.312126, z: 26.875782}
+  - cluster: 8
+    id: 1086
+    position: {x: 28.560354, y: -37.607822, z: -17.477144}
+  - cluster: 7
+    id: 1087
+    position: {x: -14.805312, y: -37.59054, z: -29.78922}
+  - cluster: 8
+    id: 1088
+    position: {x: 30.679409, y: -37.267124, z: 11.823921}
+  - cluster: 9
+    id: 1089
+    position: {x: 14.6103325, y: -37.89261, z: -29.842726}
+  - cluster: 8
+    id: 1090
+    position: {x: 9.301468, y: -37.661728, z: 31.582525}
+  - cluster: 8
+    id: 1091
+    position: {x: 31.991093, y: -37.56187, z: -6.4516015}
+  - cluster: 7
+    id: 1092
+    position: {x: -3.6493852, y: -38.120644, z: -32.713814}
+  - cluster: 8
+    id: 1093
+    position: {x: 24.643005, y: -38.01201, z: 21.526997}
+  - cluster: 8
+    id: 1094
+    position: {x: 23.637093, y: -38.315296, z: -22.708755}
+  - cluster: 6
+    id: 1095
+    position: {x: -2.0183654, y: -37.158173, z: 31.624798}
+  - cluster: 7
+    id: 1096
+    position: {x: -20.2015, y: -37.885983, z: -25.086185}
+  - cluster: 8
+    id: 1097
+    position: {x: 31.383291, y: -37.457726, z: 4.780092}
+  - cluster: 7
+    id: 1098
+    position: {x: 7.6867967, y: -38.54652, z: -31.539982}
+  - cluster: 8
+    id: 1099
+    position: {x: 15.515746, y: -38.364395, z: 28.224377}
+  - cluster: 8
+    id: 1100
+    position: {x: 29.38021, y: -38.489002, z: -12.952274}
+  - cluster: 7
+    id: 1101
+    position: {x: -10.337483, y: -38.73362, z: -30.397886}
+  - cluster: 8
+    id: 1102
+    position: {x: 27.775003, y: -38.330456, z: 15.220568}
+  - cluster: 9
+    id: 1103
+    position: {x: 17.76672, y: -38.942097, z: -26.580683}
+  - cluster: 6
+    id: 1104
+    position: {x: 4.7865148, y: -38.506336, z: 31.146687}
+  - cluster: 8
+    id: 1105
+    position: {x: 30.835838, y: -38.00445, z: -2.0092614}
+  - cluster: 7
+    id: 1106
+    position: {x: 0.707483, y: -39.192146, z: -31.652674}
+  - cluster: 8
+    id: 1107
+    position: {x: 20.71296, y: -39.041412, z: 23.647484}
+  - cluster: 8
+    id: 1108
+    position: {x: 25.377922, y: -39.303123, z: -18.559393}
+  - cluster: 7
+    id: 1109
+    position: {x: -16.1572, y: -39.281433, z: -26.71003}
+  - cluster: 8
+    id: 1110
+    position: {x: 29.047478, y: -38.215298, z: 8.512825}
+  - cluster: 9
+    id: 1111
+    position: {x: 11.33759, y: -39.591904, z: -29.015635}
+  - cluster: 8
+    id: 1112
+    position: {x: 11.133654, y: -39.3428, z: 28.774092}
+  - cluster: 8
+    id: 1113
+    position: {x: 29.214449, y: -39.037968, z: -8.44148}
+  - cluster: 7
+    id: 1114
+    position: {x: -5.936655, y: -39.824783, z: -30.236944}
+  - cluster: 8
+    id: 1115
+    position: {x: 24.48267, y: -39.44306, z: 18.047703}
+  - cluster: 9
+    id: 1116
+    position: {x: 20.253714, y: -39.983456, z: -22.969454}
+  - cluster: 7
+    id: 1117
+    position: {x: -20.595104, y: -39.26934, z: -21.637077}
+  - cluster: 7
+    id: 1118
+    position: {x: 4.71624, y: -40.248123, z: -29.932184}
+  - cluster: 8
+    id: 1119
+    position: {x: 16.592556, y: -40.025414, z: 25.02913}
+  - cluster: 8
+    id: 1120
+    position: {x: 26.249992, y: -40.10337, z: -14.272183}
+  - cluster: 7
+    id: 1121
+    position: {x: -11.939369, y: -40.43108, z: -27.426622}
+  - cluster: 8
+    id: 1122
+    position: {x: 26.398691, y: -39.198452, z: 11.757748}
+  - cluster: 9
+    id: 1123
+    position: {x: 14.426022, y: -40.62739, z: -26.007751}
+  - cluster: 7
+    id: 1124
+    position: {x: -1.7756139, y: -40.890472, z: -29.347984}
+  - cluster: 8
+    id: 1125
+    position: {x: 20.852139, y: -40.509106, z: 20.185942}
+  - cluster: 9
+    id: 1126
+    position: {x: 21.998924, y: -40.934685, z: -19.070507}
+  - cluster: 7
+    id: 1127
+    position: {x: -16.929766, y: -40.880363, z: -23.376434}
+  - cluster: 9
+    id: 1128
+    position: {x: 8.234799, y: -41.281906, z: -27.623293}
+  - cluster: 8
+    id: 1129
+    position: {x: 12.403077, y: -40.86613, z: 25.579638}
+  - cluster: 8
+    id: 1130
+    position: {x: 26.055462, y: -40.384464, z: -9.928418}
+  - cluster: 7
+    id: 1131
+    position: {x: -7.7716975, y: -41.524227, z: -27.372017}
+  - cluster: 8
+    id: 1132
+    position: {x: 23.441635, y: -40.341156, z: 14.45159}
+  - cluster: 7
+    id: 1133
+    position: {x: -20.28059, y: -40.406017, z: -18.068453}
+  - cluster: 7
+    id: 1134
+    position: {x: 2.0462687, y: -41.938305, z: -27.78903}
+  - cluster: 8
+    id: 1135
+    position: {x: 16.988014, y: -41.431126, z: 21.522676}
+  - cluster: 8
+    id: 1136
+    position: {x: 22.829062, y: -41.58797, z: -14.982063}
+  - cluster: 7
+    id: 1137
+    position: {x: -12.97244, y: -42.091244, z: -24.153782}
+  - cluster: 9
+    id: 1138
+    position: {x: 11.187643, y: -42.288986, z: -24.808357}
+  - cluster: 8
+    id: 1139
+    position: {x: 8.252493, y: -41.176888, z: 25.067463}
+  - cluster: 7
+    id: 1140
+    position: {x: -3.8178072, y: -42.57655, z: -26.569141}
+  - cluster: 8
+    id: 1141
+    position: {x: 20.114065, y: -41.41741, z: 16.479141}
+  - cluster: 9
+    id: 1142
+    position: {x: 18.4766, y: -42.466152, z: -18.910034}
+  - cluster: 7
+    id: 1143
+    position: {x: -17.012413, y: -42.29987, z: -19.80974}
+  - cluster: 9
+    id: 1144
+    position: {x: 5.390313, y: -42.94779, z: -25.611792}
+  - cluster: 8
+    id: 1145
+    position: {x: 12.977946, y: -42.003975, z: 21.935257}
+  - cluster: 7
+    id: 1146
+    position: {x: -9.055505, y: -43.182182, z: -24.100098}
+  - cluster: 9
+    id: 1147
+    position: {x: 13.447353, y: -43.202553, z: -21.56436}
+  - cluster: 9
+    id: 1148
+    position: {x: -0.232442, y: -43.599968, z: -25.065742}
+  - cluster: 8
+    id: 1149
+    position: {x: 16.479925, y: -42.20489, z: 17.655851}
+  - cluster: 9
+    id: 1150
+    position: {x: 19.115885, y: -42.785767, z: -14.929866}
+  - cluster: 7
+    id: 1151
+    position: {x: -13.339024, y: -43.636658, z: -20.554462}
+  - cluster: 9
+    id: 1152
+    position: {x: 8.120004, y: -43.885456, z: -22.89097}
+  - cluster: 9
+    id: 1153
+    position: {x: -5.338246, y: -44.221664, z: -23.271112}
+  - cluster: 9
+    id: 1154
+    position: {x: 14.834536, y: -43.774498, z: -17.936296}
+  - cluster: 9
+    id: 1155
+    position: {x: -16.238155, y: -43.358116, z: -16.029541}
+  - cluster: 9
+    id: 1156
+    position: {x: 2.869163, y: -44.548393, z: -22.89684}
+  - cluster: 9
+    id: 1157
+    position: {x: -9.642796, y: -44.744022, z: -20.391909}
+  - cluster: 9
+    id: 1158
+    position: {x: 10.102732, y: -44.576527, z: -19.653915}
+  - cluster: 9
+    id: 1159
+    position: {x: -1.9893625, y: -45.175213, z: -21.666456}
+  - cluster: 9
+    id: 1160
+    position: {x: -12.819406, y: -44.831932, z: -16.571615}
+  - cluster: 9
+    id: 1161
+    position: {x: 5.3100896, y: -45.274727, z: -20.074999}
+  - cluster: 9
+    id: 1162
+    position: {x: -6.156415, y: -45.698364, z: -19.334282}
+  - cluster: 9
+    id: 1163
+    position: {x: 0.80701727, y: -45.88405, z: -19.257336}
+  - cluster: 9
+    id: 1164
+    position: {x: -9.295437, y: -45.865623, z: -16.067152}
+  - cluster: 9
+    id: 1165
+    position: {x: 6.8438463, y: -45.30992, z: -16.55366}
+  - cluster: 9
+    id: 1166
+    position: {x: -3.0502973, y: -46.349907, z: -17.318926}
+  - cluster: 9
+    id: 1167
+    position: {x: 2.834402, y: -45.90573, z: -15.955137}
+  - cluster: 9
+    id: 1168
+    position: {x: -5.9346256, y: -46.36461, z: -14.394757}

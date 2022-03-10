@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7194109741792051482
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
 --- !u!21 &2100000
 Material:
   serializedVersion: 6
@@ -19,13 +32,28 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - Vector1_3F8F140D: 0.185
     - Vector1_5F76E7F1: 180
     - Vector1_7C3BB857: 0.32
     - Vector1_7C5EC556: 10
     - Vector1_C6B979F6: 0.427
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _ShadowColor: 0
     - _ShadowLerp: 0.343
     - _ShadowMultiplier: 0
@@ -33,3 +61,4 @@ Material:
     - Color_D507E794: {r: 1, g: 0.5666982, b: 0, a: 0}
     - Vector3_EB3096C0: {r: 0, g: -0.5, b: -1, a: 0}
     - _Color: {r: 0.447, g: 0.34685603, b: 0.282057, a: 1}
+  m_BuildTextureStacks: []

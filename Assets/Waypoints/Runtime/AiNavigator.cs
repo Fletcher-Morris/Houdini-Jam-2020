@@ -22,7 +22,7 @@ public class AiNavigator
 	private float m_pathRefreshTimer;
 	private Transform m_prevTarget;
 	private Vector3 m_prevTargetPosition;
-	public List<AiWaypoint> pathFound = new List<AiWaypoint>();
+	public List<ushort> pathFound = new List<ushort>();
 
 	[HideInInspector] private Vector3 targetPosition;
 
@@ -91,7 +91,7 @@ public class AiNavigator
 						{
 							if (m_closestWaypointToTarget == null)
 								RecalculatePath();
-							else if (newWaypoint.id != m_closestWaypointToTarget.id) RecalculatePath();
+							else if (newWaypoint.Id != m_closestWaypointToTarget.Id) RecalculatePath();
 							m_closestWaypointToTarget = newWaypoint;
 						}
 					}
@@ -135,9 +135,9 @@ public class AiNavigator
 			RaycastHit hit;
 			if (Physics.Raycast(end.normalized * 1000, -end.normalized, out hit, 1000, raycastLayermask))
 			{
-				if (debugLines && WaypointManager.Instance.lineDebugOpacity > 0.0f)
+				if (debugLines && WaypointManager.Instance.LineDebugOpacity > 0.0f)
 					Debug.DrawLine(end.normalized * 1000, hit.point,
-						Color.yellow * WaypointManager.Instance.lineDebugOpacity, pathRefreshInterval);
+						Color.yellow * WaypointManager.Instance.LineDebugOpacity, pathRefreshInterval);
 				end = hit.point;
 			}
 		}
@@ -145,7 +145,7 @@ public class AiNavigator
 		if (target != null)
 		{
 			m_prevTargetPosition = end;
-			pathFound            = WaypointManager.GetPath(self.position, end);
+			pathFound = WaypointManager.GetPath(self.position, end);
 			if (pathFound == null)
 			{
 				Debug.LogWarning($"Could not find path from '{self.position}' to '{end}'!");
@@ -157,27 +157,30 @@ public class AiNavigator
 		}
 	}
 
-	public AiWaypoint GetWaypointFromIndex(int index)
+	public ushort GetWaypointFromIndex(int index)
 	{
-		if (index == -1 || index >= pathFound.Count || pathFound.Count == 0) return null;
+		if (index == -1 || index >= pathFound.Count || pathFound.Count == 0) return 0;
 		return pathFound[index];
 	}
 
 	public void DrawLines(Vector3 start, float delta)
 	{
 		if (!initialized) return;
-		if (WaypointManager.Instance.lineDebugOpacity <= 0.0f) return;
+		if (pathFound == null) return;
+		if (WaypointManager.Instance.LineDebugOpacity <= 0.0f) return;
 		if (pathFound.Count > 0)
 		{
-			var lineCol = Color.white;
-			lineCol.a = WaypointManager.Instance.lineDebugOpacity;
-			var n = GetWaypointFromIndex(nextWaypoint);
-			if (n != null && debugLines) Debug.DrawLine(start, n.position, lineCol);
-			for (var i = 0; i < pathFound.Count - 1; i++)
+            Color lineCol = Color.white;
+			lineCol.a = WaypointManager.Instance.LineDebugOpacity;
+            ushort n = GetWaypointFromIndex(nextWaypoint);
+			if (n != 0 && debugLines) Debug.DrawLine(start, WaypointManager.GetWaypoint(n).Position, lineCol);
+			for (int i = 0; i < pathFound.Count - 1; i++)
 			{
-				if (pathFound[i] != null)
-					Debug.DrawLine(pathFound[i].position, pathFound[i + 1].position, lineCol);
-			}
+				if (pathFound[i] != 0)
+                {
+                    Debug.DrawLine(WaypointManager.GetWaypoint(pathFound[i]).Position, WaypointManager.GetWaypoint(pathFound[i + 1]).Position, lineCol);
+                }
+            }
 		}
 	}
 }

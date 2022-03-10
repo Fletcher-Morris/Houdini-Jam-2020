@@ -40,6 +40,7 @@ public class GrassComputeController : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		return;
 		if (Application.isPlaying == false)
 		{
 			OnDisable();
@@ -72,6 +73,7 @@ public class GrassComputeController : MonoBehaviour
 
 	private void OnEnable()
 	{
+		return;
 		Debug.Assert(m_compute is null, "The grass compute shader is null", gameObject);
 		Debug.Assert(material is null,  "The material is null",             gameObject);
 

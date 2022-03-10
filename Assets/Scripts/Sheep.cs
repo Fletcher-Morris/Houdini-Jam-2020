@@ -95,30 +95,35 @@ public class Sheep : MonoBehaviour
 	{
 		if (navigator.pathFound != null)
 		{
-			var last = navigator.GetWaypointFromIndex(Mathf.Max(0, navigator.prevWaypoint));
-			var next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
+            AiWaypoint last = WaypointManager.GetWaypoint(navigator.GetWaypointFromIndex(Mathf.Max(0, navigator.prevWaypoint)));
+            AiWaypoint next = WaypointManager.GetWaypoint(navigator.GetWaypointFromIndex(navigator.nextWaypoint));
 			if (next != null && last != null)
 			{
-				var lastDist = Vector3.Distance(transform.position, last.position);
-				var nextDist = Vector3.Distance(transform.position, next.position);
+                float lastDist = Vector3.Distance(transform.position, last.Position);
+                float nextDist = Vector3.Distance(transform.position, next.Position);
 				if (nextDist < lastDist + navigator.waypointTollerance)
 				{
 					navigator.prevWaypoint++;
 					navigator.nextWaypoint++;
-					next = navigator.GetWaypointFromIndex(navigator.nextWaypoint);
+					next = WaypointManager.GetWaypoint(navigator.GetWaypointFromIndex(navigator.nextWaypoint));
 				}
 
 				if (navigator.nextWaypoint >= navigator.pathFound.Count)
-					targetPosition  = transform.position;
-				else targetPosition = next.position;
-			}
+                {
+                    targetPosition = transform.position;
+                }
+                else
+                {
+                    targetPosition = next.Position;
+                }
+            }
 			else if (next != null)
 			{
-				targetPosition = next.position;
+				targetPosition = next.Position;
 			}
 		}
 
-		var posDiff = targetPosition - transform.position;
+        Vector3 posDiff = targetPosition - transform.position;
 
 		if (posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
 		{
@@ -133,9 +138,9 @@ public class Sheep : MonoBehaviour
 		{
 			Vector3 lookAt;
 			if (targetPosition != Vector3.zero && targetPosition != transform.position)
-			{
-				lookAt               = targetPosition;
-				m_lastTargetPosition = targetPosition;
+            {
+                lookAt = targetPosition;
+                m_lastTargetPosition = targetPosition;
 			}
 			else if (m_lastTargetPosition != Vector3.zero && m_lastTargetPosition != transform.position)
 			{
@@ -143,12 +148,11 @@ public class Sheep : MonoBehaviour
 			}
 			else
 			{
-				lookAt               = Random.onUnitSphere.normalized;
-				m_lastTargetPosition = lookAt;
+                lookAt = Random.onUnitSphere.normalized;
+                m_lastTargetPosition = lookAt;
 			}
 
-			var forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt)
-				.normalized;
+            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
 			//Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, delta);
 			var newRotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
 			transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotationSpeed * delta);

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c0199064f3d465a978d2c2f7a9ca71, type: 3}
+  m_Name: Grass Scatter
+  m_EditorClassIdentifier: 
+  _scatter: 0
+  _delete: 0
+  _createdGrass: []
+  _placementMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _sinkValue: 2
+  _randomScatter: 5
+  _spawnableObjects:
+  - objectName: Grass 0
+    number: 500
+    prefab: {fileID: 2115475608874850911, guid: af1dd3b3212034079909d9fa3d7285f2,
+      type: 3}
+    minSpawnHeight: 0
+    maxSpawnHeight: 0

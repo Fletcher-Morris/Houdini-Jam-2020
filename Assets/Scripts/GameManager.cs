@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[ExecuteInEditMode]
 public class GameManager : MonoBehaviour
 {
 	public static GameManager Instance;
@@ -16,35 +17,49 @@ public class GameManager : MonoBehaviour
 
 	public List<Sheep> SheepList = new List<Sheep>();
 
-	private void Awake()
+	[SerializeField] private Camera _cullingCam;
+
+    [SerializeField] private WaypointManager _waypointManager;
+    public WaypointManager WaypointManager { get => _waypointManager; }
+
+	[SerializeField] private GrassScatter _grassScatterer;
+    public GrassScatter GrassScatterer { get => _grassScatterer; }
+
+
+
+    private void Awake()
 	{
 		Instance = this;
 	}
 
 	private void Start()
 	{
-		WaypointManager.Instance.UpdateWaypoints();
-		GrassScatter.Instance.Scatter();
-
 		remainingTime = gameLength;
 	}
 
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Home))
-			SceneManager.LoadScene(0);
-		else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+        if (Input.GetKeyDown(KeyCode.Home))
+            SceneManager.LoadScene(0);
+        else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
 
 		if (runClock)
 		{
-			remainingTime          -= Time.deltaTime;
-			remainingTime          =  remainingTime.Clamp(0, gameLength);
-			remainingTimeText.text =  remainingTime.CeilToInt().ToString();
+            remainingTime -= Time.deltaTime;
+            remainingTime = remainingTime.Clamp(0, gameLength);
+            remainingTimeText.text = remainingTime.CeilToInt().ToString();
 			if (remainingTime <= 0.0f) TimeUp();
 		}
+
+		_waypointManager.DrawLines(_cullingCam);
 	}
 
-	private void OnGUI()
+    private void FixedUpdate()
+    {
+		_waypointManager.FixedUpdate();
+    }
+
+    private void OnGUI()
 	{
 		GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
 		//GUILayout.Space(50.0f);
@@ -58,6 +73,8 @@ public class GameManager : MonoBehaviour
 		});
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
+
+		_waypointManager.DebugGui();
 	}
 
 	public static void CollectSheep(Sheep sheep)
