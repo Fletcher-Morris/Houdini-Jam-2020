@@ -36,15 +36,13 @@ public class GameManager : MonoBehaviour
 
 	private void Start()
 	{
-		_waypointManager.Start();
+		if (_waypointManager.Reinitialise || _waypointManager.WaypointCount == 0)
+		{
+			StartCoroutine(_waypointManager.Initialise());
+		}
 
 		remainingTime = gameLength;
 	}
-	
-	public void FixClusters()
-    {
-		StartCoroutine(_waypointManager.FixClusters());
-    }
 
 	private void Update()
 	{
@@ -65,7 +63,10 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-		_waypointManager.FixedUpdate();
+		if(_waypointManager.Reinitialise)
+        {
+			StartCoroutine(_waypointManager.Initialise());
+        }
     }
 
     private void OnGUI()

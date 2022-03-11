@@ -115,6 +115,11 @@ public class AiNavigator
 
 	public void RecalculatePath(Vector3 end)
 	{
+		if(!WaypointManager.IsInitialised)
+		{
+			return;
+		}
+
 		if (!initialized)
 		{
 			Debug.LogWarning("Not initialized!");

@@ -19,8 +19,16 @@ public class WaypointManager : ScriptableObject
 		}
 	}
 
+	private bool _initialised = false;
+    public static bool IsInitialised
+    {
+        get
+        {
+            return Instance._initialised;
+        }
+    }
 
-	[SerializeField] private List<WaypointPath> _bakedPaths = new List<WaypointPath>();
+    [SerializeField] private List<WaypointPath> _bakedPaths = new List<WaypointPath>();
 	public List<WaypointPath> BakedPaths { get => _bakedPaths; }
 	[SerializeField] private bool _storeKnownPaths = true;
 	[SerializeField] private int _knownPathsUsed;
@@ -34,7 +42,7 @@ public class WaypointManager : ScriptableObject
 	[SerializeField] private int _maxConnections = 10;
 
 	[SerializeField] private bool _deleteAll;
-	[SerializeField] private bool _reinitialise;
+	public bool Reinitialise;
 
 	[SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
 	public float LineDebugOpacity { get => _lineDebugOpacity; set => _lineDebugOpacity = value; }
@@ -44,6 +52,7 @@ public class WaypointManager : ScriptableObject
 	[SerializeField] private bool _showClusters = true;
 	[SerializeField] private int _clusterCount = 10;
 	[SerializeField] private bool m_cullLines = true;
+	[SerializeField, Range(0,1)] private float _waitTime = 0.01f;
 
 	[System.Serializable]
     public class WaypointCluster
@@ -69,6 +78,7 @@ public class WaypointManager : ScriptableObject
 	}
 
 	[SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
+	public int WaypointCount => _waypoints.Count;
     public static AiWaypoint GetWaypoint(ushort id)
     {
 		if(id == ushort.MaxValue || id > Instance._waypoints.Count)
@@ -82,15 +92,9 @@ public class WaypointManager : ScriptableObject
 		_waypoints.Remove(waypoint);
     }
 
-
 	private void OnValidate()
 	{
 		if (_deleteAll) DeleteWaypoints();
-	}
-
-	public void FixedUpdate()
-	{
-		if (_reinitialise) Initialise();
 	}
 
 	public void DrawLines(Camera _cullCam)
@@ -104,58 +108,61 @@ public class WaypointManager : ScriptableObject
 			{
                 w1.Connections.ForEach(w2 =>
 				{
-					AiWaypoint conWp = GetWaypoint(w2);
-                    bool cullLine = false;
-					if (_cullCam == null || m_cullLines == false)
-					{
-					}
-					else
-					{
-						float dist = Mathf.Min(Vector3.Distance(_cullCam.transform.position, w1.Position),
-							Vector3.Distance(_cullCam.transform.position, conWp.Position));
-						cullLine = dist > camToPlanetDist;
-					}
-
-					int showCluster = Mathf.Lerp(0.0f, (float)_clusterCount, _showCluster).CeilToInt();
-					if (_showCluster <= 0) showCluster = -1;
-					if ((showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster) || !_showClusters)
-					{
-						if (cullLine == false)
+					if(w1.Id > w2)
+                    {
+						AiWaypoint conWp = GetWaypoint(w2);
+						bool cullLine = false;
+						if (_cullCam == null || m_cullLines == false)
 						{
-							Color lineCol = Color.grey;
-							if (_showClusters)
-							{
-								if (w1.Cluster == conWp.Cluster)
-								{
-									lineCol = ((int)conWp.Cluster).NumberToColor(_clusterCount);
-								}
+						}
+						else
+						{
+							float dist = Mathf.Min(Vector3.Distance(_cullCam.transform.position, w1.Position),
+								Vector3.Distance(_cullCam.transform.position, conWp.Position));
+							cullLine = dist > camToPlanetDist;
+						}
 
-								lineCol.a = LineDebugOpacity;
-
-								bool coreCluster = false;
-								WaypointCluster waypointCluster = GetCluster(w1.Cluster);
-								if (waypointCluster != null)
-								{
-									if (waypointCluster.ClusterCore == w1.Id)
-									{
-										coreCluster = true;
-									}
-								}
-								waypointCluster = GetCluster(conWp.Cluster);
-								if (waypointCluster != null)
-								{
-									if (waypointCluster.ClusterCore == conWp.Id)
-									{
-										coreCluster = true;
-									}
-								}
-								if (coreCluster) lineCol.a = 1;
-							}
-							else
+						int showCluster = Mathf.Lerp(0.0f, (float)_clusters.Count, _showCluster).CeilToInt();
+						if (_showCluster <= 0) showCluster = -1;
+						if ((showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster) || !_showClusters)
+						{
+							if (cullLine == false)
 							{
-								lineCol.a = LineDebugOpacity;
+								Color lineCol = Color.grey;
+								if (_showClusters)
+								{
+									if (w1.Cluster == conWp.Cluster)
+									{
+										lineCol = ((int)conWp.Cluster).NumberToColor(_clusters.Count);
+									}
+
+									lineCol.a = LineDebugOpacity;
+
+									bool coreCluster = false;
+									WaypointCluster waypointCluster = GetCluster(w1.Cluster);
+									if (waypointCluster != null)
+									{
+										if (waypointCluster.ClusterCore == w1.Id)
+										{
+											coreCluster = true;
+										}
+									}
+									waypointCluster = GetCluster(conWp.Cluster);
+									if (waypointCluster != null)
+									{
+										if (waypointCluster.ClusterCore == conWp.Id)
+										{
+											coreCluster = true;
+										}
+									}
+									if (coreCluster) lineCol.a = 1;
+								}
+								else
+								{
+									lineCol.a = LineDebugOpacity;
+								}
+								Debug.DrawLine(w1.Position, conWp.Position, lineCol);
 							}
-							Debug.DrawLine(w1.Position, conWp.Position, lineCol);
 						}
 					}
 				});
@@ -181,18 +188,19 @@ public class WaypointManager : ScriptableObject
 
 	public void Start()
     {
-		if (_reinitialise || _waypoints.Count == 0) Initialise();
+		if (Reinitialise || _waypoints.Count == 0) Initialise();
     }
 
-	public void Initialise()
+	public IEnumerator Initialise()
 	{
-		_reinitialise = false;
+		Reinitialise = false;
+		_initialised = false;
 
 		DeleteWaypoints();
 
-		var points = Extensions.FibonacciPoints(_waypointQuantity);
+        List<Vector3> points = Extensions.FibonacciPoints(_waypointQuantity);
 
-		points.ForEach(p =>
+		foreach(Vector3 p in points)
 		{
             Vector3 pos = p.normalized * _raydius;
 
@@ -205,7 +213,7 @@ public class WaypointManager : ScriptableObject
 					_waypoints.Add(new AiWaypoint(hit.point + pos.normalized));
 				}
 			}
-		});
+		}
 
 		points = Extensions.FibonacciPoints(_clusterCount);
 		_clusters = new List<WaypointCluster>();
@@ -225,14 +233,14 @@ public class WaypointManager : ScriptableObject
 
 		Debug.Log($"Created {_waypoints.Count} waypoints!");
 
-		UpdateConnections();
+		yield return UpdateConnections();
 	}
 
-	public void UpdateConnections()
+	public IEnumerator UpdateConnections()
 	{
-		_waypoints.ForEach(w1 =>
+		foreach(AiWaypoint w1 in _waypoints)
 		{
-			_waypoints.ForEach(w2 =>
+			foreach (AiWaypoint w2 in _waypoints)
 			{
 				if (w1 != w2)
 				{
@@ -259,13 +267,15 @@ public class WaypointManager : ScriptableObject
 								{
 									w1.ClusterConnections.Add(w2.Id);
 									w2.ClusterConnections.Add(w1.Id);
+
+									if(_waitTime > 0) yield return null;
 								}
 							}
 						}
 					}
 				}
-			});
-		});
+			}
+		}
 
         AiWaypoint[] remove = _waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
 		while (remove.Length > 0)
@@ -274,7 +284,7 @@ public class WaypointManager : ScriptableObject
 			remove = _waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
 		}
 
-		GameManager.Instance?.FixClusters();
+		yield return FixClusters();
 	}
 
 	public IEnumerator FixClusters()
@@ -345,7 +355,7 @@ public class WaypointManager : ScriptableObject
 							cwp.Cluster = wp.Cluster;
 							Debug.Log($"Re-clustered Waypoint '{cwp.Id}'");
 							fixedCount++;
-							yield return new WaitForSecondsRealtime(0.01f);
+							if (_waitTime > 0) yield return new WaitForSecondsRealtime(_waitTime);
 						}
 					}
 				}
@@ -353,7 +363,46 @@ public class WaypointManager : ScriptableObject
 			tries++;
 		}
 
-		foreach(WaypointCluster cluster in _clusters)
+		List<AiWaypoint> waypoints = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue);
+		maxTries = waypoints.Count();
+		tries = 0;
+
+		while (tries <= maxTries)
+		{
+			waypoints = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue);
+			if(waypoints.Count >= 1)
+            {
+				int tries2 = waypoints.Count();
+				ushort newCluster = (ushort)_clusters.Count;
+				_clusters.Add(new WaypointCluster(newCluster));
+				_clusters[newCluster].ClusterCore = waypoints[0].Id;
+				waypoints[0].Cluster = newCluster;
+				while (tries2 <= maxTries)
+				{
+					foreach (AiWaypoint wp in waypoints)
+					{
+						if (wp.Cluster != ushort.MaxValue)
+						{
+							foreach (ushort c in wp.Connections)
+							{
+								AiWaypoint cwp = GetWaypoint(c);
+								if (cwp.Cluster == ushort.MaxValue)
+								{
+									cwp.Cluster = wp.Cluster;
+									Debug.Log($"Re-clustered Waypoint '{cwp.Id}'");
+									fixedCount++;
+									yield return new WaitForSecondsRealtime(_waitTime);
+								}
+							}
+						}
+					}
+					tries2++;
+				}
+			}
+			tries++;
+		}
+
+		foreach (WaypointCluster cluster in _clusters)
         {
 			cluster.Waypoints = new List<ushort>();
 			foreach(AiWaypoint wp in _waypoints)
@@ -361,6 +410,7 @@ public class WaypointManager : ScriptableObject
 				if(wp.Cluster == cluster.Id)
                 {
 					cluster.Waypoints.Add(wp.Id);
+					if (_waitTime > 0) yield return new WaitForSecondsRealtime(_waitTime);
                 }
             }
         }
@@ -368,7 +418,8 @@ public class WaypointManager : ScriptableObject
 		Debug.Log($"Re-clustered {fixedCount} Waypoints");
 
 		yield return null;
-    }
+		_initialised = true;
+	}
 
 	public static AiWaypoint Closest(Vector3 pos)
 	{
