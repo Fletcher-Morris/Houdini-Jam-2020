@@ -171,7 +171,7 @@ public class AiNavigator
 		if (pathFound.Count > 0)
 		{
             Color lineCol = Color.white;
-			lineCol.a = WaypointManager.Instance.LineDebugOpacity;
+			lineCol.a = WaypointManager.Instance.LineDebugOpacity * 5;
             ushort n = GetWaypointFromIndex(nextWaypoint);
 			if (n != 0 && debugLines) Debug.DrawLine(start, WaypointManager.GetWaypoint(n).Position, lineCol);
 			for (int i = 0; i < pathFound.Count - 1; i++)

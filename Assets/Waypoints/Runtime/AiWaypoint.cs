@@ -33,8 +33,8 @@ public class AiWaypoint
 	{
 		Connections.ForEach(w => WaypointManager.GetWaypoint(w).Connections.Remove(id));
 		Connections.ForEach(w => WaypointManager.GetWaypoint(w).ClusterConnections.Remove(id));
-		WaypointManager.Instance.WaypointClusters[Cluster].Remove(id);
-		WaypointManager.Instance.Waypoints.Remove(this);
+		WaypointManager.Instance.Clusters[Cluster].Waypoints.Remove(id);
+		WaypointManager.Instance.RemoveWaypoint(this);
 	}
 }
 

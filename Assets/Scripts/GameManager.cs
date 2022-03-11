@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -34,8 +36,15 @@ public class GameManager : MonoBehaviour
 
 	private void Start()
 	{
+		_waypointManager.Start();
+
 		remainingTime = gameLength;
 	}
+	
+	public void FixClusters()
+    {
+		StartCoroutine(_waypointManager.FixClusters());
+    }
 
 	private void Update()
 	{
@@ -51,7 +60,7 @@ public class GameManager : MonoBehaviour
 			if (remainingTime <= 0.0f) TimeUp();
 		}
 
-		_waypointManager.DrawLines(_cullingCam);
+		_waypointManager?.DrawLines(_cullingCam);
 	}
 
     private void FixedUpdate()

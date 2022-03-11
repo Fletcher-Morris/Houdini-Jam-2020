@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -38,16 +39,49 @@ public class WaypointManager : ScriptableObject
 	[SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
 	public float LineDebugOpacity { get => _lineDebugOpacity; set => _lineDebugOpacity = value; }
 
+	[SerializeField, Range(0.0f, 1.0f)] private float _showCluster;
+
 	[SerializeField] private bool _showClusters = true;
 	[SerializeField] private int _clusterCount = 10;
 	[SerializeField] private bool m_cullLines = true;
 
-	private List<List<ushort>> _waypointClusters = new List<List<ushort>>();
-	public List<List<ushort>> WaypointClusters { get => _waypointClusters; }
+	[System.Serializable]
+    public class WaypointCluster
+    {
+		public ushort Id;
+		public List<ushort> Waypoints = new List<ushort>();
+		public ushort ClusterCore;
+
+        public WaypointCluster(int id)
+        {
+            Id = (ushort)id;
+        }
+    }
+	[SerializeField] private List<WaypointCluster> _clusters = new List<WaypointCluster>();
+	public List<WaypointCluster> Clusters { get => _clusters; }
+	public WaypointCluster GetCluster(ushort id)
+	{
+		if (id == ushort.MaxValue || id > Instance._clusters.Count)
+		{
+			return null;
+		}
+		return Instance._clusters[id];
+	}
 
 	[SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
-	public List<AiWaypoint> Waypoints { get => _waypoints; }
-	public static AiWaypoint GetWaypoint(ushort id) => Instance._waypoints.Find(wp => wp.Id == id);
+    public static AiWaypoint GetWaypoint(ushort id)
+    {
+		if(id == ushort.MaxValue || id > Instance._waypoints.Count)
+        {
+			return null;
+        }
+        return Instance._waypoints[id];
+    }
+	public void RemoveWaypoint(AiWaypoint waypoint)
+    {
+		_waypoints.Remove(waypoint);
+    }
+
 
 	private void OnValidate()
 	{
@@ -56,7 +90,7 @@ public class WaypointManager : ScriptableObject
 
 	public void FixedUpdate()
 	{
-		if (_reinitialise) UpdateWaypoints();
+		if (_reinitialise) Initialise();
 	}
 
 	public void DrawLines(Camera _cullCam)
@@ -66,11 +100,11 @@ public class WaypointManager : ScriptableObject
 			float camToPlanetDist = 0.0f;
 			if (m_cullLines && _cullCam != null)
 				camToPlanetDist = Vector3.Distance(_cullCam.transform.position, Vector3.zero);
-			Waypoints.ForEach(w1 =>
+			_waypoints.ForEach(w1 =>
 			{
                 w1.Connections.ForEach(w2 =>
 				{
-					AiWaypoint connectedWp = GetWaypoint(w2);
+					AiWaypoint conWp = GetWaypoint(w2);
                     bool cullLine = false;
 					if (_cullCam == null || m_cullLines == false)
 					{
@@ -78,16 +112,51 @@ public class WaypointManager : ScriptableObject
 					else
 					{
 						float dist = Mathf.Min(Vector3.Distance(_cullCam.transform.position, w1.Position),
-							Vector3.Distance(_cullCam.transform.position, connectedWp.Position));
+							Vector3.Distance(_cullCam.transform.position, conWp.Position));
 						cullLine = dist > camToPlanetDist;
 					}
 
-					if (cullLine == false)
+					int showCluster = Mathf.Lerp(0.0f, (float)_clusterCount, _showCluster).CeilToInt();
+					if (_showCluster <= 0) showCluster = -1;
+					if ((showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster) || !_showClusters)
 					{
-                        Color lineCol = w1.Cluster == connectedWp.Cluster ? _showClusters ? ((int)connectedWp.Cluster).NumberToColor(_clusterCount) : Color.magenta
-							: Color.grey;
-						lineCol.a = LineDebugOpacity;
-						Debug.DrawLine(w1.Position, connectedWp.Position, lineCol);
+						if (cullLine == false)
+						{
+							Color lineCol = Color.grey;
+							if (_showClusters)
+							{
+								if (w1.Cluster == conWp.Cluster)
+								{
+									lineCol = ((int)conWp.Cluster).NumberToColor(_clusterCount);
+								}
+
+								lineCol.a = LineDebugOpacity;
+
+								bool coreCluster = false;
+								WaypointCluster waypointCluster = GetCluster(w1.Cluster);
+								if (waypointCluster != null)
+								{
+									if (waypointCluster.ClusterCore == w1.Id)
+									{
+										coreCluster = true;
+									}
+								}
+								waypointCluster = GetCluster(conWp.Cluster);
+								if (waypointCluster != null)
+								{
+									if (waypointCluster.ClusterCore == conWp.Id)
+									{
+										coreCluster = true;
+									}
+								}
+								if (coreCluster) lineCol.a = 1;
+							}
+							else
+							{
+								lineCol.a = LineDebugOpacity;
+							}
+							Debug.DrawLine(w1.Position, conWp.Position, lineCol);
+						}
 					}
 				});
 			});
@@ -106,11 +175,16 @@ public class WaypointManager : ScriptableObject
 	{
 		_deleteAll = false;
 		_waypoints = new List<AiWaypoint>();
-		_waypointClusters = new List<List<ushort>>();
+		_clusters = new List<WaypointCluster>();
 		_bakedPaths = new List<WaypointPath>();
 	}
 
-	public void UpdateWaypoints()
+	public void Start()
+    {
+		if (_reinitialise || _waypoints.Count == 0) Initialise();
+    }
+
+	public void Initialise()
 	{
 		_reinitialise = false;
 
@@ -134,10 +208,10 @@ public class WaypointManager : ScriptableObject
 		});
 
 		points = Extensions.FibonacciPoints(_clusterCount);
-		_waypointClusters = new List<List<ushort>>(_clusterCount);
+		_clusters = new List<WaypointCluster>();
 		for (int i = 0; i < _clusterCount; i++)
 		{
-			_waypointClusters.Add(new List<ushort>());
+			_clusters.Add(new WaypointCluster(i));
 		}
 
         ushort id = 0;
@@ -146,19 +220,19 @@ public class WaypointManager : ScriptableObject
 			w.Id = id;
 			id++;
 			w.Cluster = (ushort) points.ClosestPoint(w.Position);
-			_waypointClusters[w.Cluster].Add(w.Id);
+			_clusters[w.Cluster].Waypoints.Add(w.Id);
 		});
 
-		Debug.Log($"Created {Waypoints.Count} waypoints!");
+		Debug.Log($"Created {_waypoints.Count} waypoints!");
 
 		UpdateConnections();
 	}
 
 	public void UpdateConnections()
 	{
-		Waypoints.ForEach(w1 =>
+		_waypoints.ForEach(w1 =>
 		{
-			Waypoints.ForEach(w2 =>
+			_waypoints.ForEach(w2 =>
 			{
 				if (w1 != w2)
 				{
@@ -193,22 +267,117 @@ public class WaypointManager : ScriptableObject
 			});
 		});
 
-        AiWaypoint[] remove = Waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
+        AiWaypoint[] remove = _waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
 		while (remove.Length > 0)
 		{
 			remove[0].Remove();
-			remove = Waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
+			remove = _waypoints.FindAll(w => w.Connections.Count > _maxConnections).ToArray();
 		}
+
+		GameManager.Instance?.FixClusters();
 	}
+
+	public IEnumerator FixClusters()
+    {
+		foreach(WaypointCluster cluster in _clusters)
+        {
+			if (cluster.Waypoints.Count == 0) continue;
+			Vector3 avPos = Vector3.zero;
+            cluster.Waypoints.ForEach(wp =>
+			{
+				avPos += GetWaypoint(wp).Position;
+			});
+			avPos.x = avPos.x / cluster.Waypoints.Count;
+			avPos.y = avPos.y / cluster.Waypoints.Count;
+			avPos.z = avPos.z / cluster.Waypoints.Count;
+            float dist = Mathf.Infinity;
+			cluster.Waypoints.ForEach(w =>
+			{
+				AiWaypoint wp = GetWaypoint(w);
+				var d = Vector3.Distance(avPos, wp.Position);
+				if (d < dist)
+				{
+					cluster.ClusterCore = wp.Id;
+					dist = d;
+				}
+			});
+			cluster.Waypoints.ForEach(w =>
+			{
+				AiWaypoint start = GetWaypoint(w);
+				AiWaypoint end = GetWaypoint(cluster.ClusterCore);
+				if(start != end)
+                {
+					List<ushort> path = GetBakedPath(start, end);
+					if (path == null || path.Count == 0)
+					{
+						start.Cluster = ushort.MaxValue;
+					}
+					else
+					{
+						path.ForEach(pwp =>
+						{
+							AiWaypoint wp = GetWaypoint(pwp);
+							if (wp.Cluster != start.Cluster)
+							{
+								start.Cluster = ushort.MaxValue;
+							}
+						});
+					}
+				}
+			});
+		}
+
+		int maxTries = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue).Count();
+		int tries = 0;
+		int fixedCount = 0;
+
+		while (tries <= maxTries && fixedCount <= maxTries)
+		{
+			foreach(AiWaypoint wp in _waypoints)
+			{
+				if (wp.Cluster != ushort.MaxValue)
+				{
+					foreach(ushort c in wp.Connections)
+					{
+						AiWaypoint cwp = GetWaypoint(c);
+						if (cwp.Cluster == ushort.MaxValue)
+						{
+							cwp.Cluster = wp.Cluster;
+							Debug.Log($"Re-clustered Waypoint '{cwp.Id}'");
+							fixedCount++;
+							yield return new WaitForSecondsRealtime(0.01f);
+						}
+					}
+				}
+			}
+			tries++;
+		}
+
+		foreach(WaypointCluster cluster in _clusters)
+        {
+			cluster.Waypoints = new List<ushort>();
+			foreach(AiWaypoint wp in _waypoints)
+            {
+				if(wp.Cluster == cluster.Id)
+                {
+					cluster.Waypoints.Add(wp.Id);
+                }
+            }
+        }
+
+		Debug.Log($"Re-clustered {fixedCount} Waypoints");
+
+		yield return null;
+    }
 
 	public static AiWaypoint Closest(Vector3 pos)
 	{
 		if (Instance == null) return null;
-		if (Instance.Waypoints == null) return null;
-		if (Instance.Waypoints.Count == 0) return null;
+		if (Instance._waypoints == null) return null;
+		if (Instance._waypoints.Count == 0) return null;
 		AiWaypoint node = null;
 		var dist = Mathf.Infinity;
-		Instance.Waypoints.ForEach(w =>
+		Instance._waypoints.ForEach(w =>
 		{
 			var d = Vector3.Distance(pos, w.Position);
 			if (d < dist)
@@ -276,7 +445,7 @@ public class WaypointManager : ScriptableObject
 	public static List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end)
 	{
 		List<ushort> result = null;
-		if (start.Cluster == end.Cluster) result = Breadthwise(start, end, Instance.WaypointClusters[start.Cluster]);
+		if (start.Cluster == end.Cluster) result = Breadthwise(start, end, Instance.Clusters[start.Cluster].Waypoints);
 		if (result != null) return result;
 		result = Breadthwise(start, end, null);
 		return result;
@@ -286,12 +455,16 @@ public class WaypointManager : ScriptableObject
 	{
         bool searchAll = true;
 		if (searchList == null)
-			//  No cluster provided, search all waypoints.
-			searchList = Instance.Waypoints.Select(wp => wp.Id).ToList();
-		else
-			searchAll = searchList.Count == Instance.Waypoints.Count;
+        {
+            //  No cluster provided, search all waypoints.
+            searchList = Instance._waypoints.Select(wp => wp.Id).ToList();
+        }
+        else
+        {
+            searchAll = searchList.Count == Instance._waypoints.Count;
+        }
 
-		var result = new List<ushort>();
+        var result = new List<ushort>();
 		var visited = new List<ushort>();
 		var work = new Queue<ushort>();
 
