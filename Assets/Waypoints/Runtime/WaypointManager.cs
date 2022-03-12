@@ -19,7 +19,7 @@ public class WaypointManager : ScriptableObject
 		}
 	}
 
-	private bool _initialised = false;
+	[SerializeField, HideInInspector] private bool _initialised = false;
     public static bool IsInitialised
     {
         get
@@ -70,11 +70,11 @@ public class WaypointManager : ScriptableObject
 	public List<WaypointCluster> Clusters { get => _clusters; }
 	public WaypointCluster GetCluster(ushort id)
 	{
-		if (id == ushort.MaxValue || id > Instance._clusters.Count)
+		if (id == ushort.MaxValue || id > _clusters.Count)
 		{
 			return null;
 		}
-		return Instance._clusters[id];
+		return _clusters[id];
 	}
 
 	[SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
@@ -87,6 +87,14 @@ public class WaypointManager : ScriptableObject
         }
         return Instance._waypoints[id];
     }
+	public AiWaypoint GetWaypointInstance(ushort id)
+	{
+		if (id == ushort.MaxValue || id > _waypoints.Count)
+		{
+			return null;
+		}
+		return _waypoints[id];
+	}
 	public void RemoveWaypoint(AiWaypoint waypoint)
     {
 		_waypoints.Remove(waypoint);
@@ -110,7 +118,7 @@ public class WaypointManager : ScriptableObject
 				{
 					if(w1.Id > w2)
                     {
-						AiWaypoint conWp = GetWaypoint(w2);
+						AiWaypoint conWp = GetWaypointInstance(w2);
 						bool cullLine = false;
 						if (_cullCam == null || m_cullLines == false)
 						{
@@ -184,6 +192,7 @@ public class WaypointManager : ScriptableObject
 		_waypoints = new List<AiWaypoint>();
 		_clusters = new List<WaypointCluster>();
 		_bakedPaths = new List<WaypointPath>();
+		_initialised = false;
 	}
 
 	public void Start()
@@ -465,7 +474,7 @@ public class WaypointManager : ScriptableObject
 	{
 		if (Instance._storeKnownPaths)
 		{
-			WaypointPath foundBakedPath = Instance.BakedPaths.Find(print => print.A == start.Id && print.B == end.Id);
+			WaypointPath foundBakedPath = Instance.BakedPaths.Find(print => print._a == start.Id && print._b == end.Id);
 			if (foundBakedPath != null)
 			{
 				//Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
@@ -473,7 +482,7 @@ public class WaypointManager : ScriptableObject
 				return foundBakedPath.Path;
 			}
 
-			foundBakedPath = Instance.BakedPaths.Find(print => print.A == end.Id && print.B == start.Id);
+			foundBakedPath = Instance.BakedPaths.Find(print => print._a == end.Id && print._b == start.Id);
 			if (foundBakedPath != null)
 			{
 				//Debug.Log($"Using pre-baked path between waypoints '{start.id}' & '{end.id}'.");
