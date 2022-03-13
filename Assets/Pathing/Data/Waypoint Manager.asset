@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b4c1862f5db84ef78091d2a478c940a, type: 3}
   m_Name: Waypoint Manager
   m_EditorClassIdentifier: 
-  _initialised: 1
   _deleteAll: 0
   Reinitialise: 0
   Settings:
