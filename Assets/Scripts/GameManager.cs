@@ -21,8 +21,8 @@ public class GameManager : MonoBehaviour
 
 	[SerializeField] private Camera _cullingCam;
 
-    [SerializeField] private WaypointManager _waypointManager;
-    public WaypointManager WaypointManager { get => _waypointManager; }
+    [SerializeField] private Pathing.WaypointManager _waypointManager;
+    public Pathing.WaypointManager WaypointManager { get => _waypointManager; }
 
 	[SerializeField] private GrassScatter _grassScatterer;
     public GrassScatter GrassScatterer { get => _grassScatterer; }
@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (_waypointManager.Reinitialise || _waypointManager.WaypointCount == 0)
 		{
-			StartCoroutine(_waypointManager.Initialise());
+			_waypointManager.Initialise();
 		}
 
 		remainingTime = gameLength;
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     {
 		if(_waypointManager.Reinitialise)
         {
-			StartCoroutine(_waypointManager.Initialise());
+			_waypointManager.Initialise();
         }
     }
 

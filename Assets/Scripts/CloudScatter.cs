@@ -60,9 +60,9 @@ public class CloudScatter : MonoBehaviour
 			var layerHeight = baseLayerHeight;
 			if (layer > 0) layerHeight += additionLayerHeight * layer;
 			var r = newLayer.AddComponent<Rotator>();
-			r.axis             = new Vector3(0.2f, 1.0f, 0.0f);
-			r.degreesPerSecond = 3.0f / (layer + 1);
-			r.rotationMode     = Rotator.RotationMode.World;
+			r._axis             = new Vector3(0.2f, 1.0f, 0.0f);
+			r._minDegreesPerSecond = 3.0f / (layer + 1);
+			r._rotationMode     = Rotator.RotationMode.World;
 
 			var points = new List<Vector3>();
 			var samples = cloudsPerLayer;
