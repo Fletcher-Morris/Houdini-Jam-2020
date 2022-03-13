@@ -28,9 +28,9 @@ public class AiWaypointVolume : MonoBehaviour
     private void DrawLines()
     {
         Color col = Color.green;
-        for(int i = 0; i < _points.Count - 1; i++)
+        for (int i = 0; i < _points.Count - 1; i++)
         {
-            Debug.DrawLine(_points[i], _points[i+1], col);
+            Debug.DrawLine(_points[i], _points[i + 1], col);
         }
     }
 
@@ -42,9 +42,9 @@ public class AiWaypointVolume : MonoBehaviour
         int xPoints = (transform.localScale.x * _waypointDensity).RoundToInt();
         int yPoints = (transform.localScale.y * _waypointDensity).RoundToInt();
         int zPoints = (transform.localScale.z * _waypointDensity).RoundToInt();
-        for(int x = 0; x < xPoints; x++)
+        for (int x = 0; x < xPoints; x++)
         {
-            for(int y = 0; y < yPoints; y++)
+            for (int y = 0; y < yPoints; y++)
             {
                 for (int z = 0; z < zPoints; z++)
                 {

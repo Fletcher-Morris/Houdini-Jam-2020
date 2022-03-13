@@ -8,101 +8,101 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class GameManager : MonoBehaviour
 {
-	public static GameManager Instance;
+    public static GameManager Instance;
 
-	public int gameLength = 180;
-	public float remainingTime = 180.0f;
-	public bool runClock;
-	public Text remainingTimeText;
+    public int gameLength = 180;
+    public float remainingTime = 180.0f;
+    public bool runClock;
+    public Text remainingTimeText;
 
-	public int remainingSheep;
+    public int remainingSheep;
 
-	public List<Sheep> SheepList = new List<Sheep>();
+    public List<Sheep> SheepList = new List<Sheep>();
 
-	[SerializeField] private Camera _cullingCam;
+    [SerializeField] private Camera _cullingCam;
 
     [SerializeField] private Pathing.WaypointManager _waypointManager;
     public Pathing.WaypointManager WaypointManager { get => _waypointManager; }
 
-	[SerializeField] private GrassScatter _grassScatterer;
+    [SerializeField] private GrassScatter _grassScatterer;
     public GrassScatter GrassScatterer { get => _grassScatterer; }
 
 
 
     private void Awake()
-	{
-		Instance = this;
-	}
+    {
+        Instance = this;
+    }
 
-	private void Start()
-	{
-		if (_waypointManager.Reinitialise || _waypointManager.WaypointCount == 0)
-		{
-			_waypointManager.Initialise();
-		}
+    private void Start()
+    {
+        if (_waypointManager.Reinitialise || _waypointManager.WaypointCount == 0)
+        {
+            _waypointManager.Initialise();
+        }
 
-		remainingTime = gameLength;
-	}
+        remainingTime = gameLength;
+    }
 
-	private void Update()
-	{
+    private void Update()
+    {
         if (Input.GetKeyDown(KeyCode.Home))
             SceneManager.LoadScene(0);
         else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
 
-		if (runClock)
-		{
+        if (runClock)
+        {
             remainingTime -= Time.deltaTime;
             remainingTime = remainingTime.Clamp(0, gameLength);
             remainingTimeText.text = remainingTime.CeilToInt().ToString();
-			if (remainingTime <= 0.0f) TimeUp();
-		}
+            if (remainingTime <= 0.0f) TimeUp();
+        }
 
-		_waypointManager?.DrawLines(_cullingCam);
-	}
+        _waypointManager?.DrawLines(_cullingCam);
+    }
 
     private void FixedUpdate()
     {
-		if(_waypointManager.Reinitialise)
+        if (_waypointManager.Reinitialise)
         {
-			_waypointManager.Initialise();
+            _waypointManager.Initialise();
         }
     }
 
     private void OnGUI()
-	{
-		GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
-		//GUILayout.Space(50.0f);
-		GUILayout.BeginHorizontal();
-		GUILayout.Label("Quality");
-		var level = 0;
-		QualitySettings.names.ToList().ForEach(l =>
-		{
-			if (GUILayout.Button(l)) QualitySettings.SetQualityLevel(level, true);
-			level++;
-		});
-		GUILayout.EndHorizontal();
-		GUILayout.EndArea();
+    {
+        GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
+        //GUILayout.Space(50.0f);
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Quality");
+        var level = 0;
+        QualitySettings.names.ToList().ForEach(l =>
+        {
+            if (GUILayout.Button(l)) QualitySettings.SetQualityLevel(level, true);
+            level++;
+        });
+        GUILayout.EndHorizontal();
+        GUILayout.EndArea();
 
-		_waypointManager.DebugGui();
-	}
+        _waypointManager.DebugGui();
+    }
 
-	public static void CollectSheep(Sheep sheep)
-	{
-		Instance.SheepList.Remove(sheep);
-		Instance.remainingSheep = Instance.SheepList.Count;
-	}
+    public static void CollectSheep(Sheep sheep)
+    {
+        Instance.SheepList.Remove(sheep);
+        Instance.remainingSheep = Instance.SheepList.Count;
+    }
 
-	private void TimeUp()
-	{
-		runClock = false;
-	}
+    private void TimeUp()
+    {
+        runClock = false;
+    }
 
-	public static void AddSheep(Sheep sheep)
-	{
-		if (Instance == null) return;
-		if (Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
-		Instance.SheepList.Add(sheep);
-		Instance.remainingSheep = Instance.SheepList.Count;
-	}
+    public static void AddSheep(Sheep sheep)
+    {
+        if (Instance == null) return;
+        if (Instance.SheepList == null) Instance.SheepList = new List<Sheep>();
+        Instance.SheepList.Add(sheep);
+        Instance.remainingSheep = Instance.SheepList.Count;
+    }
 }
