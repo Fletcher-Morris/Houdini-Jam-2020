@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Pathing
 {
     [CreateAssetMenu(fileName = "Waypoint Manager", menuName = "Scriptables/Waypoints/Waypoint Manager")]
-    public class WaypointManager : ScriptableObject
+    public class WaypointManager : SerializedScriptableObject
     {
         private static WaypointManager _instance;
         public static WaypointManager Instance
@@ -23,18 +25,23 @@ namespace Pathing
 
         private bool _initialised = false;
         [SerializeField] private bool _deleteAll;
-        public bool Reinitialise;
+        public bool RefreshOnChange;
 
         [Space]
         public WaypointManagerSettings Settings = new WaypointManagerSettings(2000, 5, 10, 100);
+        [SerializeField, HideInInspector] private WaypointManagerSettings _prevSettings;
         [Space]
 
-        [SerializeField] private Dictionary<System.Tuple<ushort, ushort>, WaypointPath> _bakedPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+        [OdinSerialize] private Dictionary<System.Tuple<ushort, ushort>, WaypointPath> _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+        [OdinSerialize] private List<WaypointPath> _knownPathsList = new List<WaypointPath>();
         [SerializeField] private bool _storeKnownPaths = true;
         [SerializeField] private int _knownPathsUsed;
         [SerializeField] private int _newPathsCalculated;
+        [SerializeField] private int _clusterSavings;
+        [SerializeField] private int _connectedClusterSavings;
+        [SerializeField] private int _allNodeSearches;
         [SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
-        [SerializeField, Range(0.0f, 1.0f)] private float _showCluster;
+        [SerializeField, Range(0, 50)] private int _showCluster;
         [SerializeField] private bool _showClusters = true;
         [SerializeField] private bool m_cullLines = true;
         [SerializeField] private bool _waitTime;
@@ -90,6 +97,16 @@ namespace Pathing
         {
             if (_deleteAll) DeleteWaypoints();
             if (Settings.UseRecommendedValues) Settings.SetRecommendedValues();
+            if(Settings.Equals(_prevSettings) == false && RefreshOnChange) Initialise();
+        }
+
+        public void GetKnownPaths()
+        {
+            _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+            _knownPathsList.ForEach(p =>
+            {
+                _knownPaths.Add(new System.Tuple<ushort, ushort>(p.Start, p.End), p);
+            });
         }
 
         public void DrawLines(Camera _cullCam)
@@ -117,7 +134,7 @@ namespace Pathing
                                 cullLine = dist > camToPlanetDist;
                             }
 
-                            int showCluster = Mathf.Lerp(0.0f, (float)_clusters.Count, _showCluster).CeilToInt();
+                            int showCluster = _showCluster;
                             if (_showCluster <= 0) showCluster = -1;
                             if ((showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster) || !_showClusters)
                             {
@@ -181,21 +198,29 @@ namespace Pathing
             _deleteAll = false;
             _waypoints = new List<AiWaypoint>();
             _clusters = new List<WaypointCluster>();
-            _bakedPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+            _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+            _knownPathsList = new List<WaypointPath>();
             _initialised = false;
             _knownPathsUsed = 0;
             _newPathsCalculated = 0;
+            _clusterSavings = 0;
+            _connectedClusterSavings = 0;
+            _allNodeSearches = 0;
         }
 
         public void Start()
         {
-            if (Reinitialise || _waypoints.Count == 0) Initialise();
+            GetKnownPaths();
+            if (_waypoints.Count == 0) Initialise();
         }
 
         public void Initialise()
         {
-            Reinitialise = false;
+            _instance = this;
+
             _initialised = false;
+
+            _prevSettings = Settings;
 
             DeleteWaypoints();
 
@@ -488,13 +513,13 @@ namespace Pathing
 
             if (_storeKnownPaths)
             {
-                if (_bakedPaths.TryGetValue(new System.Tuple<ushort, ushort>(start.Id, end.Id), out foundBakedPath))
+                if (_knownPaths.TryGetValue(new System.Tuple<ushort, ushort>(start.Id, end.Id), out foundBakedPath))
                 {
                     _knownPathsUsed++;
                     return foundBakedPath.Path;
                 }
 
-                if (_bakedPaths.TryGetValue(new System.Tuple<ushort, ushort>(end.Id, start.Id), out foundBakedPath))
+                if (_knownPaths.TryGetValue(new System.Tuple<ushort, ushort>(end.Id, start.Id), out foundBakedPath))
                 {
                     _knownPathsUsed++;
                     return foundBakedPath.Path.Reversed();
@@ -502,14 +527,16 @@ namespace Pathing
             }
 
             //  Path is not yet baked.
+            foundBakedPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
             List<ushort> newPath = Breadthwise(start, end);
-            if (newPath != null && foundBakedPath != null)
+            if (newPath != null)
             {
                 foundBakedPath.Path = newPath;
                 _newPathsCalculated++;
                 if (_storeKnownPaths)
                 {
-                    _bakedPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), foundBakedPath);
+                    _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), foundBakedPath);
+                    _knownPathsList.Add(foundBakedPath);
                 }
             }
 
@@ -522,9 +549,10 @@ namespace Pathing
 
             if (start.Cluster == end.Cluster)
             {
-                result = Breadthwise(start, end, _clusters[start.Cluster].Waypoints);
+                result = Breadthwise(start, end, start.Cluster);
                 if (result != null)
                 {
+                    _clusterSavings++;
                     return result;
                 }
                 else
@@ -534,12 +562,13 @@ namespace Pathing
             }
             else if (GetCluster(start.Cluster).ConnectedClusters.Contains(end.Cluster))
             {
-                List<ushort> combinedClusterList = new List<ushort>();
-                combinedClusterList.AddRange(GetCluster(start.Cluster).Waypoints);
-                combinedClusterList.AddRange(GetCluster(end.Cluster).Waypoints);
-                result = Breadthwise(start, end, _clusters[start.Cluster].Waypoints);
+                List<ushort> clusterIds = new List<ushort>();
+                clusterIds.Add(start.Cluster);
+                clusterIds.Add(end.Cluster);
+                result = Breadthwise(start, end, clusterIds);
                 if (result != null)
                 {
+                    _connectedClusterSavings++;
                     return result;
                 }
                 else
@@ -549,6 +578,7 @@ namespace Pathing
             }
 
             result = Breadthwise(start, end, null);
+            _allNodeSearches++;
             return result;
         }
 
@@ -556,7 +586,9 @@ namespace Pathing
         {
             if (GetCluster(clusterId) != null)
             {
-                return Breadthwise(start, end, GetCluster(clusterId).Waypoints);
+                List<ushort> list = new List<ushort>();
+                list.Add(clusterId);
+                return Breadthwise(start, end, list);
             }
             else
             {
@@ -564,14 +596,8 @@ namespace Pathing
             }
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<ushort> searchList)
+        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<ushort> validClusters)
         {
-            if (searchList == null)
-            {
-                //  No cluster provided, search all waypoints.
-                searchList = _waypoints.Select(wp => wp.Id).ToList();
-            }
-
             List<ushort> result = new List<ushort>();
             List<ushort> visited = new List<ushort>();
             Queue<ushort> work = new Queue<ushort>();
@@ -581,7 +607,7 @@ namespace Pathing
             work.Enqueue(start.Id);
             int tries = 0;
 
-            while (work.Count > 0 && tries < searchList.Count)
+            while (work.Count > 0 && tries < _waypoints.Count)
             {
                 tries++;
                 ushort current = work.Dequeue();
@@ -595,12 +621,12 @@ namespace Pathing
                 }
 
                 //Didn't find Node
-                for (var i = 0; i < (currentWp.Connections.Count); i++)
+                for (int i = 0; i < (currentWp.Connections.Count); i++)
                 {
                     ushort currentNeighbour = currentWp.Connections[i];
-                    if (searchList.Contains(currentNeighbour))
+                    AiWaypoint currentNeighbourWp = GetWaypoint(currentNeighbour);
+                    if (validClusters == null || validClusters.Count == 0 || validClusters.Contains(currentNeighbourWp.Cluster))
                     {
-                        AiWaypoint currentNeighbourWp = GetWaypoint(currentNeighbour);
                         if (!visited.Contains(currentNeighbour))
                         {
                             currentNeighbourWp.History = new List<ushort>(currentWp.History);

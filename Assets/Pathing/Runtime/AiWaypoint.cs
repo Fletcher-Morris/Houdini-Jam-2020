@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.Serialization;
 using UnityEngine;
 
 namespace Pathing
@@ -39,9 +40,10 @@ namespace Pathing
         }
     }
 
+    [System.Serializable]
     public class WaypointPath
     {
-        [SerializeField] private System.Tuple<ushort, ushort> t = new System.Tuple<ushort, ushort>(ushort.MaxValue, ushort.MaxValue);
+        [OdinSerialize] private System.Tuple<ushort, ushort> t = new System.Tuple<ushort, ushort>(ushort.MaxValue, ushort.MaxValue);
         [HideInInspector] public List<ushort> Path;
 
         public ushort Start { get => t.Item1; set => t = new System.Tuple<ushort, ushort>(value, t.Item2); }

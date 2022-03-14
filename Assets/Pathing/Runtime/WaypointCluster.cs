@@ -53,18 +53,20 @@ namespace Pathing
                 {
                     Waypoints.Add(wp.Id);
                 }
+            }
 
-                if (ConnectedClusters.Count < WaypointManager.Instance.Clusters.Count - 1)
+            foreach(ushort wp in Waypoints)
+            {
+                AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
+                foreach(ushort c in waypoint.Connections)
                 {
-                    foreach (ushort wpc in wp.Connections)
+                    AiWaypoint connection = WaypointManager.Instance.GetWaypoint(c);
+                    ushort cl = connection.Cluster;
+                    if (cl != Id)
                     {
-                        AiWaypoint wpcw = WaypointManager.Instance.GetWaypoint(wpc);
-                        if (Id != wpcw.Cluster)
+                        if(!ConnectedClusters.Contains(cl))
                         {
-                            if (!ConnectedClusters.Contains(wpcw.Cluster))
-                            {
-                                ConnectedClusters.Add(wpcw.Cluster);
-                            }
+                            ConnectedClusters.Add(cl);
                         }
                     }
                 }

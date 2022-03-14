@@ -36,10 +36,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (_waypointManager.Reinitialise || _waypointManager.WaypointCount == 0)
-        {
-            _waypointManager.Initialise();
-        }
+        _waypointManager.Start();
 
         remainingTime = gameLength;
     }
@@ -63,10 +60,7 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_waypointManager.Reinitialise)
-        {
-            _waypointManager.Initialise();
-        }
+
     }
 
     private void OnGUI()
