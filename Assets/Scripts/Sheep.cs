@@ -137,6 +137,8 @@ public class Sheep : MonoBehaviour
             }
         }
 
+        targetPosition -= targetPosition.normalized;
+
         Vector3 posDiff = targetPosition - transform.position;
 
         if (posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)

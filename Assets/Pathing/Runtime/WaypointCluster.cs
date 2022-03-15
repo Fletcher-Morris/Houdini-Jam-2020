@@ -12,6 +12,9 @@ namespace Pathing
         public ushort ClusterCore;
         public List<ushort> ConnectedClusters = new List<ushort>();
 
+        private List<ushort> _clusterSearchhistory = new List<ushort>();
+        public List<ushort> History { get => _clusterSearchhistory; set => _clusterSearchhistory = value; }
+
         public WaypointCluster(int id)
         {
             Id = (ushort)id;
