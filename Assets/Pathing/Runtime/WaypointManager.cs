@@ -36,7 +36,7 @@ namespace Pathing
         [OdinSerialize] private List<WaypointPath> _knownPathsList = new List<WaypointPath>();
         [SerializeField] private bool _storeKnownPaths = true;
         [SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
-        [SerializeField, Range(0, 50)] private int _showCluster;
+        [SerializeField, Range(0, 50)] private byte _showCluster;
         [SerializeField] private bool _showClusters = true;
         [SerializeField] private bool m_cullLines = true;
         [SerializeField] private List<WaypointCluster> _clusters = new List<WaypointCluster>();
@@ -44,9 +44,9 @@ namespace Pathing
 
         [SerializeField] private WaypointPathingStats _pathingStats = new WaypointPathingStats();
 
-        public WaypointCluster GetCluster(ushort id)
+        public WaypointCluster GetCluster(byte id)
         {
-            if (id == ushort.MaxValue || id > _clusters.Count)
+            if (id == byte.MaxValue || id > _clusters.Count)
             {
                 return null;
             }
@@ -145,7 +145,7 @@ namespace Pathing
                                             lineCol = ((int)conWp.Cluster).NumberToColor(_clusters.Count);
                                         }
 
-                                        if (conWp.Cluster == ushort.MaxValue) lineCol = Color.black;
+                                        if (conWp.Cluster == byte.MaxValue) lineCol = Color.black;
 
                                         lineCol.a = _lineDebugOpacity;
 
@@ -245,7 +245,7 @@ namespace Pathing
             {
                 w.Id = id;
                 id++;
-                w.Cluster = (ushort)points.ClosestPoint(w.Position);
+                w.Cluster = (byte)points.ClosestPoint(w.Position);
                 _clusters[w.Cluster].Waypoints.Add(w.Id);
             });
 
@@ -329,7 +329,7 @@ namespace Pathing
                             List<ushort> path = Breadthwise(start, end, cluster.Id);
                             if (path == null)
                             {
-                                start.Cluster = ushort.MaxValue;
+                                start.Cluster = byte.MaxValue;
                             }
                         }
                     });
@@ -350,15 +350,15 @@ namespace Pathing
                 {
                     cluster.Waypoints.ForEach(wp =>
                     {
-                        GetWaypoint(wp).Cluster = ushort.MaxValue;
+                        GetWaypoint(wp).Cluster = byte.MaxValue;
                     });
-                    cluster.Id = ushort.MaxValue;
+                    cluster.Id = byte.MaxValue;
                 }
             });
-            _clusters.RemoveAll(c => c.Id == ushort.MaxValue);
+            _clusters.RemoveAll(c => c.Id == byte.MaxValue);
 
 
-            int maxTries = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue).Count();
+            int maxTries = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue).Count();
             int tries = 0;
             int fixedCount = 0;
 
@@ -366,12 +366,12 @@ namespace Pathing
             {
                 _waypoints.ForEach(wp =>
                 {
-                    if (wp.Cluster != ushort.MaxValue)
+                    if (wp.Cluster != byte.MaxValue)
                     {
                         wp.Connections.ForEach(c =>
                         {
                             AiWaypoint cwp = GetWaypoint(c);
-                            if (cwp.Cluster == ushort.MaxValue)
+                            if (cwp.Cluster == byte.MaxValue)
                             {
                                 cwp.Cluster = wp.Cluster;
                                 fixedCount++;
@@ -382,17 +382,17 @@ namespace Pathing
                 tries++;
             }
 
-            List<AiWaypoint> nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue);
+            List<AiWaypoint> nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue);
             maxTries = nonClusteredWaypoints.Count();
             tries = 0;
 
             while (tries <= maxTries)
             {
-                nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == ushort.MaxValue);
+                nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue);
                 if (nonClusteredWaypoints.Count >= 1)
                 {
                     int tries2 = nonClusteredWaypoints.Count();
-                    ushort newCluster = (ushort)_clusters.Count;
+                    byte newCluster = (byte)_clusters.Count;
                     _clusters.Add(new WaypointCluster(newCluster));
                     _clusters[newCluster].ClusterCore = nonClusteredWaypoints[0].Id;
                     nonClusteredWaypoints[0].Cluster = newCluster;
@@ -400,12 +400,12 @@ namespace Pathing
                     {
                         nonClusteredWaypoints.ForEach(wp=>
                         {
-                            if (wp.Cluster != ushort.MaxValue)
+                            if (wp.Cluster != byte.MaxValue)
                             {
                                 wp.Connections.ForEach(c =>
                                 {
                                     AiWaypoint cwp = GetWaypoint(c);
-                                    if (cwp.Cluster == ushort.MaxValue)
+                                    if (cwp.Cluster == byte.MaxValue)
                                     {
                                         cwp.Cluster = wp.Cluster;
                                         fixedCount++;
@@ -422,24 +422,6 @@ namespace Pathing
             _clusters.ForEach(cluster =>
             {
                 cluster.FindConnectedClusters();
-            });
-
-            _waypoints.ForEach(wp =>
-            {
-                wp.ClusterConnections = new List<ushort>();
-            });
-
-            _waypoints.ForEach(w1 =>
-            {
-                w1.Connections.ForEach(w2id =>
-                {
-                    AiWaypoint w2 = GetWaypoint(w2id);
-                    if (w1.Cluster == w2.Cluster)
-                    {
-                        w1.ClusterConnections.Add(w2.Id);
-                        w2.ClusterConnections.Add(w1.Id);
-                    }
-                });
             });
 
             _clusters.ForEach(cluster =>
@@ -463,7 +445,7 @@ namespace Pathing
             if (_waypoints == null) return null;
             if (_waypoints.Count == 0) return null;
             AiWaypoint node = null;
-            var dist = Mathf.Infinity;
+            float dist = Mathf.Infinity;
             _waypoints.ForEach(w =>
             {
                 var d = Vector3.Distance(pos, w.Position);
@@ -557,7 +539,7 @@ namespace Pathing
 
             if (startCluster.ConnectedClusters.Contains(end.Cluster))
             {
-                List<ushort> dualClusterIds = new List<ushort>();
+                List<byte> dualClusterIds = new List<byte>();
                 dualClusterIds.Add(start.Cluster);
                 dualClusterIds.Add(end.Cluster);
                 result = Breadthwise(start, end, dualClusterIds);
@@ -572,7 +554,7 @@ namespace Pathing
                 }
             }
 
-            List<ushort> commonClusterIds = startCluster.ConnectedClusters.Intersect(endCluster.ConnectedClusters).ToList();
+            List<byte> commonClusterIds = startCluster.ConnectedClusters.Intersect(endCluster.ConnectedClusters).ToList();
             if (commonClusterIds.Count >= 1)
             {
                 commonClusterIds.Add(start.Cluster);
@@ -585,7 +567,7 @@ namespace Pathing
                 }
             }
 
-            List<ushort> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster);
+            List<byte> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster);
             if(clusterBreathwiseSearch != null)
             {
                 if (clusterBreathwiseSearch.Count >= 1)
@@ -604,11 +586,11 @@ namespace Pathing
             return result;
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, ushort clusterId)
+        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId)
         {
             if (GetCluster(clusterId) != null)
             {
-                List<ushort> list = new List<ushort>();
+                List<byte> list = new List<byte>();
                 list.Add(clusterId);
                 return Breadthwise(start, end, list);
             }
@@ -618,7 +600,7 @@ namespace Pathing
             }
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<ushort> validClusters)
+        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters)
         {
             List<ushort> result = new List<ushort>();
             List<ushort> visited = new List<ushort>();
@@ -666,13 +648,13 @@ namespace Pathing
             return null;
         }
 
-        private List<ushort> ClusterBreadthwise(WaypointCluster start, WaypointCluster end)
+        private List<byte> ClusterBreadthwise(WaypointCluster start, WaypointCluster end)
         {
-            List<ushort> result = new List<ushort>();
-            List<ushort> visited = new List<ushort>();
-            Queue<ushort> work = new Queue<ushort>();
+            List<byte> result = new List<byte>();
+            List<byte> visited = new List<byte>();
+            Queue<byte> work = new Queue<byte>();
 
-            start.History = new List<ushort>();
+            start.History = new List<byte>();
             visited.Add(start.Id);
             work.Enqueue(start.Id);
             int tries = 0;
@@ -680,7 +662,7 @@ namespace Pathing
             while (work.Count > 0 && tries < _waypoints.Count)
             {
                 tries++;
-                ushort current = work.Dequeue();
+                byte current = work.Dequeue();
                 WaypointCluster currentCluster = GetCluster(current);
                 if (current == end.Id)
                 {
@@ -693,11 +675,11 @@ namespace Pathing
                 //Didn't find Cluster
                 for (int i = 0; i < (currentCluster.ConnectedClusters.Count); i++)
                 {
-                    ushort currentNeighbour = currentCluster.ConnectedClusters[i];
+                    byte currentNeighbour = currentCluster.ConnectedClusters[i];
                     WaypointCluster currentNeighbourCl = GetCluster(currentNeighbour);
                     if (!visited.Contains(currentNeighbour))
                     {
-                        currentNeighbourCl.History = new List<ushort>(currentCluster.History);
+                        currentNeighbourCl.History = new List<byte>(currentCluster.History);
                         currentNeighbourCl.History.Add(current);
                         visited.Add(currentNeighbour);
                         work.Enqueue(currentNeighbour);

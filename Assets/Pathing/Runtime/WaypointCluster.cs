@@ -7,17 +7,17 @@ namespace Pathing
     [System.Serializable]
     public class WaypointCluster
     {
-        public ushort Id;
+        public byte Id;
         public List<ushort> Waypoints = new List<ushort>();
         public ushort ClusterCore;
-        public List<ushort> ConnectedClusters = new List<ushort>();
+        public List<byte> ConnectedClusters = new List<byte>();
 
-        private List<ushort> _clusterSearchhistory = new List<ushort>();
-        public List<ushort> History { get => _clusterSearchhistory; set => _clusterSearchhistory = value; }
+        private List<byte> _clusterSearcHistory = new List<byte>();
+        public List<byte> History { get => _clusterSearcHistory; set => _clusterSearcHistory = value; }
 
         public WaypointCluster(int id)
         {
-            Id = (ushort)id;
+            Id = (byte)id;
         }
 
         public void FindNewCore()
@@ -49,7 +49,7 @@ namespace Pathing
         public void FindConnectedClusters()
         {
             Waypoints = new List<ushort>();
-            ConnectedClusters = new List<ushort>();
+            ConnectedClusters = new List<byte>();
             foreach (AiWaypoint wp in WaypointManager.Instance.Waypoints)
             {
                 if (wp.Cluster == Id)
@@ -61,15 +61,20 @@ namespace Pathing
             foreach(ushort wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
-                foreach(ushort c in waypoint.Connections)
+                foreach(byte c in waypoint.Connections)
                 {
                     AiWaypoint connection = WaypointManager.Instance.GetWaypoint(c);
-                    ushort cl = connection.Cluster;
+                    byte cl = connection.Cluster;
                     if (cl != Id)
                     {
+                        WaypointCluster otherCluster = WaypointManager.Instance.GetCluster(cl);
                         if(!ConnectedClusters.Contains(cl))
                         {
                             ConnectedClusters.Add(cl);
+                        }
+                        if(!otherCluster.ConnectedClusters.Contains(Id))
+                        {
+                            otherCluster.ConnectedClusters.Add(Id);
                         }
                     }
                 }

@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 using Pathing;
+using Tick;
 
-[ExecuteInEditMode]
-public class Sheep : MonoBehaviour
+public class Sheep : MonoBehaviour, IManualUpdate
 {
+    [SerializeField, Required] private UpdateManager _updateManager;
+
     [SerializeField] private bool enableMovement = true;
     [SerializeField] private float moveSpeed = 3.0f;
     [SerializeField] private float rotationSpeed = 10.0f;
@@ -28,7 +31,7 @@ public class Sheep : MonoBehaviour
     [SerializeField] private float m_bleatInterval = 5.0f;
     private float m_bleatTimer = 5.0f;
 
-    [SerializeField] private Pathing.AiNavigator navigator = new Pathing.AiNavigator();
+    [SerializeField] private Pathing.AiNavigator navigator = new AiNavigator();
     [SerializeField] private readonly float bounceTilt = 10.0f;
     [SerializeField] private readonly float legBounceAngle = 30.0f;
 
@@ -43,24 +46,9 @@ public class Sheep : MonoBehaviour
     private Vector3 m_lastTargetPosition;
     private float m_legValue;
 
-    private void Start()
+    private void Awake()
     {
-        m_audioSource = GetComponent<AudioSource>();
-        m_bleatPitch = Random.Range(0.8f, 1.2f);
-        m_body = GetComponent<Rigidbody>();
-        GameManager.AddSheep(this);
-        navigator.Initialize(Random.Range(0.0f, updateWaypointInterval), transform);
-    }
-
-    private void Update()
-    {
-        float deltaT = Time.deltaTime;
-
-        navigator.Update(deltaT);
-        navigator.DrawLines(transform.position, deltaT);
-
-        Bouncing(deltaT);
-        Bleating(deltaT);
+        _updateManager.AddToUpdateList(this);
     }
 
     private void Bouncing(float deltaT)
@@ -96,15 +84,6 @@ public class Sheep : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        float deltaT = Time.fixedDeltaTime;
-        gravityDirection = -transform.position.normalized;
-        m_body.AddForce(gravityDirection * 10.0f);
-        Movement(deltaT);
-        Rotation(deltaT);
-    }
-
     private void Movement(float deltaT)
     {
         if (navigator.pathFound != null)
@@ -136,8 +115,6 @@ public class Sheep : MonoBehaviour
                 targetPosition = next.Position;
             }
         }
-
-        targetPosition -= targetPosition.normalized;
 
         Vector3 posDiff = targetPosition - transform.position;
 
@@ -184,5 +161,39 @@ public class Sheep : MonoBehaviour
     public void CollectSheep()
     {
         GameManager.CollectSheep(this);
+    }
+
+    void IManualUpdate.AddToUpdateList()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    void IManualUpdate.OnInitialise()
+    {
+        m_audioSource = GetComponent<AudioSource>();
+        m_bleatPitch = Random.Range(0.8f, 1.2f);
+        m_body = GetComponent<Rigidbody>();
+        GameManager.AddSheep(this);
+        navigator.Initialize(Random.Range(0.0f, updateWaypointInterval), transform);
+    }
+
+    void IManualUpdate.OnManualUpdate(float delta)
+    {
+        Bouncing(delta);
+        Bleating(delta);
+    }
+
+    void IManualUpdate.OnTick(float delta)
+    {
+        navigator.Update(delta);
+        navigator.DrawLines(transform.position, delta);
+    }
+
+    void IManualUpdate.OnManualFixedUpdate(float delta)
+    {
+        gravityDirection = -transform.position.normalized;
+        m_body.AddForce(gravityDirection * 10.0f);
+        Movement(delta);
+        Rotation(delta);
     }
 }

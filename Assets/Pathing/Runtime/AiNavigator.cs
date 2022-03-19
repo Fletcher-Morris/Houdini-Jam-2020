@@ -169,7 +169,7 @@ namespace Pathing
             return pathFound[index];
         }
 
-        public void DrawLines(Vector3 start, float delta)
+        public void DrawLines(Vector3 start, float duration)
         {
             if (!initialized) return;
             if (pathFound == null) return;
@@ -179,12 +179,12 @@ namespace Pathing
                 Color lineCol = Color.white;
                 lineCol.a = WaypointManager.Instance.LineDebugOpacity * 5;
                 ushort n = GetWaypointFromIndex(nextWaypoint);
-                if (n != 0 && debugLines) Debug.DrawLine(start, WaypointManager.Instance.GetWaypoint(n).Position, lineCol);
+                if (n != 0 && debugLines) Debug.DrawLine(start, WaypointManager.Instance.GetWaypoint(n).Position, lineCol, duration);
                 for (int i = 0; i < pathFound.Count - 1; i++)
                 {
                     if (pathFound[i] != 0)
                     {
-                        Debug.DrawLine(WaypointManager.Instance.GetWaypoint(pathFound[i]).Position, WaypointManager.Instance.GetWaypoint(pathFound[i + 1]).Position, lineCol);
+                        Debug.DrawLine(WaypointManager.Instance.GetWaypoint(pathFound[i]).Position, WaypointManager.Instance.GetWaypoint(pathFound[i + 1]).Position, lineCol, duration);
                     }
                 }
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 [ExecuteInEditMode]
 public class GameManager : MonoBehaviour
@@ -21,13 +22,19 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Camera _cullingCam;
 
-    [SerializeField] private Pathing.WaypointManager _waypointManager;
+    [SerializeField, Required] private Tick.UpdateManager _updateManager;
+    public Tick.UpdateManager UpdateManager { get => _updateManager; }
+
+    [SerializeField, Required] private Pathing.WaypointManager _waypointManager;
     public Pathing.WaypointManager WaypointManager { get => _waypointManager; }
 
     [SerializeField] private GrassScatter _grassScatterer;
     public GrassScatter GrassScatterer { get => _grassScatterer; }
 
-
+    private void OnApplicationQuit()
+    {
+        _updateManager.OnApplicationQuit();
+    }
 
     private void Awake()
     {
@@ -43,6 +50,9 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        float delta = Time.deltaTime;
+        _updateManager.OnUpdate(delta);
+
         if (Input.GetKeyDown(KeyCode.Home))
             SceneManager.LoadScene(0);
         else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
@@ -60,7 +70,8 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-
+        float delta = Time.fixedDeltaTime;
+        _updateManager.OnFixedUpdate(delta);
     }
 
     private void OnGUI()
