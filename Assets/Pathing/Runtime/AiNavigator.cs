@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Pathing
@@ -49,18 +50,22 @@ namespace Pathing
             self = newTransform;
         }
 
+        private Task _recalculatePathTask = null;
         public void Update(float delta)
         {
             if (!initialized) return;
             m_pathRefreshTimer -= delta;
-            if (m_pathRefreshTimer <= 0.0f)
+            if (m_pathRefreshTimer <= 0.0f
+                && (_recalculatePathTask == null
+                || _recalculatePathTask.IsCompleted
+                || _recalculatePathTask.IsCanceled))
             {
                 m_pathRefreshTimer = pathRefreshInterval;
-                RecalculateCheck(delta);
+                _recalculatePathTask = RecalculateCheckAsync(delta);
             }
         }
 
-        private void RecalculateCheck(float delta)
+        private async Task RecalculateCheckAsync(float delta)
         {
             if (!initialized)
             {
@@ -73,26 +78,41 @@ namespace Pathing
                 case NavPathUpdateMode.Manual:
                     break;
                 case NavPathUpdateMode.TargetChanged:
-                    if (m_prevTarget != target && target != null) RecalculatePath(target.position);
+                    if (m_prevTarget != target && target != null)
+                    {
+                        await RecalculatePath(target.position);
+                    }
                     break;
+
                 case NavPathUpdateMode.TargetPositionChanged:
                     if (target != null)
+                    {
                         if (m_prevTargetPosition != target.position)
-                            RecalculatePath();
+                        {
+                            await RecalculatePath();
+                        }
+                    }
                     break;
+
                 case NavPathUpdateMode.Always:
                     {
                         if (target != null && self != null)
                         {
-                            var distToTarget = self.Distance(target);
+                            float distToTarget = self.Distance(target);
                             if (distToTarget > waypointTollerance)
                             {
                                 var newWaypoint = WaypointManager.Instance.Closest(target.position);
                                 if (newWaypoint != null)
                                 {
                                     if (m_closestWaypointToTarget == null)
-                                        RecalculatePath();
-                                    else if (newWaypoint.Id != m_closestWaypointToTarget.Id) RecalculatePath();
+                                    {
+                                        await RecalculatePath();
+                                    }
+                                    else if (newWaypoint.Id != m_closestWaypointToTarget.Id)
+                                    {
+                                        await RecalculatePath();
+                                    }
+
                                     m_closestWaypointToTarget = newWaypoint;
                                 }
                             }
@@ -102,19 +122,20 @@ namespace Pathing
             }
         }
 
-        public void RecalculatePath()
+        public async Task RecalculatePath()
         {
             if (target == null)
             {
                 Debug.LogWarning("TARGET IS NULL!");
-                return;
             }
-
-            m_prevTargetPosition = target.transform.position;
-            RecalculatePath(target.transform.position);
+            else
+            {
+                m_prevTargetPosition = target.transform.position;
+                await RecalculatePath(target.transform.position);
+            }
         }
 
-        public void RecalculatePath(Vector3 end)
+        public async Task RecalculatePath(Vector3 end)
         {
             if (!WaypointManager.IsInitialised)
             {

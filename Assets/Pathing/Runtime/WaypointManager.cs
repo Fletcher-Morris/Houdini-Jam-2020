@@ -205,6 +205,7 @@ namespace Pathing
         {
             GetKnownPaths();
             if (_waypoints.Count == 0) Initialise();
+            _initialised = true;
         }
 
         public void Initialise()
