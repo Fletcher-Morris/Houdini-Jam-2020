@@ -8,153 +8,184 @@ public class Sheep : MonoBehaviour, IManualUpdate
 {
     [SerializeField, Required] private UpdateManager _updateManager;
 
-    [SerializeField] private bool enableMovement = true;
-    [SerializeField] private float moveSpeed = 3.0f;
-    [SerializeField] private float rotationSpeed = 10.0f;
-    [SerializeField] private float bounceHeight = 1.0f;
-    [SerializeField] private float bounceSpeed = 4.0f;
-    [SerializeField] private AnimationCurve bounceAnimCurve;
-    [SerializeField] private AnimationCurve legAnimCurve;
+    [Space]
+    [Header("Movement")]
+    [SerializeField] private bool _enableMovement = true;
+    [SerializeField] private float _moveSpeed = 3.0f;
+    [SerializeField] private float _rotationSpeed = 10.0f;
+    [SerializeField] private float _bounceHeight = 1.0f;
+    [SerializeField] private float _bounceSpeed = 4.0f;
+    [SerializeField] private AnimationCurve _bounceAnimCurve;
+    [SerializeField] private AnimationCurve _legAnimCurve;
+    [SerializeField] private Transform _visual;
+    [SerializeField] private Transform _legs;
+    [SerializeField] private readonly float bounceTilt = 10.0f;
+    [SerializeField] private readonly float legBounceAngle = 30.0f;
+    private Vector3 _gravityDirection;
+    [SerializeField] private bool _updateRotation = true;
+    private Vector3 _movementVector;
+    private Rigidbody _rigidBody;
+    private float _bounceTimer;
+    private float _bounceValue;
+    private Vector3 _lastTargetPosition;
+    private float _legValue;
+    private float _bounceDirection = 1.0f;
 
-    [SerializeField] private Transform visual;
-    [SerializeField] private Transform legs;
-
-    private Vector3 gravityDirection;
-    [SerializeField] private bool updateRotation = true;
-
-    [SerializeField] private Transform followTarget;
-    [SerializeField] private float updateWaypointInterval = 2.0f;
-    private Vector3 targetPosition;
-    private Vector3 movementVector;
+    [Space]
+    [Header("Audio")]
     [SerializeField] private List<AudioClip> m_bleats = new List<AudioClip>();
     [SerializeField] private float bleatChance = 0.5f;
     [SerializeField] private float m_bleatInterval = 5.0f;
-    private float m_bleatTimer = 5.0f;
+    private float _bleatTimer = 5.0f;
+    private AudioSource _audioSource;
+    private float _bleatPitch = 1.0f;
 
-    [SerializeField] private Pathing.AiNavigator navigator = new AiNavigator();
-    [SerializeField] private readonly float bounceTilt = 10.0f;
-    [SerializeField] private readonly float legBounceAngle = 30.0f;
+    [Space]
+    [Header("Navigation")]
+    [SerializeField] private IAiTarget _aiTarget;
+    [SerializeField] private Pathing.AiNavigator _navigator = new AiNavigator();
+    [SerializeField] private float _updateWaypointInterval = 2.0f;
 
-    private AudioSource m_audioSource;
-    private float m_bleatPitch = 1.0f;
-
-    private Rigidbody m_body;
-    private float m_bounceDirection = 1.0f;
-
-    private float m_bounceTimer;
-    private float m_bounceValue;
-    private Vector3 m_lastTargetPosition;
-    private float m_legValue;
+    [Space]
+    [Header("Hunger")]
+    [SerializeField] private HungerState _hungerState;
+    public enum HungerState { Sated, SearchingForFood, MovingToFood, Eating}
+    [SerializeField] private float _currentHungerValue = 1.0f;
+    [SerializeField] private float _hungerDeleptionRate = 0.01f;
+    [SerializeField] private Food _targetFood = null;
+    [SerializeField] private float _eatTime = 1.0f;
+    private float _eatTimer = 0;
 
     private void Awake()
     {
         _updateManager.AddToUpdateList(this);
     }
 
-    private void Bouncing(float deltaT)
+    private void Bouncing(float delta)
     {
-        if (movementVector.magnitude > 0)
+        if (_movementVector.magnitude > 0)
         {
-            m_bounceTimer += deltaT * bounceSpeed;
+            _bounceTimer += delta * _bounceSpeed;
         }
         else
         {
-            m_bounceTimer = 0;
+            _bounceTimer = 0;
         }
 
-        m_bounceDirection = Mathf.Lerp(-1, 1, m_bounceTimer.FloorToInt().IsEven().ToInt());
-        m_bounceValue = bounceAnimCurve.Evaluate(m_bounceTimer);
-        m_legValue = legAnimCurve.Evaluate(m_bounceTimer);
-        visual.transform.localPosition = new Vector3(0, m_bounceValue * bounceHeight, 0);
-        legs.localEulerAngles = new Vector3(Mathf.LerpAngle(0, legBounceAngle, m_legValue), 0, 0);
-        visual.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(0.0f, bounceTilt * m_bounceDirection, m_bounceValue));
+        _bounceDirection = Mathf.Lerp(-1, 1, _bounceTimer.FloorToInt().IsEven().ToInt());
+        _bounceValue = _bounceAnimCurve.Evaluate(_bounceTimer);
+        _legValue = _legAnimCurve.Evaluate(_bounceTimer);
+        _visual.transform.localPosition = new Vector3(0, _bounceValue * _bounceHeight, 0);
+        _legs.localEulerAngles = new Vector3(Mathf.LerpAngle(0, legBounceAngle, _legValue), 0, 0);
+        _visual.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(0.0f, bounceTilt * _bounceDirection, _bounceValue));
     }
 
-    private void Bleating(float deltaT)
+    private void Bleating(float delta)
     {
-        if ((m_bleatTimer -= deltaT) <= 0.0f)
+        if ((_bleatTimer -= delta) <= 0.0f)
         {
-            m_bleatTimer = m_bleatInterval;
+            _bleatTimer = m_bleatInterval;
 
             if (Random.Range(0.0f, 1.0f) <= bleatChance)
             {
-                m_audioSource.pitch = m_bleatPitch;
-                m_audioSource.PlayOneShot(m_bleats.RandomItem());
+                _audioSource.pitch = _bleatPitch;
+                _audioSource.PlayOneShot(m_bleats.RandomItem());
             }
         }
     }
 
-    private void Movement(float deltaT)
+    private void Hunger(float delta)
     {
-        if (navigator.pathFound != null)
+        if (_hungerState != HungerState.Eating)
         {
-            AiWaypoint last = WaypointManager.Instance.GetWaypoint(navigator.GetWaypointFromIndex(Mathf.Max(0, navigator.prevWaypoint)));
-            AiWaypoint next = WaypointManager.Instance.GetWaypoint(navigator.GetWaypointFromIndex(navigator.nextWaypoint));
-            if (next != null && last != null)
-            {
-                float lastDist = Vector3.Distance(transform.position, last.Position);
-                float nextDist = Vector3.Distance(transform.position, next.Position);
-                if (nextDist < lastDist + navigator.waypointTollerance)
-                {
-                    navigator.prevWaypoint++;
-                    navigator.nextWaypoint++;
-                    next = WaypointManager.Instance.GetWaypoint(navigator.GetWaypointFromIndex(navigator.nextWaypoint));
-                }
-
-                if (navigator.nextWaypoint >= navigator.pathFound.Count)
-                {
-                    targetPosition = transform.position;
-                }
-                else
-                {
-                    targetPosition = next.Position;
-                }
-            }
-            else if (next != null)
-            {
-                targetPosition = next.Position;
-            }
+            _currentHungerValue -= delta * _hungerDeleptionRate;
         }
 
-        Vector3 posDiff = targetPosition - transform.position;
-
-        if (posDiff.magnitude > 0.05f && enableMovement && targetPosition != Vector3.zero)
+        switch (_hungerState)
         {
-            transform.position += posDiff.normalized * moveSpeed * deltaT;
-            movementVector = transform.position - m_body.position;
-            Physics.SyncTransforms();
+            case HungerState.Sated:
+                _targetFood = null;
+                if(_currentHungerValue <= 0)
+                {
+                    _hungerState = HungerState.SearchingForFood;
+                }
+                break;
+
+            case HungerState.SearchingForFood:
+                _targetFood = null;
+                float closestDist = Mathf.Infinity;
+                foreach (Food food in FindObjectsOfType<Food>())
+                {
+                    if (food.RemainingFood() >= 1)
+                    {
+                        float dist = Vector3.Distance(transform.position, food.transform.position);
+                        if (dist < closestDist)
+                        {
+                            _targetFood = food;
+                            closestDist = dist;
+                        }
+                    }
+                }
+                if (_targetFood != null) _hungerState = HungerState.MovingToFood;
+                break;
+
+            case HungerState.MovingToFood:
+                _navigator.SetTarget(_targetFood);
+                _navigator.SetCurrentNavPosition(transform.position);
+                if (_navigator.HasReachedTarget()) _hungerState = HungerState.Eating;
+                break;
+
+            case HungerState.Eating:
+                if ((_eatTimer -= delta) <= 0)
+                {
+                    _eatTimer = _eatTime;
+                    ((Food)_aiTarget).EatFromFood();
+                    _currentHungerValue += _hungerDeleptionRate * 2.0f;
+
+                    if (_currentHungerValue >= 1) _hungerState = HungerState.Sated;
+                    else if (((Food)_aiTarget).RemainingFood() <= 0) _hungerState = HungerState.SearchingForFood;
+                }
+                break;
+        }
+    }
+
+    private void Movement(float delta)
+    {
+        if (_navigator.HasReachedTarget())
+        {
+
         }
         else
         {
-            movementVector = Vector3.zero;
+            Vector3 newPos = _navigator.Navigate(transform.position, _moveSpeed * delta, 1.0f);
+            transform.position = newPos;
+            Physics.SyncTransforms();
         }
-
     }
 
-    private void Rotation(float deltaT)
+    private void Rotation(float delta)
     {
-        if (updateRotation && Vector3.Distance(transform.position, followTarget.position) > 0.05f)
+        if (_updateRotation && !_navigator.HasReachedTarget())
         {
             Vector3 lookAt;
-            if (targetPosition != Vector3.zero && targetPosition != transform.position)
+            if (!_navigator.MoveTarget.Approximately(Vector3.zero))
             {
-                lookAt = targetPosition;
-                m_lastTargetPosition = targetPosition;
+                lookAt = _navigator.MoveTarget;
+                _lastTargetPosition = _navigator.MoveTarget;
             }
-            else if (m_lastTargetPosition != Vector3.zero && m_lastTargetPosition != transform.position)
+            else if (_lastTargetPosition != Vector3.zero && _lastTargetPosition != transform.position)
             {
-                lookAt = m_lastTargetPosition;
+                lookAt = _lastTargetPosition;
             }
             else
             {
                 lookAt = Random.onUnitSphere.normalized;
-                m_lastTargetPosition = lookAt;
+                _lastTargetPosition = lookAt;
             }
 
-            Vector3 forwardsVec = -Vector3.Cross(-gravityDirection, Quaternion.AngleAxis(90.0f, -gravityDirection) * lookAt).normalized;
-            //Debug.DrawLine(transform.position, transform.position + forwardsVec, Color.red, delta);
-            var newRotation = Quaternion.LookRotation(forwardsVec, -gravityDirection);
-            transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, rotationSpeed * deltaT);
+            Vector3 forwardsVec = -Vector3.Cross(-_gravityDirection, Quaternion.AngleAxis(90.0f, -_gravityDirection) * lookAt).normalized;
+            Quaternion newRotation = Quaternion.LookRotation(forwardsVec, -_gravityDirection);
+            transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, _rotationSpeed * delta);
         }
     }
 
@@ -163,18 +194,15 @@ public class Sheep : MonoBehaviour, IManualUpdate
         GameManager.CollectSheep(this);
     }
 
-    void IManualUpdate.AddToUpdateList()
-    {
-        throw new System.NotImplementedException();
-    }
-
     void IManualUpdate.OnInitialise()
     {
-        m_audioSource = GetComponent<AudioSource>();
-        m_bleatPitch = Random.Range(0.8f, 1.2f);
-        m_body = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
+        _bleatPitch = Random.Range(0.8f, 1.2f);
+        _rigidBody = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
-        navigator.Initialize(Random.Range(0.0f, updateWaypointInterval), transform);
+        _navigator.Initialize(Random.Range(0.0f, _updateWaypointInterval), transform);
+        _navigator.SetTarget(null);
+        _navigator.SetCurrentNavPosition(transform.position);
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
@@ -185,15 +213,22 @@ public class Sheep : MonoBehaviour, IManualUpdate
 
     void IManualUpdate.OnTick(float delta)
     {
-        navigator.Update(delta);
-        navigator.DrawLines(transform.position, delta);
+        Hunger(delta);
+
+        _navigator.Update(delta);
+        _navigator.DrawLines(transform.position, delta);
     }
 
     void IManualUpdate.OnManualFixedUpdate(float delta)
     {
-        gravityDirection = -transform.position.normalized;
-        m_body.AddForce(gravityDirection * 10.0f);
+        _gravityDirection = -transform.position.normalized;
+        _rigidBody.AddForce(_gravityDirection * 10.0f);
         Movement(delta);
         Rotation(delta);
+    }
+
+    UpdateManager IManualUpdate.GetUpdateManager()
+    {
+        return _updateManager;
     }
 }

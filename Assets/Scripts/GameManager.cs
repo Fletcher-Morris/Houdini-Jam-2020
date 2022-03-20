@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
 
-[ExecuteInEditMode]
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -28,8 +27,8 @@ public class GameManager : MonoBehaviour
     [SerializeField, Required] private Pathing.WaypointManager _waypointManager;
     public Pathing.WaypointManager WaypointManager { get => _waypointManager; }
 
-    [SerializeField] private GrassScatter _grassScatterer;
-    public GrassScatter GrassScatterer { get => _grassScatterer; }
+    [SerializeField] private Scatter.ObjectScatterer _grassScatterer;
+    public Scatter.ObjectScatterer GrassScatterer { get => _grassScatterer; }
 
     private void OnApplicationQuit()
     {
@@ -39,6 +38,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        //_grassScatterer.Scatter();
     }
 
     private void Start()

@@ -6,7 +6,7 @@ namespace Tick
 {
     public interface IManualUpdate
     {
-        public void AddToUpdateList();
+        public UpdateManager GetUpdateManager();
 
         public void OnInitialise();
 

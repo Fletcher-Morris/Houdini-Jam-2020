@@ -49,6 +49,25 @@ public static class Extensions
     /// </summary>
     public static Vector4 Scale(this Vector4 _a, Vector4 _b) => Vector4.Scale(_a, _b);
     /// <summary>
+    /// Return true if these two Vector2 values approximately equal.
+    /// </summary>
+    public static bool Approximately(this Vector2 _a, Vector2 _b)
+    {
+        bool x = Mathf.Approximately(_a.x, _b.x);
+        bool y = Mathf.Approximately(_a.y, _b.y);
+        return x && y;
+    }
+    /// <summary>
+    /// Return true if these two Vector3 values approximately equal.
+    /// </summary>
+    public static bool Approximately(this Vector3 _a, Vector3 _b)
+    {
+        bool x = Mathf.Approximately(_a.x, _b.x);
+        bool y = Mathf.Approximately(_a.y, _b.y);
+        bool z = Mathf.Approximately(_a.z, _b.z);
+        return x && y && z;
+    }
+    /// <summary>
     /// Rorate this Vector3 towards a target value by specified degrees and max magnitude
     /// </summary>
     public static Vector3 RotateTowards(this Vector3 _value, Vector3 _target, float _degrees, float _mag) => Vector3.RotateTowards(_value, _target, _degrees * Mathf.Rad2Deg, _mag);

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Pathing
 {
     [System.Serializable]
-    public class AiWaypoint
+    public class AiWaypoint : IAiTarget
     {
         [SerializeField] private ushort _id;
         [SerializeField] private byte _cluster;
@@ -26,6 +26,16 @@ namespace Pathing
             _history = new List<ushort>();
             _id = 0;
             _cluster = 0;
+        }
+
+        void IAiTarget.SetPosition(Vector3 pos)
+        {
+            _position = pos;
+        }
+
+        Vector3 IAiTarget.GetPosition()
+        {
+            return _position;
         }
     }
 

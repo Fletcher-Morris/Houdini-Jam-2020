@@ -7,10 +7,10 @@ namespace Pathing
     [System.Serializable]
     public class AiNavigator
     {
-        public Transform target;
+        public IAiTarget _aiTarget;
         [HideInInspector] public Transform self;
-        public int prevWaypoint;
-        public int nextWaypoint;
+        public int _prevWaypoint;
+        public int _nextWaypoint;
         public float waypointTollerance = 0.1f;
         public float pathRefreshInterval = 3.0f;
         public NavPathUpdateMode updateMode = NavPathUpdateMode.Always;
@@ -22,11 +22,11 @@ namespace Pathing
         private bool initialized;
         [SerializeField] private AiWaypoint m_closestWaypointToTarget;
         private float m_pathRefreshTimer;
-        private Transform m_prevTarget;
+        private IAiTarget m_prevTarget;
         private Vector3 m_prevTargetPosition;
         public List<ushort> pathFound = new List<ushort>();
 
-        [HideInInspector] private Vector3 targetPosition;
+        [HideInInspector] private Vector3 _targetPosition;
 
         public void Initialize(float offset, Transform setSelf)
         {
@@ -36,13 +36,20 @@ namespace Pathing
             initialized = true;
         }
 
-        public void SetTarget(Transform newTarget)
+        public void SetTarget(IAiTarget newTarget)
         {
             if (updateMode == NavPathUpdateMode.TargetChanged) RecalculatePath();
-            target = newTarget;
-            if (pathFound == null) return;
-            prevWaypoint = -1;
-            nextWaypoint = 1;
+            _aiTarget = newTarget;
+            if (_aiTarget == null)
+            {
+                _targetPosition = Vector3.zero;
+                _prevWaypoint = -1;
+                _nextWaypoint = 1;
+            }
+            else
+            {
+                _targetPosition = _aiTarget.GetPosition();
+            }
         }
 
         public void SetSelfTransform(Transform newTransform)
@@ -50,22 +57,66 @@ namespace Pathing
             self = newTransform;
         }
 
-        private Task _recalculatePathTask = null;
         public void Update(float delta)
         {
             if (!initialized) return;
-            m_pathRefreshTimer -= delta;
-            if (m_pathRefreshTimer <= 0.0f
-                && (_recalculatePathTask == null
-                || _recalculatePathTask.IsCompleted
-                || _recalculatePathTask.IsCanceled))
+            m_pathRefreshTimer += delta;
+            if (m_pathRefreshTimer >= pathRefreshInterval)
             {
                 m_pathRefreshTimer = pathRefreshInterval;
-                _recalculatePathTask = RecalculateCheckAsync(delta);
+                RecalculateCheck(delta);
             }
         }
 
-        private async Task RecalculateCheckAsync(float delta)
+        [SerializeField] private Vector3 _navPosition = Vector3.zero;
+        [SerializeField] private Vector3 _moveTarget = Vector3.zero;
+        public Vector3 MoveTarget { get => _moveTarget; }
+
+        public void SetCurrentNavPosition(Vector3 pos)
+        {
+            _navPosition = pos;
+        }
+
+        public Vector3 Navigate(Vector3 currentPos, float moveDelta, float cornerSmoothing)
+        {
+            _moveTarget = Vector3.zero;
+            if (pathFound != null && _aiTarget != null)
+            {
+                AiWaypoint last = WaypointManager.Instance.GetWaypoint(GetWaypointFromIndex(Mathf.Max(0, _prevWaypoint)));
+                AiWaypoint next = WaypointManager.Instance.GetWaypoint(GetWaypointFromIndex(_nextWaypoint));
+                _moveTarget = _aiTarget.GetPosition();
+                if (next != null)
+                {
+                    _moveTarget = next.Position;
+                    float distToNext = Vector3.Distance(_navPosition, _moveTarget);
+                    if(distToNext < cornerSmoothing)
+                    {
+                        _prevWaypoint++;
+                        _nextWaypoint++;
+                        next = WaypointManager.Instance.GetWaypoint(GetWaypointFromIndex(_nextWaypoint));
+                        if(next != null)
+                        {
+                            _moveTarget = next.Position;
+                        }
+                        else
+                        {
+                            _moveTarget = _aiTarget.GetPosition();
+                        }
+                    }
+                }
+
+                _navPosition = Vector3.MoveTowards(_navPosition, _moveTarget, moveDelta);
+            }
+
+            return _navPosition;
+        }
+
+        public bool HasReachedTarget()
+        {
+            return _navPosition.Approximately(_targetPosition);
+        }
+
+        private void RecalculateCheck(float delta)
         {
             if (!initialized)
             {
@@ -78,39 +129,39 @@ namespace Pathing
                 case NavPathUpdateMode.Manual:
                     break;
                 case NavPathUpdateMode.TargetChanged:
-                    if (m_prevTarget != target && target != null)
+                    if (m_prevTarget != _aiTarget && _aiTarget != null)
                     {
-                        await RecalculatePath(target.position);
+                        RecalculatePath(_aiTarget.GetPosition());
                     }
                     break;
 
                 case NavPathUpdateMode.TargetPositionChanged:
-                    if (target != null)
+                    if (_aiTarget != null)
                     {
-                        if (m_prevTargetPosition != target.position)
+                        if (m_prevTargetPosition != _aiTarget.GetPosition())
                         {
-                            await RecalculatePath();
+                            RecalculatePath();
                         }
                     }
                     break;
 
                 case NavPathUpdateMode.Always:
                     {
-                        if (target != null && self != null)
+                        if (_aiTarget != null && self != null)
                         {
-                            float distToTarget = self.Distance(target);
+                            float distToTarget = self.Distance(_aiTarget.GetPosition());
                             if (distToTarget > waypointTollerance)
                             {
-                                var newWaypoint = WaypointManager.Instance.Closest(target.position);
+                                var newWaypoint = WaypointManager.Instance.Closest(_aiTarget.GetPosition());
                                 if (newWaypoint != null)
                                 {
                                     if (m_closestWaypointToTarget == null)
                                     {
-                                        await RecalculatePath();
+                                        RecalculatePath();
                                     }
                                     else if (newWaypoint.Id != m_closestWaypointToTarget.Id)
                                     {
-                                        await RecalculatePath();
+                                        RecalculatePath();
                                     }
 
                                     m_closestWaypointToTarget = newWaypoint;
@@ -122,20 +173,20 @@ namespace Pathing
             }
         }
 
-        public async Task RecalculatePath()
+        public void RecalculatePath()
         {
-            if (target == null)
+            if (_aiTarget == null)
             {
                 Debug.LogWarning("TARGET IS NULL!");
             }
             else
             {
-                m_prevTargetPosition = target.transform.position;
-                await RecalculatePath(target.transform.position);
+                m_prevTargetPosition = _aiTarget.GetPosition();
+                RecalculatePath(m_prevTargetPosition);
             }
         }
 
-        public async Task RecalculatePath(Vector3 end)
+        public void RecalculatePath(Vector3 end)
         {
             if (!WaypointManager.IsInitialised)
             {
@@ -155,7 +206,7 @@ namespace Pathing
             }
 
             pathFound = null;
-            m_prevTarget = target;
+            m_prevTarget = _aiTarget;
 
             if (sphereRaycastTarget)
             {
@@ -169,7 +220,7 @@ namespace Pathing
                 }
             }
 
-            if (target != null)
+            if (_aiTarget != null)
             {
                 m_prevTargetPosition = end;
                 pathFound = WaypointManager.Instance.GetPath(self.position, end);
@@ -179,8 +230,8 @@ namespace Pathing
                     return;
                 }
 
-                prevWaypoint = -1;
-                nextWaypoint = 1;
+                _prevWaypoint = -1;
+                _nextWaypoint = 1;
             }
         }
 
@@ -199,7 +250,7 @@ namespace Pathing
             {
                 Color lineCol = Color.white;
                 lineCol.a = WaypointManager.Instance.LineDebugOpacity * 5;
-                ushort n = GetWaypointFromIndex(nextWaypoint);
+                ushort n = GetWaypointFromIndex(_nextWaypoint);
                 if (n != 0 && debugLines) Debug.DrawLine(start, WaypointManager.Instance.GetWaypoint(n).Position, lineCol, duration);
                 for (int i = 0; i < pathFound.Count - 1; i++)
                 {

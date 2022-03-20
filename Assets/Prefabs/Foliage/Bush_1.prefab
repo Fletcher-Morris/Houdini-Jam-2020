@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8958372598221531153}
   m_RootOrder: 3
@@ -110,6 +111,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8958372598221531153}
   m_RootOrder: 2
@@ -192,6 +194,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8958372598221531153}
   m_RootOrder: 0
@@ -274,6 +277,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8958372598221531153}
   m_RootOrder: 1
@@ -338,6 +342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8958372598221531153}
   - component: {fileID: 2116856032641104739}
+  - component: {fileID: -4677345568898673955}
   m_Layer: 0
   m_Name: Bush_1
   m_TagString: Untagged
@@ -355,6 +360,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2028413780063986773}
   - {fileID: 7012630285351724860}
@@ -389,8 +395,25 @@ LODGroup:
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 6300853043052106961}
-  - screenRelativeHeight: 0.05
+  - screenRelativeHeight: 0.011002759
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 4077593555311538154}
   m_Enabled: 1
+--- !u!114 &-4677345568898673955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8958372598221531154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d778d4967110d499bf8e2efb9523be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _updateManager: {fileID: 11400000, guid: c14fd15c9e5a7754596fb5b12d2ecfca, type: 2}
+  _maxFood: 10
+  _currentFood: 10
+  _growthRate: 0.1
+  _growthDelay: 10

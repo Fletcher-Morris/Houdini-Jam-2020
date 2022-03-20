@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Compute Grass")]
+[CreateAssetMenu(fileName = "Compute Grass", menuName = "Scriptables/Grass/Compute Grass Settings")]
 public class ComputeGrassSettings : ScriptableObject
 {
     public ComputeGrassSettingsData SettingsData;
