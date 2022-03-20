@@ -226,8 +226,10 @@ public class Sheep : MonoBehaviour, IManualUpdate
         _rigidBody = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
         _navigator.Initialize(Random.Range(0.0f, _updateWaypointInterval), transform);
-        _navigator.SetTarget(null);
+        _navigator.SetTarget(_navigator);
         _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
+        transform.position = _navigator.GetNavPosition();
+        _navigator.RecalculatePath();
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
