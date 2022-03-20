@@ -500,20 +500,39 @@ namespace Pathing
             }
 
             //  Path is not yet baked.
-            foundBakedPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
-            List<ushort> newPath = Breadthwise(start, end);
-            if (newPath != null)
+            WaypointPath forwardWaypointPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
+            List<ushort> forwardPath = Breadthwise(start, end);
+            WaypointPath backwardWaypointPath = new WaypointPath(end.Id, start.Id, new List<ushort>());
+            List<ushort> backwardPath = Breadthwise(end, start);
+            if (forwardPath != null)
             {
-                foundBakedPath.Path = newPath;
+                forwardWaypointPath.Path = forwardPath;
                 _pathingStats.TotalPathsCalculated++;
-                if (_storeKnownPaths)
-                {
-                    _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), foundBakedPath);
-                    _knownPathsList.Add(foundBakedPath);
-                }
+            }
+            if (backwardPath != null)
+            {
+                backwardWaypointPath.Path = backwardPath;
+                _pathingStats.TotalPathsCalculated++;
             }
 
-            return newPath;
+            if(forwardWaypointPath.Length() < backwardWaypointPath.Length())
+            {
+                if (_storeKnownPaths)
+                {
+                    _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), forwardWaypointPath);
+                    _knownPathsList.Add(forwardWaypointPath);
+                }
+                return forwardPath;
+            }
+            else
+            {
+                if (_storeKnownPaths)
+                {
+                    _knownPaths.Add(new System.Tuple<ushort, ushort>(end.Id, start.Id), backwardWaypointPath);
+                    _knownPathsList.Add(backwardWaypointPath);
+                }
+                return backwardPath.Reversed();
+            }
         }
 
         private List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end)

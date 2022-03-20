@@ -59,7 +59,7 @@ namespace Tick
                 Debug.Log($"Initialised '{queuedObject}'.");
             }
 
-            _updateList.ForEach(o => o.OnManualUpdate(delta));
+            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualUpdate(delta);});
         }
 
         public void OnFixedUpdate(float delta)
@@ -70,12 +70,12 @@ namespace Tick
                 _tickTimer = _managerSettings.TickLength;
             }
 
-            _updateList.ForEach(o => o.OnManualFixedUpdate(delta));
+            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualFixedUpdate(delta); });
         }
 
         private void OnTickUpdate(float delta)
         {
-            _updateList.ForEach(o => o.OnTick(delta));
+            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnTick(delta); });
         }
     }
 

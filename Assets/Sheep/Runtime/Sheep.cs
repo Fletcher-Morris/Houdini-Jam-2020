@@ -27,6 +27,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
     private Rigidbody _rigidBody;
     private float _bounceTimer;
     private float _bounceValue;
+    private Vector3 _lastPosition;
     private Vector3 _lastTargetPosition;
     private float _legValue;
     private float _bounceDirection = 1.0f;
@@ -42,9 +43,8 @@ public class Sheep : MonoBehaviour, IManualUpdate
 
     [Space]
     [Header("Navigation")]
-    [SerializeField] private IAiTarget _aiTarget;
     [SerializeField] private Pathing.AiNavigator _navigator = new AiNavigator();
-    [SerializeField] private float _updateWaypointInterval = 2.0f;
+    [SerializeField] private float _updateWaypointInterval = 4.0f;
 
     [Space]
     [Header("Hunger")]
@@ -69,7 +69,14 @@ public class Sheep : MonoBehaviour, IManualUpdate
         }
         else
         {
-            _bounceTimer = 0;
+            if (_bounceTimer + (delta * _bounceSpeed) <_bounceTimer.CeilToInt())
+            {
+                _bounceTimer += delta * _bounceSpeed;
+            }
+            else
+            {
+                _bounceTimer = 0;
+            }
         }
 
         _bounceDirection = Mathf.Lerp(-1, 1, _bounceTimer.FloorToInt().IsEven().ToInt());
@@ -99,6 +106,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
         if (_hungerState != HungerState.Eating)
         {
             _currentHungerValue -= delta * _hungerDeleptionRate;
+            _currentHungerValue = Mathf.Max(0, _currentHungerValue);
         }
 
         switch (_hungerState)
@@ -126,12 +134,16 @@ public class Sheep : MonoBehaviour, IManualUpdate
                         }
                     }
                 }
-                if (_targetFood != null) _hungerState = HungerState.MovingToFood;
+                if (_targetFood != null)
+                {
+                    _hungerState = HungerState.MovingToFood;
+                    _navigator.SetCurrentNavPosition(transform.position);
+                    _navigator.SetTarget(_targetFood);
+                }
+
                 break;
 
             case HungerState.MovingToFood:
-                _navigator.SetTarget(_targetFood);
-                _navigator.SetCurrentNavPosition(transform.position);
                 if (_navigator.HasReachedTarget()) _hungerState = HungerState.Eating;
                 break;
 
@@ -139,11 +151,21 @@ public class Sheep : MonoBehaviour, IManualUpdate
                 if ((_eatTimer -= delta) <= 0)
                 {
                     _eatTimer = _eatTime;
-                    ((Food)_aiTarget).EatFromFood();
-                    _currentHungerValue += _hungerDeleptionRate * 2.0f;
+                    _targetFood.EatFromFood();
+                    _currentHungerValue += 0.1f;
 
-                    if (_currentHungerValue >= 1) _hungerState = HungerState.Sated;
-                    else if (((Food)_aiTarget).RemainingFood() <= 0) _hungerState = HungerState.SearchingForFood;
+                    if (_currentHungerValue >= 1)
+                    {
+                        _targetFood = null;
+                        _navigator.SetTarget(null);
+                        _hungerState = HungerState.Sated;
+                    }
+                    else if (_targetFood.RemainingFood() <= 0)
+                    {
+                        _targetFood = null;
+                        _navigator.SetTarget(null);
+                        _hungerState = HungerState.SearchingForFood;
+                    }
                 }
                 break;
         }
@@ -151,16 +173,19 @@ public class Sheep : MonoBehaviour, IManualUpdate
 
     private void Movement(float delta)
     {
+        if (_enableMovement == false) return;
         if (_navigator.HasReachedTarget())
         {
 
         }
         else
         {
-            Vector3 newPos = _navigator.Navigate(transform.position, _moveSpeed * delta, 1.0f);
+            Vector3 newPos = _navigator.Navigate(_moveSpeed * delta);
             transform.position = newPos;
             Physics.SyncTransforms();
         }
+        _movementVector = transform.position - _lastPosition;
+        _lastPosition = transform.position;
     }
 
     private void Rotation(float delta)
@@ -202,13 +227,15 @@ public class Sheep : MonoBehaviour, IManualUpdate
         GameManager.AddSheep(this);
         _navigator.Initialize(Random.Range(0.0f, _updateWaypointInterval), transform);
         _navigator.SetTarget(null);
-        _navigator.SetCurrentNavPosition(transform.position);
+        _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
     {
         Bouncing(delta);
         Bleating(delta);
+        Movement(delta);
+        Rotation(delta);
     }
 
     void IManualUpdate.OnTick(float delta)
@@ -223,12 +250,15 @@ public class Sheep : MonoBehaviour, IManualUpdate
     {
         _gravityDirection = -transform.position.normalized;
         _rigidBody.AddForce(_gravityDirection * 10.0f);
-        Movement(delta);
-        Rotation(delta);
     }
 
     UpdateManager IManualUpdate.GetUpdateManager()
     {
         return _updateManager;
+    }
+
+    public bool IsEnabled()
+    {
+        return gameObject.activeInHierarchy;
     }
 }

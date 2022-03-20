@@ -17,4 +17,4 @@ MonoBehaviour:
   Prefab: {fileID: 2115475608874850911, guid: 09891d8210d1c4440bec9b3dcc0a8d8f, type: 3}
   MinSpawnHeight: 48
   MaxSpawnHeight: 60
-  SinkValue: 0.5
+  SinkValue: 0

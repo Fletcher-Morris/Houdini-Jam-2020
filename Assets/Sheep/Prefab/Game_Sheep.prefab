@@ -528,8 +528,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _updateManager: {fileID: 11400000, guid: c14fd15c9e5a7754596fb5b12d2ecfca, type: 2}
   _enableMovement: 1
-  _moveSpeed: 3
-  _rotationSpeed: 10
+  _moveSpeed: 10
+  _rotationSpeed: 5
   _bounceHeight: 1
   _bounceSpeed: 4
   _bounceAnimCurve:
@@ -600,7 +600,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   _visual: {fileID: 2591797813518333246}
   _legs: {fileID: 2591797814696532179}
-  _updateWaypointInterval: 2
   _updateRotation: 1
   m_bleats:
   - {fileID: 8300000, guid: d55fceefe0c234ab9bdf12cf159b0782, type: 3}
@@ -608,17 +607,17 @@ MonoBehaviour:
   bleatChance: 0.5
   m_bleatInterval: 3
   _navigator:
-    target: {fileID: 0}
     self: {fileID: 0}
-    prevWaypoint: 0
-    nextWaypoint: 0
+    _prevWaypoint: 0
+    _nextWaypoint: 0
     waypointTollerance: 0.1
     pathRefreshInterval: 3
-    updateMode: 3
+    updateMode: 1
+    _waypointSmoothing: 3
     sphereRaycastTarget: 1
     raycastLayermask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 257
     debugLines: 1
     m_closestWaypointToTarget:
       _id: 0
@@ -627,12 +626,16 @@ MonoBehaviour:
       _connections: 
       _history: 
     pathFound: 
-  _currentCluster: 0
+    _targetPosition: {x: 0, y: 0, z: 0}
+    _navPosition: {x: 0, y: 0, z: 0}
+    _moveTarget: {x: 0, y: 0, z: 0}
+    _hasReachedTarget: 0
+  _updateWaypointInterval: 5
+  _hungerState: 0
   _currentHungerValue: 1
-  _hungerDeleptionRate: 1
-  _movingToFood: 0
-  _eatingFood: 0
+  _hungerDeleptionRate: 0.1
   _targetFood: {fileID: 0}
+  _eatTime: 1
 --- !u!114 &2591797814019501309
 MonoBehaviour:
   m_ObjectHideFlags: 0

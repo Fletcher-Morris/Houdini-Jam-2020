@@ -15,5 +15,7 @@ namespace Tick
         public void OnTick(float delta);
 
         public void OnManualFixedUpdate(float delta);
+
+        public bool IsEnabled();
     }
 }

@@ -84,4 +84,9 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
     {
         return transform.position;
     }
+
+    bool IManualUpdate.IsEnabled()
+    {
+        return gameObject.activeInHierarchy;
+    }
 }

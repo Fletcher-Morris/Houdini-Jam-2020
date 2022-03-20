@@ -343,6 +343,8 @@ GameObject:
   - component: {fileID: 8958372598221531153}
   - component: {fileID: 2116856032641104739}
   - component: {fileID: -4677345568898673955}
+  - component: {fileID: 9166335969786734448}
+  - component: {fileID: 6370773556686929316}
   m_Layer: 0
   m_Name: Bush_1
   m_TagString: Untagged
@@ -417,3 +419,29 @@ MonoBehaviour:
   _currentFood: 10
   _growthRate: 0.1
   _growthDelay: 10
+--- !u!135 &9166335969786734448
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8958372598221531154}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9
+  m_Center: {x: -0.55, y: 1, z: -0.21}
+--- !u!135 &6370773556686929316
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8958372598221531154}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9
+  m_Center: {x: 0.55, y: 1, z: -0.21}

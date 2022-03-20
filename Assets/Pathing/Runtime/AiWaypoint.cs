@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -52,6 +53,28 @@ namespace Pathing
         {
             t = new System.Tuple<ushort, ushort>(start, stop);
             Path = path;
+        }
+
+        public int Length()
+        {
+            if (Path == null) return 0;
+            return Path.Count;
+        }
+
+        public float Distance()
+        {
+            float dist = 0;
+            if (Path != null) return 0;
+            if(Length() == 0) return 0;
+            Vector3 lastPos = WaypointManager.Instance.GetWaypoint(0).Position;
+            Path.ForEach(n =>
+            {
+                AiWaypoint wp = WaypointManager.Instance.GetWaypoint(n);
+                Vector3 wpPos = wp.Position;
+                dist += Vector3.Distance(lastPos, wpPos);
+                lastPos = wpPos;
+            });
+            return dist;
         }
     }
 }
