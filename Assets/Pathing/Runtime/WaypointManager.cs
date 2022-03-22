@@ -39,6 +39,7 @@ namespace Pathing
         [SerializeField, Range(0, 50)] private byte _showCluster;
         [SerializeField] private bool _showClusters = true;
         [SerializeField] private bool m_cullLines = true;
+        public bool ShowNavigatorPaths = true;
         [SerializeField] private List<WaypointCluster> _clusters = new List<WaypointCluster>();
         [SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
 
@@ -184,7 +185,7 @@ namespace Pathing
 
         public void DebugGui()
         {
-            GUILayout.BeginArea(new Rect(5.0f, 5.0f, 100.0f, 50.0f));
+            GUILayout.BeginArea(new Rect(5.0f, 55.0f, 100.0f, 50.0f));
             GUILayout.Label("Debug Opacity");
             _lineDebugOpacity = GUILayout.HorizontalSlider(_lineDebugOpacity, 0.0f, 1.0f);
             GUILayout.EndArea();

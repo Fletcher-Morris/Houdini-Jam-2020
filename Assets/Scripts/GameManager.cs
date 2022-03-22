@@ -77,19 +77,6 @@ public class GameManager : MonoBehaviour
 
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(105.0f, 5.0f, 300.0f, 50.0f));
-        //GUILayout.Space(50.0f);
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Quality");
-        var level = 0;
-        QualitySettings.names.ToList().ForEach(l =>
-        {
-            if (GUILayout.Button(l)) QualitySettings.SetQualityLevel(level, true);
-            level++;
-        });
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
-
         _waypointManager.DebugGui();
     }
 

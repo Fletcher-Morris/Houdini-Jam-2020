@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using Pathing;
 using Tick;
 
-public class Sheep : MonoBehaviour, IManualUpdate
+public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 {
     [SerializeField, Required] private UpdateManager _updateManager;
 
@@ -45,6 +45,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
     [Header("Navigation")]
     [SerializeField] private Pathing.AiNavigator _navigator = new AiNavigator();
     [SerializeField] private float _updateWaypointInterval = 4.0f;
+    [SerializeField] private LineRenderer _pathLineRenderer;
 
     [Space]
     [Header("Hunger")]
@@ -117,6 +118,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
                 {
                     _hungerState = HungerState.SearchingForFood;
                 }
+
                 break;
 
             case HungerState.SearchingForFood:
@@ -124,7 +126,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
                 float closestDist = Mathf.Infinity;
                 foreach (Food food in FindObjectsOfType<Food>())
                 {
-                    if (food.RemainingFood() >= 1)
+                    if (food.RemainingFood() >= 1 && food.BeingEatenBy().Count == 0)
                     {
                         float dist = Vector3.Distance(transform.position, food.transform.position);
                         if (dist < closestDist)
@@ -136,6 +138,7 @@ public class Sheep : MonoBehaviour, IManualUpdate
                 }
                 if (_targetFood != null)
                 {
+                    _targetFood.AddEater(this);
                     _hungerState = HungerState.MovingToFood;
                     _navigator.SetCurrentNavPosition(transform.position);
                     _navigator.SetTarget(_targetFood);
@@ -144,7 +147,16 @@ public class Sheep : MonoBehaviour, IManualUpdate
                 break;
 
             case HungerState.MovingToFood:
-                if (_navigator.HasReachedTarget()) _hungerState = HungerState.Eating;
+                if(_targetFood.BeingEatenBy().Count >= 2)
+                {
+                    _targetFood = null;
+                    _hungerState = HungerState.SearchingForFood;
+                }
+                else if (_navigator.HasReachedTarget())
+                {
+                    _hungerState = HungerState.Eating;
+                }
+
                 break;
 
             case HungerState.Eating:
@@ -156,17 +168,20 @@ public class Sheep : MonoBehaviour, IManualUpdate
 
                     if (_currentHungerValue >= 1)
                     {
+                        _targetFood.RemoveFoodEater(this);
                         _targetFood = null;
                         _navigator.SetTarget(null);
                         _hungerState = HungerState.Sated;
                     }
                     else if (_targetFood.RemainingFood() <= 0)
                     {
+                        _targetFood.RemoveFoodEater(this);
                         _targetFood = null;
                         _navigator.SetTarget(null);
                         _hungerState = HungerState.SearchingForFood;
                     }
                 }
+
                 break;
         }
     }
@@ -184,6 +199,12 @@ public class Sheep : MonoBehaviour, IManualUpdate
             transform.position = newPos;
             Physics.SyncTransforms();
         }
+
+        if (_pathLineRenderer.positionCount > 0)
+        {
+            _pathLineRenderer.SetPosition(0, _navigator.GetNavPosition());
+        }
+
         _movementVector = transform.position - _lastPosition;
         _lastPosition = transform.position;
     }
@@ -219,6 +240,43 @@ public class Sheep : MonoBehaviour, IManualUpdate
         GameManager.CollectSheep(this);
     }
 
+    private void  OnReachedTarget(Vector3 vec)
+    {
+
+    }
+
+    private List<Vector3> _navPoints = new List<Vector3>();
+    private void OnReachedWaypoint(Vector3 vec, int id)
+    {
+        int positionCount = Mathf.Max(0, (_navPoints.Count - id));
+        _pathLineRenderer.positionCount = positionCount;
+        int point = 1;
+        for(int i = 0; i < _navPoints.Count; i++)
+        {
+            if(id < i)
+            {
+                _pathLineRenderer.SetPosition(point, _navPoints[i]);
+                point++;
+            }
+        }
+
+        if (_pathLineRenderer.positionCount > 0)
+        {
+            _pathLineRenderer.SetPosition(positionCount - 1, _navigator.GetTargetPos());
+        }
+    }
+
+    private void OnRecalculatedPath(List<ushort> path)
+    {
+        _navPoints = new List<Vector3>();
+        for (int i = 0; i < path.Count; i++)
+        {
+            AiWaypoint aiWaypoint = WaypointManager.Instance.GetWaypoint(path[i]);
+            _navPoints.Add(aiWaypoint.Position);
+        }
+        OnReachedWaypoint(_navigator.GetNavPosition(), 0);
+    }
+
     void IManualUpdate.OnInitialise()
     {
         _audioSource = GetComponent<AudioSource>();
@@ -226,6 +284,9 @@ public class Sheep : MonoBehaviour, IManualUpdate
         _rigidBody = GetComponent<Rigidbody>();
         GameManager.AddSheep(this);
         _navigator.Initialize(Random.Range(0.0f, _updateWaypointInterval), transform);
+        _navigator.OnReachedTarget.AddListener(OnReachedTarget);
+        _navigator.OnReachedWaypoint.AddListener(OnReachedWaypoint);
+        _navigator.OnRecalculatedPath.AddListener(OnRecalculatedPath);
         _navigator.SetTarget(_navigator);
         _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
         transform.position = _navigator.GetNavPosition();
@@ -238,6 +299,11 @@ public class Sheep : MonoBehaviour, IManualUpdate
         Bleating(delta);
         Movement(delta);
         Rotation(delta);
+
+        if(WaypointManager.Instance.ShowNavigatorPaths != _pathLineRenderer.enabled)
+        {
+            _pathLineRenderer.enabled = WaypointManager.Instance.ShowNavigatorPaths;
+        }
     }
 
     void IManualUpdate.OnTick(float delta)
@@ -245,7 +311,6 @@ public class Sheep : MonoBehaviour, IManualUpdate
         Hunger(delta);
 
         _navigator.Update(delta);
-        _navigator.DrawLines(transform.position, delta);
     }
 
     void IManualUpdate.OnManualFixedUpdate(float delta)

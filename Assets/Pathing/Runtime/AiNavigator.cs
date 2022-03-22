@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Pathing
 {
@@ -19,6 +20,10 @@ namespace Pathing
         [SerializeField] private float _waypointSmoothing = 2.0f;
         [SerializeField] private bool _sphereRaycastTarget = true;
         [SerializeField] private LayerMask _raycastLayermask;
+
+        public UnityEvent<Vector3, int> OnReachedWaypoint = new UnityEvent<Vector3, int>();
+        public UnityEvent<Vector3> OnReachedTarget = new UnityEvent<Vector3>();
+        public UnityEvent<List<ushort>> OnRecalculatedPath = new UnityEvent<List<ushort>>();
 
         [SerializeField] private bool _debugLines = true;
         private bool initialized;
@@ -96,12 +101,21 @@ namespace Pathing
 
             if (getNext)
             {
+                OnReachedWaypoint.Invoke(_moveTarget, _nextWaypoint);
                 _moveTarget = GetNextNavPosition(_nextWaypoint);
                 _prevWaypoint = _nextWaypoint;
                 _nextWaypoint++;
             }
 
             _navPosition = Vector3.MoveTowards(_navPosition, _moveTarget, moveDelta);
+
+            if(_hasReachedTarget == false)
+            {
+                if(HasReachedTarget())
+                {
+                    OnReachedTarget.Invoke(_targetPosition);
+                }
+            }
 
             return _navPosition;
         }
@@ -247,7 +261,15 @@ namespace Pathing
 
                 _prevWaypoint = -1;
                 _nextWaypoint = 1;
+
             }
+
+            OnRecalculatedPath.Invoke(_pathFound);
+        }
+
+        internal Vector3 GetTargetPos()
+        {
+            return _targetPosition;
         }
 
         public Vector3 GetNavPosition()
@@ -259,27 +281,6 @@ namespace Pathing
         {
             if (index == -1 || index >= _pathFound.Count || _pathFound.Count == 0) return 0;
             return _pathFound[index];
-        }
-
-        public void DrawLines(Vector3 start, float duration)
-        {
-            if (!initialized) return;
-            if (_pathFound == null) return;
-            if (WaypointManager.Instance.LineDebugOpacity <= 0.0f) return;
-            if (_pathFound.Count > 0)
-            {
-                Color lineCol = Color.white;
-                lineCol.a = WaypointManager.Instance.LineDebugOpacity * 5;
-                ushort n = GetWaypointFromIndex(_nextWaypoint);
-                if (n != 0 && _debugLines) Debug.DrawLine(start, WaypointManager.Instance.GetWaypoint(n).Position, lineCol, duration);
-                for (int i = 0; i < _pathFound.Count - 1; i++)
-                {
-                    if (_pathFound[i] != 0)
-                    {
-                        Debug.DrawLine(WaypointManager.Instance.GetWaypoint(_pathFound[i]).Position, WaypointManager.Instance.GetWaypoint(_pathFound[i + 1]).Position, lineCol, duration);
-                    }
-                }
-            }
         }
 
         void IAiTarget.SetPosition(Vector3 pos)

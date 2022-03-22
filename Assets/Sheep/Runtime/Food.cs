@@ -19,6 +19,20 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
     private float _currentGrowth;
     private byte _clusterId;
 
+    private List<IFoodEater> _eaters = new List<IFoodEater>();
+    public void AddEater(IFoodEater foodEater)
+    {
+        if (!_eaters.Contains(foodEater)) _eaters.Add(foodEater);
+    }
+    public void RemoveFoodEater(IFoodEater foodEater)
+    {
+        if (_eaters.Contains(foodEater)) _eaters.Remove(foodEater);
+    }
+    public List<IFoodEater> BeingEatenBy()
+    {
+        return _eaters;
+    }
+
     public byte ClusterId { get => _clusterId; }
 
     private void Awake()
@@ -37,6 +51,7 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
         _currentGrowth = _currentFood;
         Pathing.AiWaypoint closestWaypoint = Pathing.WaypointManager.Instance.Closest(transform.position);
         _clusterId = closestWaypoint.Cluster;
+        _growthDelayTimer = _growthDelay;
     }
 
     public void OnManualFixedUpdate(float delta)
