@@ -298,7 +298,6 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         Bouncing(delta);
         Bleating(delta);
         Movement(delta);
-        Rotation(delta);
 
         if(WaypointManager.Instance.ShowNavigatorPaths != _pathLineRenderer.enabled)
         {
@@ -308,6 +307,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 
     void IManualUpdate.OnTick(float delta)
     {
+        Rotation(delta);
         Hunger(delta);
 
         _navigator.Update(delta);
