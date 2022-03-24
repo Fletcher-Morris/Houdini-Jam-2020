@@ -636,6 +636,7 @@ MonoBehaviour:
   _hungerDeleptionRate: 0.1
   _targetFood: {fileID: 0}
   _eatTime: 0.33333334
+  _eyes: {fileID: 2591797814019501309}
 --- !u!114 &2591797814019501309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -651,9 +652,8 @@ MonoBehaviour:
   followTransform: {fileID: 2591797812990719377}
   targetObject: {fileID: 0}
   maxMagnitude: 0.25
-  renderers:
-  - {fileID: 2591797813131023579}
-  - {fileID: 2591797814023986480}
+  _renderer1: {fileID: 2591797813131023579}
+  _renderer2: {fileID: 2591797814023986480}
   position: {x: 0, y: 0}
   invertX: 0
   invertY: 1

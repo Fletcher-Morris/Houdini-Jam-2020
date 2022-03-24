@@ -57,6 +57,10 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     [SerializeField] private float _eatTime = 1.0f;
     private float _eatTimer = 0;
 
+    [Space]
+    [Header("Eyes")]
+    [SerializeField] private EyePosition _eyes;
+
     private void Awake()
     {
         _updateManager.AddToUpdateList(this);
@@ -193,11 +197,10 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         {
 
         }
-        else
+        else if(_navigator.HasTarget())
         {
             Vector3 newPos = _navigator.Navigate(_moveSpeed * delta);
             transform.position = newPos;
-            Physics.SyncTransforms();
         }
 
         if (_pathLineRenderer.positionCount > 0)
@@ -229,7 +232,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
                 _lastTargetPosition = lookAt;
             }
 
-            Vector3 forwardsVec = -Vector3.Cross(-_gravityDirection, Quaternion.AngleAxis(90.0f, -_gravityDirection) * lookAt).normalized;
+            Vector3 forwardsVec = lookAt - ((-_gravityDirection) * Vector3.Dot(lookAt, -_gravityDirection));
             Quaternion newRotation = Quaternion.LookRotation(forwardsVec, -_gravityDirection);
             transform.rotation = Quaternion.Lerp(transform.rotation, newRotation, _rotationSpeed * delta);
         }
@@ -287,7 +290,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         _navigator.OnReachedTarget.AddListener(OnReachedTarget);
         _navigator.OnReachedWaypoint.AddListener(OnReachedWaypoint);
         _navigator.OnRecalculatedPath.AddListener(OnRecalculatedPath);
-        _navigator.SetTarget(_navigator);
+        _navigator.SetTarget(null);
         _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
         transform.position = _navigator.GetNavPosition();
         _navigator.RecalculatePath();
@@ -298,8 +301,9 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         Bouncing(delta);
         Bleating(delta);
         Movement(delta);
+        _eyes.UpdateEyes(delta);
 
-        if(WaypointManager.Instance.ShowNavigatorPaths != _pathLineRenderer.enabled)
+        if (WaypointManager.Instance.ShowNavigatorPaths != _pathLineRenderer.enabled)
         {
             _pathLineRenderer.enabled = WaypointManager.Instance.ShowNavigatorPaths;
         }

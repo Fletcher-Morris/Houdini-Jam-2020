@@ -198,6 +198,11 @@ namespace Pathing
             }
         }
 
+        public bool HasTarget()
+        {
+            return _aiTarget != null;
+        }
+
         public void RecalculatePath()
         {
             if (_aiTarget == null)

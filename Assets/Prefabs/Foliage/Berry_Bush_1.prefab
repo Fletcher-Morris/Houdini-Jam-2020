@@ -346,7 +346,7 @@ GameObject:
   - component: {fileID: 9166335969786734448}
   - component: {fileID: 6370773556686929316}
   m_Layer: 0
-  m_Name: Bush_1
+  m_Name: Berry_Bush_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

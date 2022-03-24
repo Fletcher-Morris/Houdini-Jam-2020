@@ -8,7 +8,8 @@ public class EyePosition : MonoBehaviour
     public Transform followTransform;
     public Transform targetObject;
     public float maxMagnitude = 0.333f;
-    public List<Renderer> renderers = new List<Renderer>();
+    [SerializeField] private Renderer _renderer1;
+    [SerializeField] private Renderer _renderer2;
     public Vector2 position;
     public bool invertX;
     public bool invertY = true;
@@ -68,38 +69,26 @@ public class EyePosition : MonoBehaviour
 
     private void Start()
     {
-        if (renderers.Count < 1) return;
+        if (_renderer1 == null || _renderer2 == null) return;
         ConfigMaterial();
     }
 
     private void Update()
     {
+        if (Application.isPlaying) return;
+        UpdateEyes(Time.deltaTime);
+    }
+
+    public void UpdateEyes(float delta)
+    {
         if (refreshMaterial) ConfigMaterial();
 
-        var pos = position;
 
-        renderers.ForEach(r =>
-        {
-            var t = r.transform;
+        if (_renderer1 == null || _renderer2 == null) return;
+        UpdateRenderer(_renderer1, position, delta);
+        UpdateRenderer(_renderer2, position, delta);
 
-            if (followTransform != null)
-            {
-                if (targetObject != null) followTransform.position = targetObject.position;
-                var x = followTransform.position.z - t.position.z;
-                var y = followTransform.position.y - t.position.y;
-                pos.x = x;
-                pos.y = y;
-            }
-
-            if (pos.magnitude > maxMagnitude) pos = pos.normalized * maxMagnitude;
-
-            if (invertX) pos.x *= -1;
-            if (invertY) pos.y *= -1;
-
-            if (Application.isPlaying) r.material.SetVector(m_positionPropertyId, pos);
-        });
-
-        m_blinkTimer += Time.deltaTime;
+        m_blinkTimer += delta;
         if (m_blinkTimer >= blinkInterval && autoBlink)
         {
             m_blinkTimer = 0.0f;
@@ -111,13 +100,35 @@ public class EyePosition : MonoBehaviour
         CheckValues(false);
     }
 
+    private void UpdateRenderer(Renderer r, Vector3 pos, float delta)
+    {
+        Transform t = r.transform;
+
+        if (followTransform != null)
+        {
+            if (targetObject != null) followTransform.position = targetObject.position;
+            float x = followTransform.position.z - t.position.z;
+            float y = followTransform.position.y - t.position.y;
+            pos.x = x;
+            pos.y = y;
+        }
+
+        if (pos.magnitude > maxMagnitude) pos = pos.normalized * maxMagnitude;
+
+        if (invertX) pos.x *= -1;
+        if (invertY) pos.y *= -1;
+
+        if (Application.isPlaying) r.material.SetVector(m_positionPropertyId, pos);
+    }
+
     private void ConfigMaterial()
     {
         refreshMaterial = false;
         if (EyeMaterial == null) return;
         m_mat = new Material(EyeMaterial);
         SetPropertyIds();
-        renderers.ForEach(r => r.material = new Material(m_mat));
+        _renderer1.material = new Material(m_mat);
+        _renderer2.material = new Material(m_mat);
         CheckValues(true);
     }
 
@@ -143,62 +154,74 @@ public class EyePosition : MonoBehaviour
         if (openness != m_prevOpenness || _overide)
         {
             m_prevOpenness = openness;
-            renderers.ForEach(r => r.material.SetFloat(m_openPropertyId, openness));
+            _renderer1.material.SetFloat(m_openPropertyId, openness);
+            _renderer2.material.SetFloat(m_openPropertyId, openness);
         }
 
         if (m_prevPupilSize != pupilSize || _overide)
         {
             m_prevPupilSize = pupilSize;
-            renderers.ForEach(r => r.material.SetFloat(m_pupilSizePropertyId, pupilSize));
+            _renderer1.material.SetFloat(m_pupilSizePropertyId, pupilSize);
+            _renderer2.material.SetFloat(m_pupilSizePropertyId, pupilSize);
         }
 
         if (m_prevInnerSize != innerSize || _overide)
         {
             m_prevInnerSize = innerSize;
-            renderers.ForEach(r => r.material.SetFloat(m_innerSizePropertyId, innerSize));
+            _renderer1.material.SetFloat(m_innerSizePropertyId, innerSize);
+            _renderer2.material.SetFloat(m_innerSizePropertyId, innerSize);
         }
 
         if (m_prevOuterSize != outerSize || _overide)
         {
             m_prevOuterSize = outerSize;
-            renderers.ForEach(r => r.material.SetFloat(m_outerSizePropertyId, outerSize));
+            _renderer1.material.SetFloat(m_outerSizePropertyId, outerSize);
+            _renderer2.material.SetFloat(m_outerSizePropertyId, outerSize);
         }
 
         if (pupilColor != m_prevPupilColor || _overide)
         {
             m_prevPupilColor = pupilColor;
-            renderers.ForEach(r => r.material.SetColor(m_pupilColorPropertyId, pupilColor));
+            _renderer1.material.SetColor(m_pupilColorPropertyId, pupilColor);
+            _renderer2.material.SetColor(m_pupilColorPropertyId, pupilColor);
         }
 
         if (innerColor != m_prevInnerColor || _overide)
         {
             m_prevInnerColor = innerColor;
-            renderers.ForEach(r => r.material.SetColor(m_innerColorPropertyId, innerColor));
+            _renderer1.material.SetColor(m_innerColorPropertyId, innerColor);
+            _renderer2.material.SetColor(m_innerColorPropertyId, innerColor);
         }
 
         if (outerColor != m_prevOuterColor || _overide)
         {
             m_prevOuterColor = outerColor;
-            renderers.ForEach(r => r.material.SetColor(m_outerColorPropertyId, outerColor));
+            _renderer1.material.SetColor(m_outerColorPropertyId, outerColor);
+            _renderer2.material.SetColor(m_outerColorPropertyId, outerColor);
         }
 
         if (layerDepth != m_prevLayerDepth || _overide)
         {
             m_prevLayerDepth = layerDepth;
-            renderers.ForEach(r => r.material.SetFloat(m_layerDepthPropertyId, layerDepth));
+            _renderer1.material.SetFloat(m_layerDepthPropertyId, layerDepth);
+            _renderer2.material.SetFloat(m_layerDepthPropertyId, layerDepth);
         }
 
         if (m_prevEyeLaziness != eyeLaziness || _overide)
         {
             m_prevEyeLaziness = eyeLaziness;
-            renderers.ForEach(r => r.material.SetFloat(m_lazinessPropertyId, eyeLaziness));
+            _renderer1.material.SetFloat(m_lazinessPropertyId, eyeLaziness);
+            _renderer2.material.SetFloat(m_lazinessPropertyId, eyeLaziness);
         }
     }
 
     private void ManualBlink()
     {
         if (Application.isPlaying)
-            renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt()));
+        {
+            _renderer1.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt());
+            _renderer2.material.SetInt(m_blinkPropertyId, (manualBlinkValue * 100).RoundToInt());
+        }
     }
 
     private IEnumerator Blink()
@@ -209,7 +232,11 @@ public class EyePosition : MonoBehaviour
         while (t < 1.0f)
         {
             if (Application.isPlaying)
-                renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            {
+                _renderer1.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt());
+                _renderer2.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt());
+            }
+
             t += Time.deltaTime * blinkSpeed;
             yield return null;
         }
@@ -218,12 +245,20 @@ public class EyePosition : MonoBehaviour
         while (t > 0.0f)
         {
             if (Application.isPlaying)
-                renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt()));
+            {
+                _renderer1.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt());
+                _renderer2.material.SetInt(m_blinkPropertyId, (t * 100).RoundToInt());
+            }
+
             t -= Time.deltaTime * blinkSpeed;
             yield return null;
         }
 
-        if (Application.isPlaying) renderers.ForEach(r => r.material.SetInt(m_blinkPropertyId, 0));
+        if (Application.isPlaying)
+        {
+            _renderer1.material.SetInt(m_blinkPropertyId, 0);
+            _renderer2.material.SetInt(m_blinkPropertyId, 0);
+        }
 
         m_blinking = false;
 
