@@ -292,8 +292,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         _navigator.OnRecalculatedPath.AddListener(OnRecalculatedPath);
         _navigator.SetTarget(null);
         _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
-        transform.position = _navigator.GetNavPosition();
-        _navigator.RecalculatePath();
+        _currentHungerValue = 0;
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
