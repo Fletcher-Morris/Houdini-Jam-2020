@@ -63,8 +63,8 @@ namespace Pathing
         {
             get
             {
-                if(GameManager.Instance == null) return false;
-                if(Instance == null) return false;
+                if (GameManager.Instance == null) return false;
+                if (Instance == null) return false;
                 return Instance._initialised;
             }
         }
@@ -96,7 +96,7 @@ namespace Pathing
         {
             if (_deleteAll) DeleteWaypoints();
             if (Settings.UseRecommendedValues) Settings.SetRecommendedValues();
-            if(Settings.Equals(_prevSettings) == false && RefreshOnChange) Initialise();
+            if (Settings.Equals(_prevSettings) == false && RefreshOnChange) Initialise();
         }
 
         public void GetKnownPaths()
@@ -297,27 +297,25 @@ namespace Pathing
 
         public void FixClusters(int passes, bool first)
         {
-            passes--;
+            passes = passes - 1;
 
-            if (!first)
+            _waypoints.ForEach(wp =>
             {
-                _waypoints.ForEach(wp =>
+                float closestDist = Mathf.Infinity;
+                WaypointCluster closestCluster = null;
+                _clusters.ForEach(cluster =>
                 {
-                    float closestDist = Mathf.Infinity;
-                    WaypointCluster closestCluster = null;
-                    _clusters.ForEach(cluster =>
+                    AiWaypoint core = GetWaypoint(cluster.ClusterCore);
+                    float dist = Vector2.Distance(core.Position, wp.Position);
+                    if (dist < closestDist)
                     {
-                        AiWaypoint core = GetWaypoint(cluster.ClusterCore);
-                        float dist = Vector3.Distance(wp.Position, core.Position);
-                        if (dist < closestDist)
-                        {
-                            closestDist = dist;
-                            closestCluster = cluster;
-                        }
-                    });
-                    wp.Cluster = closestCluster.Id;
+                        closestDist = dist;
+                        closestCluster = cluster;
+                    }
                 });
-            }
+                wp.Cluster = closestCluster.Id;
+                if (!closestCluster.Waypoints.Contains(wp.Id)) closestCluster.Waypoints.Add(wp.Id);
+            });
 
             _clusters.ForEach(cluster =>
             {
@@ -329,8 +327,8 @@ namespace Pathing
                         AiWaypoint end = GetWaypoint(cluster.ClusterCore);
                         if (start != end)
                         {
-                            List<ushort> path = Breadthwise(start, end, cluster.Id);
-                            if (path == null)
+                            List<ushort> path = Breadthwise(start, end, cluster.Id, 0);
+                            if (path == null || path.Count == 0)
                             {
                                 start.Cluster = byte.MaxValue;
                             }
@@ -401,7 +399,7 @@ namespace Pathing
                     nonClusteredWaypoints[0].Cluster = newCluster;
                     while (tries2 <= maxTries)
                     {
-                        nonClusteredWaypoints.ForEach(wp=>
+                        nonClusteredWaypoints.ForEach(wp =>
                         {
                             if (wp.Cluster != byte.MaxValue)
                             {
@@ -500,7 +498,7 @@ namespace Pathing
                     return foundBakedPath.Path.Reversed();
                 }
             }
-            
+
             //  Path is not yet baked.
 
             WaypointPath chosenPath = null;
@@ -592,7 +590,7 @@ namespace Pathing
             }
 
             List<byte> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster, attempt);
-            if(clusterBreathwiseSearch != null)
+            if (clusterBreathwiseSearch != null)
             {
                 if (clusterBreathwiseSearch.Count >= 1)
                 {
