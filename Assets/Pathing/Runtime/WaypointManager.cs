@@ -35,6 +35,7 @@ namespace Pathing
         [OdinSerialize] private Dictionary<System.Tuple<ushort, ushort>, WaypointPath> _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
         [OdinSerialize] private List<WaypointPath> _knownPathsList = new List<WaypointPath>();
         [SerializeField] private bool _storeKnownPaths = true;
+        [SerializeField, Range(1, 10)] private int _pathingAttempts = 5;
         [SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
         [SerializeField, Range(0, 50)] private byte _showCluster;
         [SerializeField] private bool _showClusters = true;
@@ -499,50 +500,52 @@ namespace Pathing
                     return foundBakedPath.Path.Reversed();
                 }
             }
-
+            
             //  Path is not yet baked.
-            WaypointPath forwardWaypointPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
-            List<ushort> forwardPath = Breadthwise(start, end);
-            WaypointPath backwardWaypointPath = new WaypointPath(end.Id, start.Id, new List<ushort>());
-            List<ushort> backwardPath = Breadthwise(end, start);
-            if (forwardPath != null)
+
+            WaypointPath chosenPath = null;
+            List<ushort> chosenPathList = null;
+            float shortestPathDistance = Mathf.Infinity;
+            float longestPathDistance = Mathf.NegativeInfinity;
+
+            for (int attempt = 0; attempt < _pathingAttempts; attempt++)
             {
-                forwardWaypointPath.Path = forwardPath;
-                _pathingStats.TotalPathsCalculated++;
-            }
-            if (backwardPath != null)
-            {
-                backwardWaypointPath.Path = backwardPath;
-                _pathingStats.TotalPathsCalculated++;
+                WaypointPath forwardWaypointPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
+                List<ushort> forwardPath = Breadthwise(start, end, attempt);
+                if (forwardPath != null)
+                {
+                    forwardWaypointPath.Path = forwardPath;
+                    _pathingStats.TotalPathsCalculated++;
+
+                    float forwardPathDist = forwardWaypointPath.Distance();
+                    if (forwardPathDist > longestPathDistance)
+                    {
+                        longestPathDistance = forwardPathDist;
+                    }
+                    if (forwardPathDist < shortestPathDistance)
+                    {
+                        shortestPathDistance = forwardPathDist;
+                        chosenPath = forwardWaypointPath;
+                        chosenPathList = forwardPath;
+                    }
+                }
             }
 
-            if(forwardWaypointPath.Length() < backwardWaypointPath.Length())
+            if (_storeKnownPaths)
             {
-                if (_storeKnownPaths)
-                {
-                    _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), forwardWaypointPath);
-                    _knownPathsList.Add(forwardWaypointPath);
-                }
-                return forwardPath;
+                _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), chosenPath);
+                _knownPathsList.Add(chosenPath);
             }
-            else
-            {
-                if (_storeKnownPaths)
-                {
-                    _knownPaths.Add(new System.Tuple<ushort, ushort>(end.Id, start.Id), backwardWaypointPath);
-                    _knownPathsList.Add(backwardWaypointPath);
-                }
-                return backwardPath.Reversed();
-            }
+            return chosenPathList;
         }
 
-        private List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end)
+        private List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, int attempt)
         {
             List<ushort> result = null;
 
             if (start.Cluster == end.Cluster)
             {
-                result = Breadthwise(start, end, start.Cluster);
+                result = Breadthwise(start, end, start.Cluster, attempt);
                 if (result != null)
                 {
                     _pathingStats.SingleClusterSearches++;
@@ -563,7 +566,7 @@ namespace Pathing
                 List<byte> dualClusterIds = new List<byte>();
                 dualClusterIds.Add(start.Cluster);
                 dualClusterIds.Add(end.Cluster);
-                result = Breadthwise(start, end, dualClusterIds);
+                result = Breadthwise(start, end, dualClusterIds, attempt);
                 if (result != null)
                 {
                     _pathingStats.NeighbourClusterSearches++;
@@ -580,7 +583,7 @@ namespace Pathing
             {
                 commonClusterIds.Add(start.Cluster);
                 commonClusterIds.Add(end.Cluster);
-                result = Breadthwise(start, end, commonClusterIds);
+                result = Breadthwise(start, end, commonClusterIds, attempt);
                 if (result != null)
                 {
                     _pathingStats.CommonNeighbourClusterSearches++;
@@ -588,12 +591,12 @@ namespace Pathing
                 }
             }
 
-            List<byte> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster);
+            List<byte> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster, attempt);
             if(clusterBreathwiseSearch != null)
             {
                 if (clusterBreathwiseSearch.Count >= 1)
                 {
-                    result = Breadthwise(start, end, clusterBreathwiseSearch);
+                    result = Breadthwise(start, end, clusterBreathwiseSearch, attempt);
                     if (result != null)
                     {
                         _pathingStats.MultiClusterSearches++;
@@ -602,18 +605,18 @@ namespace Pathing
                 }
             }
 
-            result = Breadthwise(start, end, null);
+            result = Breadthwise(start, end, null, attempt);
             _pathingStats.AllNodeSearches++;
             return result;
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId)
+        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId, int attempt)
         {
             if (GetCluster(clusterId) != null)
             {
                 List<byte> list = new List<byte>();
                 list.Add(clusterId);
-                return Breadthwise(start, end, list);
+                return Breadthwise(start, end, list, attempt);
             }
             else
             {
@@ -621,7 +624,7 @@ namespace Pathing
             }
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters)
+        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters, int attempt)
         {
             List<ushort> result = new List<ushort>();
             List<ushort> visited = new List<ushort>();
@@ -648,7 +651,8 @@ namespace Pathing
                 //Didn't find Node
                 for (int i = 0; i < (currentWp.Connections.Count); i++)
                 {
-                    ushort currentNeighbour = currentWp.Connections[i];
+                    int j = (i + attempt) % currentWp.Connections.Count;
+                    ushort currentNeighbour = currentWp.Connections[j];
                     AiWaypoint currentNeighbourWp = GetWaypoint(currentNeighbour);
                     if (validClusters == null || validClusters.Count == 0 || validClusters.Contains(currentNeighbourWp.Cluster))
                     {
@@ -669,7 +673,7 @@ namespace Pathing
             return null;
         }
 
-        private List<byte> ClusterBreadthwise(WaypointCluster start, WaypointCluster end)
+        private List<byte> ClusterBreadthwise(WaypointCluster start, WaypointCluster end, int attempt)
         {
             List<byte> result = new List<byte>();
             List<byte> visited = new List<byte>();

@@ -420,6 +420,24 @@ public static class Extensions
     /// </summary>
     public static T RandomItem<T>(this T[] _array) => _array.ToList().RandomItem();
     /// <summary>
+    /// Return a random item from this array
+    /// </summary>
+    public static List<T> Randomise<T>(this List<T> _list, int seed)
+    {
+        Random.InitState(seed);
+        List<T> result = _list.Reversed();
+        int count = result.Count;
+        int last = count - 1;
+        for (int i = 0; i < last; ++i)
+        {
+            int r = Random.Range(i, count);
+            T tmp = result[i];
+            result[i] = result[r];
+            result[r] = tmp;
+        }
+        return result;
+    }
+    /// <summary>
     /// Return a random item from this List
     /// </summary>
     public static T RandomItem<T>(this List<T> _list)

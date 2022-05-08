@@ -64,7 +64,7 @@ namespace Pathing
         public float Distance()
         {
             float dist = 0;
-            if (Path != null) return 0;
+            if (Path == null) return 0;
             if(Length() == 0) return 0;
             Vector3 lastPos = WaypointManager.Instance.GetWaypoint(0).Position;
             Path.ForEach(n =>
