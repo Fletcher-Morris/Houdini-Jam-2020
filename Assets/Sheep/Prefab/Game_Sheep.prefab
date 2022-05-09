@@ -655,18 +655,19 @@ MonoBehaviour:
   _renderer1: {fileID: 2591797813131023579}
   _renderer2: {fileID: 2591797814023986480}
   position: {x: 0, y: 0}
+  EyeMaterial: {fileID: 2100000, guid: 5df87953d51ba49d69433ba74a5cea4d, type: 2}
   invertX: 0
   invertY: 1
-  EyeMaterial: {fileID: 2100000, guid: 5df87953d51ba49d69433ba74a5cea4d, type: 2}
-  openness: 0
-  outerColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
-  innerColor: {r: 0.4, g: 0.4755583, b: 0.7372549, a: 1}
-  pupilColor: {r: 0.1882353, g: 0.1882353, b: 0.1882353, a: 1}
-  outerSize: 0.5
-  innerSize: 0.3
-  pupilSize: 0.2
-  layerDepth: 1.05
-  eyeLaziness: 0.5
+  _eyeProperties:
+    EyeLaziness: 0
+    InnerColor: {r: 0, g: 0, b: 1, a: 1}
+    InnerSize: 0.3
+    LayerDepth: 1.1
+    Openness: 0.05
+    OuterColor: {r: 1, g: 1, b: 1, a: 1}
+    OuterSize: 0.5
+    PupilColor: {r: 0, g: 0, b: 0, a: 1}
+    PupilSize: 0.2
   distanceMultiplier: 0.1
   refreshMaterial: 0
   autoBlink: 1

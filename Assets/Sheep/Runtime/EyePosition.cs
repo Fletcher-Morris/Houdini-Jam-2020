@@ -39,7 +39,7 @@ public class EyePosition : MonoBehaviour
             InnerColor = Color.blue;
             InnerSize = 0.3f;
             LayerDepth = 1.1f;
-            Openness = 0.95f;
+            Openness = 0.05f;
             OuterColor = Color.white;
             OuterSize = 0.5f;
             PupilColor = Color.black;
