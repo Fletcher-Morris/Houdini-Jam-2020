@@ -14,7 +14,7 @@ public class GlobeCam : MonoBehaviour
     public float defaultZoom = 100.0f;
     [SerializeField] private float m_zoomValue = 100.0f;
 
-    public Transform focusTarget;
+    public Sheep focusSheep;
     [SerializeField] private bool m_followFocusTarget;
     [SerializeField] private float m_followRotationLerpSpeed = 15.0f;
     [SerializeField] private float rotationDragLerp = 2.0f;
@@ -70,7 +70,7 @@ public class GlobeCam : MonoBehaviour
         if (m_followFocusTarget)
         {
             //  Follow the predefined target transform.
-            m_targetCamRotation = CalcAxisRotations(focusTarget.position);
+            m_targetCamRotation = CalcAxisRotations(focusSheep.transform.position);
             var followLerpSpeed = m_followRotationLerpSpeed;
             m_yAxis.localEulerAngles = new Vector3(0,
                 Mathf.LerpAngle(m_yAxis.localEulerAngles.y, m_targetCamRotation.y, followLerpSpeed * Time.deltaTime),
@@ -115,21 +115,21 @@ public class GlobeCam : MonoBehaviour
     {
         m_selectedSheep++;
         m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
+        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep]);
     }
 
     public void SelectPrevSheep()
     {
         m_selectedSheep--;
         m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep].transform);
+        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep]);
     }
 
-    public void SetFocusTarget(Transform targ)
+    public void SetFocusTarget(Sheep targ)
     {
-        focusTarget = targ;
+        focusSheep = targ;
         m_followFocusTarget = false;
-        if (focusTarget != null) m_followFocusTarget = true;
+        if (focusSheep != null) m_followFocusTarget = true;
     }
 
     public void SetZoomFromSlider(Slider _slider)
