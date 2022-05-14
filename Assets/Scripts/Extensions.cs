@@ -282,6 +282,24 @@ public static class Extensions
         return v;
     }
     /// <summary>
+    /// Clamp this angle between two values.
+    /// </summary>
+    public static float ClampAngleBetween(this float _value, float _min, float _max)
+    {
+        float start = (_min + _max) * 0.5f - 180;
+        float floor = Mathf.FloorToInt((_value - start) / 360) * 360;
+        _min += floor;
+        _max += floor;
+        return Mathf.Clamp(_value, _min, _max);
+    }
+    /// <summary>
+    /// Return the sign of this float.
+    /// </summary>
+    public static float Sign(this float _value)
+    {
+        return Mathf.Sign(_value);
+    }
+    /// <summary>
     /// Copy this string value to the clipboard
     /// </summary>
     public static void CopyToClipboard(string _copy)

@@ -245,7 +245,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 
     private void  OnReachedTarget(Vector3 vec)
     {
-
+        _eyes.SetLookTarget(vec);
     }
 
     private List<Vector3> _navPoints = new List<Vector3>();
@@ -256,7 +256,12 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         int point = 1;
         for(int i = 0; i < _navPoints.Count; i++)
         {
-            if(id < i)
+            if (i < _navPoints.Count - 1)
+            {
+                _eyes.SetLookTarget(_navPoints[i]);
+            }
+
+            if (id < i)
             {
                 _pathLineRenderer.SetPosition(point, _navPoints[i]);
                 point++;

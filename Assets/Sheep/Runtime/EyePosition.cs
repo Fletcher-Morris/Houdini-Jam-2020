@@ -47,16 +47,17 @@ public class EyePosition : MonoBehaviour
         }
     }
 
-    public Transform followTransform;
-    public Transform targetObject;
-    public float maxMagnitude = 0.333f;
+    [SerializeField] private Transform followTransform;
+    [SerializeField] private Transform targetObject;
+    [SerializeField] private Transform _eyesCenter;
+    [SerializeField] private float maxMagnitude = 0.333f;
     [SerializeField] private Renderer _renderer1;
     [SerializeField] private Renderer _renderer2;
-    public Vector2 position;
-    public Material EyeMaterial;
+    [SerializeField] private Vector2 position;
+    [SerializeField] private Material EyeMaterial;
     private Material m_mat;
-    public bool invertX;
-    public bool invertY = true;
+    [SerializeField] private bool invertX;
+    [SerializeField] private bool invertY = true;
 
     [SerializeField] private EyeProperties _eyeProperties = new EyeProperties(true);
     private EyeProperties _prevEyeProperties = new EyeProperties();
@@ -96,6 +97,17 @@ public class EyePosition : MonoBehaviour
         UpdateEyes(Time.deltaTime);
     }
 
+    public void SetLookTarget(Transform target)
+    {
+        targetObject = target;
+    }
+
+    public void SetLookTarget(Vector3 target)
+    {
+        targetObject = null;
+        followTransform.position = target;
+    }
+
     public void UpdateEyes(float delta)
     {
         if (refreshMaterial) ConfigMaterial();
@@ -119,15 +131,16 @@ public class EyePosition : MonoBehaviour
 
     private void UpdateRenderer(Renderer r, Vector3 pos, float delta)
     {
-        Transform t = r.transform;
-
         if (followTransform != null)
         {
             if (targetObject != null) followTransform.position = targetObject.position;
-            float x = followTransform.position.z - t.position.z;
-            float y = followTransform.position.y - t.position.y;
-            pos.x = x;
-            pos.y = y;
+            _eyesCenter.position = Vector3.Lerp(_renderer1.transform.position, _renderer2.transform.position, 0.5f);
+
+            float angleZ = Vector2.SignedAngle(new Vector2(0, _eyesCenter.localPosition.z), new Vector2(followTransform.localPosition.x, followTransform.localPosition.z)).Abs();
+            float angleY = Vector2.SignedAngle(new Vector2(0, _eyesCenter.localPosition.y), new Vector2(followTransform.localPosition.x, followTransform.localPosition.y)).Abs();
+
+            pos.x = Mathf.Lerp(-1, 1, angleZ / 180.0f);
+            pos.y = Mathf.Lerp(-1, 1, angleY / 180.0f);
         }
 
         if (pos.magnitude > maxMagnitude) pos = pos.normalized * maxMagnitude;
@@ -147,7 +160,6 @@ public class EyePosition : MonoBehaviour
         _renderer2.material = new Material(m_mat);
         CheckValues(true);
     }
-
 
     private void CheckValues(bool _overide)
     {
