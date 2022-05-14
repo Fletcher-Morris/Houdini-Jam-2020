@@ -637,6 +637,8 @@ MonoBehaviour:
   _targetFood: {fileID: 0}
   _eatTime: 0.33333334
   _eyes: {fileID: 2591797814019501309}
+  _movingEyesPreset: {fileID: 11400000, guid: 34910776767bfb74db55cc90cb56ce30, type: 2}
+  _eatingEyesPreset: {fileID: 11400000, guid: 2397083001c67054ebad399045372d4f, type: 2}
 --- !u!114 &2591797814019501309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -660,14 +662,15 @@ MonoBehaviour:
   invertX: 1
   invertY: 0
   _eyeProperties:
+    EyeColors:
+      PupilColor: {r: 0.18823531, g: 0.18823531, b: 0.18823531, a: 1}
+      InnerColor: {r: 0.31764707, g: 0.3803922, b: 0.59607846, a: 1}
+      OuterColor: {r: 0.6313726, g: 0.6313726, b: 0.6313726, a: 1}
     EyeLaziness: 0
-    InnerColor: {r: 0, g: 0, b: 1, a: 1}
     InnerSize: 0.3
     LayerDepth: 1.1
     Openness: 0.05
-    OuterColor: {r: 1, g: 1, b: 1, a: 1}
     OuterSize: 0.5
-    PupilColor: {r: 0, g: 0, b: 0, a: 1}
     PupilSize: 0.2
   distanceMultiplier: 0.1
   refreshMaterial: 0
@@ -676,8 +679,6 @@ MonoBehaviour:
   blinkSpeed: 10
   blinkInterval: 0.5
   blinkChance: 0.2
-  angleZ: 180
-  angleY: 180
 --- !u!54 &2591797814019501308
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1218,7 +1219,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8454240841159024111}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.6144311, z: 1.5277891}
+  m_LocalPosition: {x: 0, y: 1.6144311, z: 1.5277892}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

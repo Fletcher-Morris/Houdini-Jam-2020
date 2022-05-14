@@ -8,8 +8,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 {
     [SerializeField, Required] private UpdateManager _updateManager;
 
-    [Space]
-    [Header("Movement")]
+    [Space, Header("Movement")]
     [SerializeField] private bool _enableMovement = true;
     [SerializeField] private float _moveSpeed = 3.0f;
     [SerializeField] private float _rotationSpeed = 10.0f;
@@ -32,8 +31,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     private float _legValue;
     private float _bounceDirection = 1.0f;
 
-    [Space]
-    [Header("Audio")]
+    [Space, Header("Audio")]
     [SerializeField] private List<AudioClip> m_bleats = new List<AudioClip>();
     [SerializeField] private float bleatChance = 0.5f;
     [SerializeField] private float m_bleatInterval = 5.0f;
@@ -41,25 +39,24 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     private AudioSource _audioSource;
     private float _bleatPitch = 1.0f;
 
-    [Space]
-    [Header("Navigation")]
+    [Space, Header("Navigation")]
     [SerializeField] private Pathing.AiNavigator _navigator = new AiNavigator();
     [SerializeField] private float _updateWaypointInterval = 4.0f;
     [SerializeField] private LineRenderer _pathLineRenderer;
 
-    [Space]
-    [Header("Hunger")]
+    [Space, Header("Hunger")]
     [SerializeField] private HungerState _hungerState;
-    public enum HungerState { Sated, SearchingForFood, MovingToFood, Eating}
+    public enum HungerState { Default, Sated, SearchingForFood, MovingToFood, Eating}
     [SerializeField] private float _currentHungerValue = 1.0f;
     [SerializeField] private float _hungerDeleptionRate = 0.01f;
     [SerializeField] private Food _targetFood = null;
     [SerializeField] private float _eatTime = 1.0f;
     private float _eatTimer = 0;
 
-    [Space]
-    [Header("Eyes")]
+    [Space, Header("Eyes")]
     [SerializeField] private EyePosition _eyes;
+    [SerializeField] private EyePreset _movingEyesPreset;
+    [SerializeField] private EyePreset _eatingEyesPreset;
 
     private void Awake()
     {
@@ -116,6 +113,11 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 
         switch (_hungerState)
         {
+            case HungerState.Default:
+                _eyes.ApplyAyePreset(_movingEyesPreset);
+                _hungerState = HungerState.Sated;
+                break;
+
             case HungerState.Sated:
                 _targetFood = null;
                 if(_currentHungerValue <= 0)
@@ -158,6 +160,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
                 }
                 else if (_navigator.HasReachedTarget())
                 {
+                    _eyes.ApplyAyePreset(_eatingEyesPreset);
                     _hungerState = HungerState.Eating;
                 }
 
@@ -175,6 +178,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
                         _targetFood.RemoveFoodEater(this);
                         _targetFood = null;
                         _navigator.SetTarget(null);
+                        _eyes.ApplyAyePreset(_movingEyesPreset);
                         _hungerState = HungerState.Sated;
                     }
                     else if (_targetFood.RemainingFood() <= 0)
@@ -182,6 +186,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
                         _targetFood.RemoveFoodEater(this);
                         _targetFood = null;
                         _navigator.SetTarget(null);
+                        _eyes.ApplyAyePreset(_movingEyesPreset);
                         _hungerState = HungerState.SearchingForFood;
                     }
                 }

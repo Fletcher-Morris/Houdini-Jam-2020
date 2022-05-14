@@ -8,42 +8,52 @@ public class EyePosition : MonoBehaviour
     [System.Serializable]
     public struct EyeProperties
     {
+        [System.Serializable]
+        public struct Colors
+        {
+            public Color PupilColor;
+            public Color InnerColor;
+            public Color OuterColor;
+        }
+
+        public Colors EyeColors;
         public float EyeLaziness;
-        public Color InnerColor;
         public float InnerSize;
         public float LayerDepth;
         public float Openness;
-        public Color OuterColor;
         public float OuterSize;
-        public Color PupilColor;
         public float PupilSize;
 
-        public EyeProperties Lerp(EyeProperties a, EyeProperties b, float t)
+        public EyeProperties Lerp(EyeProperties a, EyeProperties b, float t, bool lerpColors)
         {
             EyeProperties result = a;
             result.EyeLaziness = Mathf.Lerp(a.EyeLaziness, b.EyeLaziness, t);
-            result.InnerColor = Color.Lerp(a.InnerColor, b.InnerColor, t);
             result.InnerSize = Mathf.Lerp(a.InnerSize, b.InnerSize, t);
             result.LayerDepth = Mathf.Lerp(a.LayerDepth, b.LayerDepth, t);
             result.Openness = Mathf.Lerp(a.Openness, b.Openness, t);
-            result.OuterColor = Color.Lerp(a.OuterColor, b.OuterColor, t);
             result.OuterSize = Mathf.Lerp(a.OuterSize, b.OuterSize, t);
-            result.PupilColor = Color.Lerp(a.PupilColor, b.PupilColor, t);
             result.PupilSize = Mathf.Lerp(a.PupilSize, b.PupilSize, t);
+
+            if (lerpColors)
+            {
+                result.EyeColors.PupilColor = Color.Lerp(a.EyeColors.PupilColor, b.EyeColors.PupilColor, t);
+                result.EyeColors.InnerColor = Color.Lerp(a.EyeColors.InnerColor, b.EyeColors.InnerColor, t);
+                result.EyeColors.OuterColor = Color.Lerp(a.EyeColors.OuterColor, b.EyeColors.OuterColor, t);
+            }
             return result;
         }
 
         public EyeProperties(bool x)
         {
             EyeLaziness = 0;
-            InnerColor = Color.blue;
             InnerSize = 0.3f;
             LayerDepth = 1.1f;
             Openness = 0.05f;
-            OuterColor = Color.white;
             OuterSize = 0.5f;
-            PupilColor = Color.black;
             PupilSize = 0.2f;
+            EyeColors.PupilColor = Color.black;
+            EyeColors.InnerColor = Color.blue;
+            EyeColors.OuterColor = Color.white;
         }
     }
 
@@ -95,6 +105,34 @@ public class EyePosition : MonoBehaviour
     {
         if (Application.isPlaying) return;
         UpdateEyes(Time.deltaTime);
+    }
+
+    public void ApplyAyePreset(EyePreset preset)
+    {
+        if (preset == null) return;
+        StartCoroutine(LerpToEyeProperties(preset.Properties, 1.0f));
+    }
+
+    private bool _lerpingEyeProperties;
+    private IEnumerator LerpToEyeProperties(EyeProperties newProperties, float lerpTime)
+    {
+        if(_lerpingEyeProperties == false)
+        {
+            _lerpingEyeProperties = true;
+            EyeProperties prev = _eyeProperties;
+
+            float t = 0;
+            while(t < lerpTime)
+            {
+                _eyeProperties = _eyeProperties.Lerp(prev, newProperties, t / lerpTime, false);
+                t += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
+            _eyeProperties = _eyeProperties.Lerp(newProperties, newProperties, 1, false);
+
+            _lerpingEyeProperties = false;
+        }
+        yield return null;
     }
 
     public void SetLookTarget(Transform target)
@@ -189,22 +227,22 @@ public class EyePosition : MonoBehaviour
             _renderer2.material.SetFloat(OuterSizePropHash, _eyeProperties.OuterSize);
         }
 
-        if (_eyeProperties.PupilColor != _prevEyeProperties.PupilColor || _overide)
+        if (_eyeProperties.EyeColors.PupilColor != _prevEyeProperties.EyeColors.PupilColor || _overide)
         {
-            _renderer1.material.SetColor(PupilColorPropHash, _eyeProperties.PupilColor);
-            _renderer2.material.SetColor(PupilColorPropHash, _eyeProperties.PupilColor);
+            _renderer1.material.SetColor(PupilColorPropHash, _eyeProperties.EyeColors.PupilColor);
+            _renderer2.material.SetColor(PupilColorPropHash, _eyeProperties.EyeColors.PupilColor);
         }
 
-        if (_eyeProperties.InnerColor != _prevEyeProperties.InnerColor || _overide)
+        if (_eyeProperties.EyeColors.InnerColor != _prevEyeProperties.EyeColors.InnerColor || _overide)
         {
-            _renderer1.material.SetColor(InnerColorPropHash, _eyeProperties.InnerColor);
-            _renderer2.material.SetColor(InnerColorPropHash, _eyeProperties.InnerColor);
+            _renderer1.material.SetColor(InnerColorPropHash, _eyeProperties.EyeColors.InnerColor);
+            _renderer2.material.SetColor(InnerColorPropHash, _eyeProperties.EyeColors.InnerColor);
         }
 
-        if (_eyeProperties.OuterColor != _prevEyeProperties.OuterColor|| _overide)
+        if (_eyeProperties.EyeColors.OuterColor != _prevEyeProperties.EyeColors.OuterColor || _overide)
         {
-            _renderer1.material.SetColor(OuterColorPropHash, _eyeProperties.OuterColor);
-            _renderer2.material.SetColor(OuterColorPropHash, _eyeProperties.OuterColor);
+            _renderer1.material.SetColor(OuterColorPropHash, _eyeProperties.EyeColors.OuterColor);
+            _renderer2.material.SetColor(OuterColorPropHash, _eyeProperties.EyeColors.OuterColor);
         }
 
         if (_eyeProperties.LayerDepth != _prevEyeProperties.LayerDepth|| _overide)
