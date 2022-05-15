@@ -7,12 +7,13 @@ public class GlobeCam : MonoBehaviour
     public float minRotateSpeed = 15.0f;
     public float maxRotateSpeed = 45.0f;
     [SerializeField] private float m_rotSpeed = 45.0f;
-    public float zoomSpeed = 10.0f;
+    public float _scrollZoomSpeed = 4.0f;
+    public float _maxZoomSpeed = 10.0f;
     public float closeUpZoomStart = 70.0f;
     public float minZoom = 60.0f;
     public float maxZoom = 150.0f;
     public float defaultZoom = 100.0f;
-    [SerializeField] private float m_zoomValue = 100.0f;
+    [SerializeField] private float _zoomValue = 100.0f;
 
     public Sheep focusSheep;
     [SerializeField] private bool m_followFocusTarget;
@@ -65,7 +66,7 @@ public class GlobeCam : MonoBehaviour
 
         if (inDir.magnitude >= 0.05f) m_followFocusTarget = false;
 
-        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, m_zoomValue));
+        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, _zoomValue));
 
         if (m_followFocusTarget)
         {
@@ -94,13 +95,15 @@ public class GlobeCam : MonoBehaviour
             m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f, 89.0f), 0, 0);
         }
 
-        m_zoomValue -= Input.mouseScrollDelta.y * zoomSpeed;
-        m_zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f * zoomSpeed;
-        m_zoomValue = m_zoomValue.Clamp(minZoom, maxZoom);
+        float prevZoomValue = _zoomValue;
+        _zoomValue -= Input.mouseScrollDelta.y * _scrollZoomSpeed;
+        _zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f;
+        _zoomValue = Mathf.Clamp(_zoomValue, prevZoomValue - _maxZoomSpeed, prevZoomValue + _maxZoomSpeed);
+        _zoomValue = _zoomValue.Clamp(minZoom, maxZoom);
 
-        var closeUpLerp = Mathf.InverseLerp(closeUpZoomStart, minZoom, m_zoomValue).Clamp(0.0f, 1.0f);
-        transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -1) * m_zoomValue,
-            new Vector3(0, 0, -1) * m_zoomValue + new Vector3(0, -7.5f, 0), closeUpLerp);
+        var closeUpLerp = Mathf.InverseLerp(closeUpZoomStart, minZoom, _zoomValue).Clamp(0.0f, 1.0f);
+        transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -1) * _zoomValue,
+            new Vector3(0, 0, -1) * _zoomValue + new Vector3(0, -7.5f, 0), closeUpLerp);
         transform.localEulerAngles = Vector3.Lerp(Vector3.zero, new Vector3(-60.0f, 0, 0), closeUpLerp);
     }
 
@@ -134,7 +137,7 @@ public class GlobeCam : MonoBehaviour
 
     public void SetZoomFromSlider(Slider _slider)
     {
-        m_zoomValue = Mathf.Lerp(minZoom, maxZoom, _slider.value);
+        _zoomValue = Mathf.Lerp(minZoom, maxZoom, _slider.value);
     }
 
     public Vector2 CalcAxisRotations(Vector3 pos)
