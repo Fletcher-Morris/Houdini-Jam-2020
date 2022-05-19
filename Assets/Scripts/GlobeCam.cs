@@ -3,50 +3,45 @@ using UnityEngine.UI;
 
 public class GlobeCam : MonoBehaviour
 {
-    public bool enableMovement;
-    public float minRotateSpeed = 15.0f;
-    public float maxRotateSpeed = 45.0f;
-    [SerializeField] private float m_rotSpeed = 45.0f;
-    public float _scrollZoomSpeed = 4.0f;
-    public float _maxZoomSpeed = 10.0f;
-    public float closeUpZoomStart = 70.0f;
-    public float minZoom = 60.0f;
-    public float maxZoom = 150.0f;
-    public float defaultZoom = 100.0f;
+    [SerializeField] private bool _enableMovement;
+    [SerializeField] private float _minRotateSpeed = 15.0f;
+    [SerializeField] private float _maxRotateSpeed = 45.0f;
+    [SerializeField] private float _rotSpeed = 45.0f;
+    [SerializeField] private float _scrollZoomSpeed = 4.0f;
+    [SerializeField] private float _maxZoomSpeed = 10.0f;
+    [SerializeField] private float _closeUpZoomStart = 70.0f;
+    [SerializeField] private float _minZoom = 60.0f;
+    [SerializeField] private float _maxZoom = 150.0f;
+    [SerializeField] private float _defaultZoom = 100.0f;
     [SerializeField] private float _zoomValue = 100.0f;
+    [SerializeField] private Sheep _focusSheep;
+    [SerializeField] private bool _followFocusTarget;
+    [SerializeField] private float _followRotationLerpSpeed = 15.0f;
+    [SerializeField] private float _rotationDragLerp = 2.0f;
+    [SerializeField] private Joystick _joystick;
 
-    public Sheep focusSheep;
-    [SerializeField] private bool m_followFocusTarget;
-    [SerializeField] private float m_followRotationLerpSpeed = 15.0f;
-    [SerializeField] private float rotationDragLerp = 2.0f;
-
-    [SerializeField] private Joystick m_joystick;
-
-    private float m_rotDragX;
-    private float m_rotDragY;
-
-    private int m_selectedSheep;
-
-    private Vector2 m_targetCamRotation;
-    private Transform m_xAxis;
-
-    private Transform m_yAxis;
+    private float _rotDragX;
+    private float _rotDragY;
+    private int _selectedSheep;
+    private Vector2 _targetCamRotation;
+    private Transform _xAxis;
+    private Transform _yAxis;
 
     private void Start()
     {
-        if (m_yAxis == null)
+        if (_yAxis == null)
         {
-            m_yAxis = new GameObject("GlobeCam_Y").transform;
-            m_yAxis.transform.position = Vector3.zero;
-            m_yAxis.transform.rotation = Quaternion.identity;
+            _yAxis = new GameObject("GlobeCam_Y").transform;
+            _yAxis.transform.position = Vector3.zero;
+            _yAxis.transform.rotation = Quaternion.identity;
 
-            m_xAxis = new GameObject("GlobeCam_X").transform;
-            m_xAxis.parent = m_yAxis;
-            m_xAxis.transform.position = Vector3.zero;
-            m_xAxis.transform.rotation = Quaternion.identity;
+            _xAxis = new GameObject("GlobeCam_X").transform;
+            _xAxis.parent = _yAxis;
+            _xAxis.transform.position = Vector3.zero;
+            _xAxis.transform.rotation = Quaternion.identity;
 
-            transform.parent = m_xAxis;
-            transform.position = -m_xAxis.forward * defaultZoom;
+            transform.parent = _xAxis;
+            transform.position = -_xAxis.forward * _defaultZoom;
         }
     }
 
@@ -54,54 +49,54 @@ public class GlobeCam : MonoBehaviour
     {
         SelectTargetSheep();
 
-        if (!enableMovement) return;
+        if (!_enableMovement) return;
 
         var inDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        if (m_joystick != null)
+        if (_joystick != null)
         {
-            var jDir = m_joystick.Direction;
+            var jDir = _joystick.Direction;
             if (jDir != Vector2.zero) inDir = jDir;
         }
 
-        if (inDir.magnitude >= 0.05f) m_followFocusTarget = false;
+        if (inDir.magnitude >= 0.05f) _followFocusTarget = false;
 
-        m_rotSpeed = Mathf.Lerp(minRotateSpeed, maxRotateSpeed, Mathf.InverseLerp(minZoom, maxZoom, _zoomValue));
+        _rotSpeed = Mathf.Lerp(_minRotateSpeed, _maxRotateSpeed, Mathf.InverseLerp(_minZoom, _maxZoom, _zoomValue));
 
-        if (m_followFocusTarget)
+        if (_followFocusTarget)
         {
             //  Follow the predefined target transform.
-            m_targetCamRotation = CalcAxisRotations(focusSheep.transform.position);
-            var followLerpSpeed = m_followRotationLerpSpeed;
-            m_yAxis.localEulerAngles = new Vector3(0,
-                Mathf.LerpAngle(m_yAxis.localEulerAngles.y, m_targetCamRotation.y, followLerpSpeed * Time.deltaTime),
+            _targetCamRotation = CalcAxisRotations(_focusSheep.transform.position);
+            var followLerpSpeed = _followRotationLerpSpeed;
+            _yAxis.localEulerAngles = new Vector3(0,
+                Mathf.LerpAngle(_yAxis.localEulerAngles.y, _targetCamRotation.y, followLerpSpeed * Time.deltaTime),
                 0);
-            m_xAxis.localEulerAngles =
+            _xAxis.localEulerAngles =
                 new Vector3(
-                    Mathf.LerpAngle(m_xAxis.localEulerAngles.x, m_targetCamRotation.x,
+                    Mathf.LerpAngle(_xAxis.localEulerAngles.x, _targetCamRotation.x,
                         followLerpSpeed * Time.deltaTime), 0, 0);
         }
         else
         {
             //  Follow via input axis.
-            m_rotDragX += inDir.x;
-            m_rotDragY += inDir.y;
-            m_rotDragX = m_rotDragX.Clamp(-1.0f, 1.0f);
-            m_rotDragY = m_rotDragY.Clamp(-1.0f, 1.0f);
-            m_rotDragX = Mathf.Lerp(m_rotDragX, 0.0f, rotationDragLerp * Time.deltaTime);
-            m_rotDragY = Mathf.Lerp(m_rotDragY, 0.0f, rotationDragLerp * Time.deltaTime);
-            m_yAxis.Rotate(-Vector3.up, m_rotSpeed * Time.deltaTime * m_rotDragX);
-            m_xAxis.Rotate(Vector3.right, m_rotSpeed * Time.deltaTime * m_rotDragY);
-            m_xAxis.localEulerAngles = new Vector3(m_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f, 89.0f), 0, 0);
+            _rotDragX += inDir.x;
+            _rotDragY += inDir.y;
+            _rotDragX = _rotDragX.Clamp(-1.0f, 1.0f);
+            _rotDragY = _rotDragY.Clamp(-1.0f, 1.0f);
+            _rotDragX = Mathf.Lerp(_rotDragX, 0.0f, _rotationDragLerp * Time.deltaTime);
+            _rotDragY = Mathf.Lerp(_rotDragY, 0.0f, _rotationDragLerp * Time.deltaTime);
+            _yAxis.Rotate(-Vector3.up, _rotSpeed * Time.deltaTime * _rotDragX);
+            _xAxis.Rotate(Vector3.right, _rotSpeed * Time.deltaTime * _rotDragY);
+            _xAxis.localEulerAngles = new Vector3(_xAxis.transform.localEulerAngles.x.ClampAngle(0.0f, 89.0f), 0, 0);
         }
 
         float prevZoomValue = _zoomValue;
         _zoomValue -= Input.mouseScrollDelta.y * _scrollZoomSpeed;
         _zoomValue += (Input.GetKey(KeyCode.Q).ToFloat() - Input.GetKey(KeyCode.E).ToFloat()) * 0.25f;
         _zoomValue = Mathf.Clamp(_zoomValue, prevZoomValue - _maxZoomSpeed, prevZoomValue + _maxZoomSpeed);
-        _zoomValue = _zoomValue.Clamp(minZoom, maxZoom);
+        _zoomValue = _zoomValue.Clamp(_minZoom, _maxZoom);
 
-        var closeUpLerp = Mathf.InverseLerp(closeUpZoomStart, minZoom, _zoomValue).Clamp(0.0f, 1.0f);
+        var closeUpLerp = Mathf.InverseLerp(_closeUpZoomStart, _minZoom, _zoomValue).Clamp(0.0f, 1.0f);
         transform.localPosition = Vector3.Lerp(new Vector3(0, 0, -1) * _zoomValue,
             new Vector3(0, 0, -1) * _zoomValue + new Vector3(0, -7.5f, 0), closeUpLerp);
         transform.localEulerAngles = Vector3.Lerp(Vector3.zero, new Vector3(-60.0f, 0, 0), closeUpLerp);
@@ -116,28 +111,28 @@ public class GlobeCam : MonoBehaviour
 
     public void SelectNextSheep()
     {
-        m_selectedSheep++;
-        m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep]);
+        _selectedSheep++;
+        _selectedSheep = _selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
+        SetFocusTarget(GameManager.Instance.SheepList[_selectedSheep]);
     }
 
     public void SelectPrevSheep()
     {
-        m_selectedSheep--;
-        m_selectedSheep = m_selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
-        SetFocusTarget(GameManager.Instance.SheepList[m_selectedSheep]);
+        _selectedSheep--;
+        _selectedSheep = _selectedSheep.Loop(0, GameManager.Instance.SheepList.Count - 1);
+        SetFocusTarget(GameManager.Instance.SheepList[_selectedSheep]);
     }
 
     public void SetFocusTarget(Sheep targ)
     {
-        focusSheep = targ;
-        m_followFocusTarget = false;
-        if (focusSheep != null) m_followFocusTarget = true;
+        _focusSheep = targ;
+        _followFocusTarget = false;
+        if (_focusSheep != null) _followFocusTarget = true;
     }
 
     public void SetZoomFromSlider(Slider _slider)
     {
-        _zoomValue = Mathf.Lerp(minZoom, maxZoom, _slider.value);
+        _zoomValue = Mathf.Lerp(_minZoom, _maxZoom, _slider.value);
     }
 
     public Vector2 CalcAxisRotations(Vector3 pos)

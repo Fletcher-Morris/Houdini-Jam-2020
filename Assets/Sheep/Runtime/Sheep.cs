@@ -45,6 +45,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     [SerializeField] private LineRenderer _pathLineRenderer;
 
     [Space, Header("Hunger")]
+    [SerializeField] private bool _enableHunger = true;
     [SerializeField] private HungerState _hungerState;
     public enum HungerState { Default, Sated, SearchingForFood, MovingToFood, Eating}
     [SerializeField] private float _currentHungerValue = 1.0f;
@@ -65,7 +66,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 
     private void Bouncing(float delta)
     {
-        if (_movementVector.magnitude > 0)
+        if (_movementVector.magnitude > 0 && _enableMovement)
         {
             _bounceTimer += delta * _bounceSpeed;
         }
@@ -103,6 +104,31 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         }
     }
 
+    private void SetHungerState(HungerState state)
+    {
+        switch (state)
+        {
+            case HungerState.Default:
+                _eyes.ApplyAyePreset(_movingEyesPreset);
+                break;
+            case HungerState.Sated:
+                _eyes.ApplyAyePreset(_movingEyesPreset);
+                _targetFood = null;
+                break;
+            case HungerState.SearchingForFood:
+                _eyes.ApplyAyePreset(_movingEyesPreset);
+                break;
+            case HungerState.MovingToFood:
+                _eyes.ApplyAyePreset(_movingEyesPreset);
+                break;
+            case HungerState.Eating:
+                _eyes.ApplyAyePreset(_eatingEyesPreset);
+                break;
+        }
+
+        _hungerState = state;
+    }
+
     private void Hunger(float delta)
     {
         if (_hungerState != HungerState.Eating)
@@ -114,81 +140,87 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         switch (_hungerState)
         {
             case HungerState.Default:
-                _eyes.ApplyAyePreset(_movingEyesPreset);
-                _hungerState = HungerState.Sated;
+                SetHungerState(HungerState.Sated);
                 break;
 
             case HungerState.Sated:
-                _targetFood = null;
-                if(_currentHungerValue <= 0)
+                if (_currentHungerValue <= 0)
                 {
-                    _hungerState = HungerState.SearchingForFood;
+                    SetHungerState(HungerState.SearchingForFood);
                 }
-
                 break;
 
             case HungerState.SearchingForFood:
-                _targetFood = null;
-                float closestDist = Mathf.Infinity;
-                foreach (Food food in FindObjectsOfType<Food>())
+                if (_enableHunger)
                 {
-                    if (food.RemainingFood() >= 1 && food.BeingEatenBy().Count == 0)
+                    _targetFood = null;
+                    float closestDist = Mathf.Infinity;
+                    foreach (Food food in FindObjectsOfType<Food>())
                     {
-                        float dist = Vector3.Distance(transform.position, food.transform.position);
-                        if (dist < closestDist)
+                        if (food.RemainingFood() >= 1 && food.BeingEatenBy().Count == 0)
                         {
-                            _targetFood = food;
-                            closestDist = dist;
+                            float dist = Vector3.Distance(transform.position, food.transform.position);
+                            if (dist < closestDist)
+                            {
+                                _targetFood = food;
+                                closestDist = dist;
+                            }
                         }
                     }
+                    if (_targetFood != null)
+                    {
+                        _targetFood.AddEater(this);                        
+                        _navigator.SetCurrentNavPosition(transform.position);
+                        _navigator.SetTarget(_targetFood);
+                        SetHungerState(HungerState.MovingToFood);
+                    }
                 }
-                if (_targetFood != null)
+                else
                 {
-                    _targetFood.AddEater(this);
-                    _hungerState = HungerState.MovingToFood;
-                    _navigator.SetCurrentNavPosition(transform.position);
-                    _navigator.SetTarget(_targetFood);
+                    SetHungerState(HungerState.Sated);
                 }
-
                 break;
 
             case HungerState.MovingToFood:
                 if(_targetFood.BeingEatenBy().Count >= 2)
                 {
                     _targetFood = null;
-                    _hungerState = HungerState.SearchingForFood;
+                    SetHungerState(HungerState.SearchingForFood);
                 }
                 else if (_navigator.HasReachedTarget())
                 {
-                    _eyes.ApplyAyePreset(_eatingEyesPreset);
-                    _hungerState = HungerState.Eating;
+                    SetHungerState(HungerState.Eating);
                 }
-
                 break;
 
             case HungerState.Eating:
-                if ((_eatTimer -= delta) <= 0)
+                if (_enableHunger)
                 {
-                    _eatTimer = _eatTime;
-                    _targetFood.EatFromFood();
-                    _currentHungerValue += 0.1f;
+                    if ((_eatTimer -= delta) <= 0)
+                    {
+                        _eatTimer = _eatTime;
+                        _targetFood.EatFromFood();
+                        _currentHungerValue += 0.1f;
 
-                    if (_currentHungerValue >= 1)
-                    {
-                        _targetFood.RemoveFoodEater(this);
-                        _targetFood = null;
-                        _navigator.SetTarget(null);
-                        _eyes.ApplyAyePreset(_movingEyesPreset);
-                        _hungerState = HungerState.Sated;
+                        if (_currentHungerValue >= 1)
+                        {
+                            _targetFood.RemoveFoodEater(this);
+                            _targetFood = null;
+                            _navigator.SetTarget(null);
+                            SetHungerState(HungerState.Sated);
+                        }
+                        else if (_targetFood.RemainingFood() <= 0)
+                        {
+                            _targetFood.RemoveFoodEater(this);
+                            _targetFood = null;
+                            _navigator.SetTarget(null);
+                            SetHungerState(HungerState.SearchingForFood);
+                        }
                     }
-                    else if (_targetFood.RemainingFood() <= 0)
-                    {
-                        _targetFood.RemoveFoodEater(this);
-                        _targetFood = null;
-                        _navigator.SetTarget(null);
-                        _eyes.ApplyAyePreset(_movingEyesPreset);
-                        _hungerState = HungerState.SearchingForFood;
-                    }
+                }
+                else
+                {
+                    SetHungerState(HungerState.Sated);
                 }
 
                 break;

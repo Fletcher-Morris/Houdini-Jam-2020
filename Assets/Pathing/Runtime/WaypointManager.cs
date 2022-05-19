@@ -39,7 +39,7 @@ namespace Pathing
         [SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
         [SerializeField, Range(0, 50)] private byte _showCluster;
         [SerializeField] private bool _showClusters = true;
-        [SerializeField] private bool m_cullLines = true;
+        [SerializeField] private bool _cullLines = true;
         public bool ShowNavigatorPaths = true;
         [SerializeField] private List<WaypointCluster> _clusters = new List<WaypointCluster>();
         [SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
@@ -113,7 +113,7 @@ namespace Pathing
             if (_lineDebugOpacity > 0.0f)
             {
                 float camToPlanetDist = 0.0f;
-                if (m_cullLines && _cullCam != null)
+                if (_cullLines && _cullCam != null)
                     camToPlanetDist = Vector3.Distance(_cullCam.transform.position, Vector3.zero);
                 _waypoints.ForEach(w1 =>
                 {
@@ -123,7 +123,7 @@ namespace Pathing
                         {
                             AiWaypoint conWp = GetWaypointInstance(w2);
                             bool cullLine = false;
-                            if (_cullCam == null || m_cullLines == false)
+                            if (_cullCam == null || _cullLines == false)
                             {
                             }
                             else

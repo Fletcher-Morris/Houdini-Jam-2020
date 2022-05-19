@@ -15,7 +15,7 @@ MonoBehaviour:
   version: 5
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -23,7 +23,8 @@ Material:
   m_Name: Sky
   m_Shader: {fileID: -6465566751694194690, guid: 536aa0ac0597c47bea7ece35633c2f50,
     type: 3}
-  m_ShaderKeywords: 
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -104,8 +105,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_1BB82E4: {r: 0.43921322, g: 0.5916853, b: 0.8867924, a: 1}
-    - Color_E0624E01: {r: 0.05163634, g: 0.10696096, b: 0.21299997, a: 1}
+    - Color_1BB82E4: {r: 0.4392157, g: 0.5921569, b: 0.8862745, a: 1}
+    - Color_E0624E01: {r: 0.043137252, g: 0.09474048, b: 0.18431373, a: 1}
     - _BaseColor: {r: 0.5518868, g: 0.72578144, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
