@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
 
@@ -293,7 +296,7 @@ public static class Extensions
         return Mathf.Clamp(_value, _min, _max);
     }
     /// <summary>
-    /// Return the sign of this float.
+    /// Return the sign of this float
     /// </summary>
     public static float Sign(this float _value)
     {
@@ -367,6 +370,26 @@ public static class Extensions
         return builder.ToString();
     }
     /// <summary>
+    /// Remove non-alphanumeric from this string, swap them for '_'
+    /// </summary>
+    public static string AlphanumericOnly(this string _string)
+    {
+        if (string.IsNullOrEmpty(_string))
+        {
+            return string.Empty;
+        }
+        StringBuilder builder = new StringBuilder(_string);
+        for (int i = 0; i < _string.Length; i++)
+        {
+            if (!AlphaNumeric.Contains(_string[i].ToString().ToLower()))
+            {
+                builder.Remove(i, 1);
+                builder.Insert(i, '_');
+            }
+        }
+        return builder.ToString();
+    }
+    /// <summary>
     /// Remove non-letters/periods from this string, swap them for '_'
     /// </summary>
     public static string LettersAndPeriodsOnly(this string _string)
@@ -386,6 +409,21 @@ public static class Extensions
             }
         }
         return builder.ToString();
+    }
+    /// <summary>
+    /// Remove duplicates of a specified character from a string
+    /// </summary>
+    public static string RemoveDuplicates(this string _string, char _remove)
+    {
+        string replaceStroing = "#";
+        replaceStroing = replaceStroing.Replace('#', _remove);
+        string removeString = "##";
+        removeString = removeString.Replace('#', _remove);
+        while(_string.Contains(removeString))
+        {
+            _string = _string.Replace(removeString, replaceStroing);
+        }
+        return _string;
     }
     /// <summary>
     /// Convert this string to title case (This is title case)
@@ -552,4 +590,38 @@ public static class Extensions
     /// Check if a GUID is NULL or empty
     /// </summary>
     public static bool IsNullOrEmpty(this System.Guid guid) => guid == null || guid == System.Guid.Empty;
+    /// <summary>
+    /// Return a ScriptableObject asset of specified type
+    /// </summary>
+    public static T GetScriptableObjectAsset<T>() where T : ScriptableObject
+    {
+        return GetScriptableObjectAssets<T>().FirstOrDefault();
+    }
+    /// <summary>
+    /// Return a List of ScriptableObject assets of specified type
+    /// </summary>
+    public static List<T> GetScriptableObjectAssets<T>() where T : ScriptableObject
+    {
+        List<T> result = default;
+#if UNITY_EDITOR
+        result = UnityEditor.AssetDatabase.FindAssets($"t: {typeof(T).Name}").ToList()
+                    .Select(UnityEditor.AssetDatabase.GUIDToAssetPath)
+                    .Select(UnityEditor.AssetDatabase.LoadAssetAtPath<T>)
+                    .ToList();
+#endif
+        return result;
+    }
+    /// <summary>
+    /// Deep-Copy an Object
+    /// </summary>
+    public static T CopyObject<T>(this object objSource)
+    {
+        using (MemoryStream stream = new MemoryStream())
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, objSource);
+            stream.Position = 0;
+            return (T)formatter.Deserialize(stream);
+        }
+    }
 }
