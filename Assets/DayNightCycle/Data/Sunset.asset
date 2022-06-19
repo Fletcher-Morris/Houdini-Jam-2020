@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Sunset
   m_EditorClassIdentifier: 
   _frameData:
-    SkyColor: {r: 1, g: 0.58810955, b: 0.3176471, a: 1}
+    SkyColor: {r: 1, g: 0.43795097, b: 0.2216981, a: 1}

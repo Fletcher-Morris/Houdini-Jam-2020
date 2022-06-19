@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Sunrise
   m_EditorClassIdentifier: 
   _frameData:
-    SkyColor: {r: 1, g: 0.3433781, b: 0.3160377, a: 1}
+    SkyColor: {r: 1, g: 0.43867922, b: 0.43867922, a: 1}
