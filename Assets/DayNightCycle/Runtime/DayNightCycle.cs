@@ -23,6 +23,12 @@ public class DayNightCycle : SerializedScriptableObject
     [SerializeField, Min(1)] private int _ticksPerCycle = 1000;
     [SerializeField] private List<DayNightCycleFrameLength> _frames = new List<DayNightCycleFrameLength>();
     [SerializeField] private List<DayNightCycleFrameLength> _loopedFrames = new List<DayNightCycleFrameLength>();
+    private int _currentTick = 0;
+    private DayNightFrame.DayNightFrameData _currentData;
+    private float _prevLerpVal = -1;
+    private float _currentLerpVal = 0;
+
+    [Space(50)]
     [SerializeField] private bool _alwaysNormaliseFrameTimes = false;
     [Button]
     private void NormaliseFrameTimes()
@@ -82,7 +88,7 @@ public class DayNightCycle : SerializedScriptableObject
     [Range(0, 1000), SerializeField] private int _testLerp = 0;
     [SerializeField] private bool _useBias;
     [SerializeField] private DayNightFrame.DayNightFrameData _lerpedData;
-
+    [SerializeField] private bool _applyTestData;
     [SerializeField] private Texture2D _lerpedTexture;
     [Button]
     private void GenerateSkyGradient()
@@ -94,7 +100,7 @@ public class DayNightCycle : SerializedScriptableObject
 
         for (int x = 0; x < _lerpedTexture.width; x++)
         {
-            _lerpedData = LerpedDayNightFrameDataForTick(_ticksPerCycle / _lerpedTexture.width * x);
+            _lerpedData = LerpedDayNightFrameDataForTick(_ticksPerCycle / _lerpedTexture.width * x, false);
             for (int y = 0; y < _lerpedTexture.height; y++)
             {
                 _lerpedTexture.SetPixel(x, y, _lerpedData.SkyColor);
@@ -107,7 +113,14 @@ public class DayNightCycle : SerializedScriptableObject
     private void OnValidate()
     {
         if (!_onValidate) return;
-        _lerpedData = LerpedDayNightFrameDataForTick(_testLerp);
+
+        _lerpedData = LerpedDayNightFrameDataForTick(_testLerp, false);
+
+        if(_applyTestData)
+        {
+            _currentTick = _testLerp;
+            Tick();
+        }
     }
 
     private DayNightCycleFrameLength DayNightFrameLengthForTick(int tick)
@@ -130,7 +143,7 @@ public class DayNightCycle : SerializedScriptableObject
         else return _loopedFrames[frameLength.ListIndex + 1];
     }
 
-    public DayNightFrame.DayNightFrameData LerpedDayNightFrameDataForTick(int tick)
+    public DayNightFrame.DayNightFrameData LerpedDayNightFrameDataForTick(int tick, bool setLerpVal)
     {
         if (_loopedFrames == null) return default;
         if (_loopedFrames.Count == 0) return default;
@@ -164,6 +177,23 @@ public class DayNightCycle : SerializedScriptableObject
             lerpVal = secondFrame.Bias.Evaluate(lerpVal);
         }
 
+        if (setLerpVal)
+        {
+            _prevLerpVal = _currentLerpVal;
+            _currentLerpVal = lerpVal;
+        }
+
         return new(firstFrame.Frame.FrameData, secondFrame.Frame.FrameData, lerpVal);
+    }
+
+    public void Tick()
+    {
+        if(_currentTick >= _ticksPerCycle) _currentTick = 0;
+        _currentData = LerpedDayNightFrameDataForTick(_currentTick, true);
+        if(!Mathf.Approximately(_prevLerpVal, _currentLerpVal))
+        {
+            _currentData.ApplyDataToWorld();
+        }
+        _currentTick++;
     }
 }

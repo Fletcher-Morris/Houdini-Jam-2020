@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Night
   m_EditorClassIdentifier: 
   _frameData:
-    SkyColor: {r: 0.18630074, g: 0.18071377, b: 0.2924528, a: 1}
+    SkyColor: {r: 0.026666671, g: 0.021333337, b: 0.064, a: 1}
+    LightColor: {r: 0.09590268, g: 0.081301175, b: 0.1981132, a: 1}
+    ShadowColor: {r: 0.039215688, g: 0.03137255, b: 0.09411766, a: 1}
