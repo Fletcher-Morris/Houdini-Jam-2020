@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Scatter.ObjectScatterer _grassScatterer;
     public Scatter.ObjectScatterer GrassScatterer { get => _grassScatterer; }
 
+    [SerializeField] private DayNightCycle _dayNightCycle;
+    public DayNightCycle DayNightCycle { get => _dayNightCycle; }
+
     private void OnApplicationQuit()
     {
         _updateManager.OnApplicationQuit();
@@ -47,6 +50,8 @@ public class GameManager : MonoBehaviour
         _waypointManager.Start();
 
         remainingTime = gameLength;
+
+        _updateManager.AddToUpdateList(_dayNightCycle);
     }
 
     private void Update()

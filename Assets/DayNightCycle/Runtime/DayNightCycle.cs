@@ -3,10 +3,11 @@ using Sirenix.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tick;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Scriptables/Time/Day Night Cycle", fileName = "New Day Night Cycle")]
-public class DayNightCycle : SerializedScriptableObject
+public class DayNightCycle : SerializedScriptableObject, IManualUpdate
 {
     [System.Serializable]
     private struct DayNightCycleFrameLength
@@ -195,5 +196,32 @@ public class DayNightCycle : SerializedScriptableObject
             _currentData.ApplyDataToWorld();
         }
         _currentTick++;
+    }
+
+    UpdateManager IManualUpdate.GetUpdateManager()
+    {
+        return GameManager.Instance.UpdateManager;
+    }
+
+    void IManualUpdate.OnInitialise()
+    {
+    }
+
+    void IManualUpdate.OnManualUpdate(float delta)
+    {
+    }
+
+    void IManualUpdate.OnTick(float delta)
+    {
+        Tick();
+    }
+
+    void IManualUpdate.OnManualFixedUpdate(float delta)
+    {
+    }
+
+    bool IManualUpdate.IsEnabled()
+    {
+        return true;
     }
 }
