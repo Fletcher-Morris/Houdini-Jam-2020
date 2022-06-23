@@ -6,6 +6,7 @@ using UnityEngine;
 public class DayNightFrame : ScriptableObject
 {
     static int SkyColorHash = Shader.PropertyToID("SKY_COLOR");
+    static int HorizonColorHash = Shader.PropertyToID("HORIZON_COLOR");
     static int LightColorHash = Shader.PropertyToID("LIGHT_COLOR");
     static int ShadowColorHash = Shader.PropertyToID("SHADOW_COLOR");
 
@@ -13,12 +14,14 @@ public class DayNightFrame : ScriptableObject
     public struct DayNightFrameData
     {
         public Color SkyColor;
+        public Color HorizonColor;
         public Color LightColor;
         public Color ShadowColor;
 
         public DayNightFrameData(bool v)
         {
             SkyColor = Color.blue;
+            HorizonColor = Color.blue;
             LightColor = Color.white;
             ShadowColor = Color.grey;
         }
@@ -26,6 +29,7 @@ public class DayNightFrame : ScriptableObject
         public DayNightFrameData(DayNightFrameData a, DayNightFrameData b, float t)
         {
             SkyColor = Color.Lerp(a.SkyColor, b.SkyColor, t);
+            HorizonColor = Color.Lerp(a.HorizonColor, b.HorizonColor, t);
             LightColor = Color.Lerp(a.LightColor, b.LightColor, t);
             ShadowColor = Color.Lerp(a.ShadowColor, b.ShadowColor, t);
         }
@@ -33,6 +37,7 @@ public class DayNightFrame : ScriptableObject
         public void ApplyDataToWorld()
         {
             Shader.SetGlobalColor(SkyColorHash, SkyColor);
+            Shader.SetGlobalColor(HorizonColorHash, HorizonColor);
             Shader.SetGlobalColor(LightColorHash, LightColor);
             Shader.SetGlobalColor(ShadowColorHash, ShadowColor);
         }
