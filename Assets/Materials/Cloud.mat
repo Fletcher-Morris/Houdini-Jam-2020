@@ -105,6 +105,10 @@ Material:
     - _InnerSize: 0.25
     - _LayerDepth: 1.1
     - _Laziness: 0
+    - _Light_Blend: 1
+    - _Light_Color_Blend: 1
+    - _Light_Step_Max: 3
+    - _Light_Step_Min: -3
     - _METALNESS: 0
     - _Open: 0
     - _OuterSize: 0.5
@@ -126,10 +130,11 @@ Material:
     - _Surface: 0
     - _ZWrite: 1
     m_Colors:
+    - LIGHT_COLOR: {r: 1, g: 0.951438, b: 0.8349056, a: 1}
     - Vector2_8F05744D: {r: 1, g: 15, b: 0, a: 0}
     - _BASE_COLOR: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 0.8679245, g: 0.8679245, b: 0.8679245, a: 0}
-    - _Color: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+    - _Color: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
     - _EMISSION_COLOR: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EyePosition: {r: 0, g: 0, b: 0, a: 0}

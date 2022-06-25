@@ -21,9 +21,10 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
         public AnimationCurve Bias;
     }
 
+    [SerializeField] private bool _autoTick = true;
     [SerializeField, Min(1)] private int _ticksPerCycle = 1000;
     [SerializeField] private List<DayNightCycleFrameLength> _frames = new List<DayNightCycleFrameLength>();
-    [SerializeField] private List<DayNightCycleFrameLength> _loopedFrames = new List<DayNightCycleFrameLength>();
+    [SerializeField, HideInInspector] private List<DayNightCycleFrameLength> _loopedFrames = new List<DayNightCycleFrameLength>();
     private int _currentTick = 0;
     private DayNightFrame.DayNightFrameData _currentData;
     private float _prevLerpVal = -1;
@@ -94,20 +95,42 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
     [Button]
     private void GenerateSkyGradient()
     {
-        if (_lerpedTexture == null || _lerpedTexture.width != _ticksPerCycle || _lerpedTexture.height != _ticksPerCycle / 8) ;
-        {
-            _lerpedTexture = new Texture2D(_ticksPerCycle, _ticksPerCycle / 8);
-        }
+        int prevTicksCount = _ticksPerCycle;
 
-        for (int x = 0; x < _lerpedTexture.width; x++)
+        _ticksPerCycle = 512;
+        int width = _ticksPerCycle;
+        int height = _ticksPerCycle / 8;
+        int segHeight = height / 4;
+        
+        _lerpedTexture = new Texture2D(width, height);
+
+        for (int x = 0; x < width; x++)
         {
-            _lerpedData = LerpedDayNightFrameDataForTick(_ticksPerCycle / _lerpedTexture.width * x, false);
-            for (int y = 0; y < _lerpedTexture.height; y++)
+            _lerpedData = LerpedDayNightFrameDataForTick(width / width * x, false);
+            int seg = 0;
+            for (int y = segHeight * seg; y < (height / 4) * (seg + 1); y++)
             {
                 _lerpedTexture.SetPixel(x, y, _lerpedData.SkyColor);
             }
+            seg++;
+            for (int y = segHeight * seg; y < (height / 4) * (seg + 1); y++)
+            {
+                _lerpedTexture.SetPixel(x, y, _lerpedData.HorizonColor);
+            }
+            seg++;
+            for (int y = segHeight * seg; y < (height / 4) * (seg + 1); y++)
+            {
+                _lerpedTexture.SetPixel(x, y, _lerpedData.LightColor);
+            }
+            seg++;
+            for (int y = segHeight * seg; y < (height / 4) * (seg + 1); y++)
+            {
+                _lerpedTexture.SetPixel(x, y, _lerpedData.ShadowColor);
+            }
         }
         _lerpedTexture.Apply();
+
+        _ticksPerCycle = prevTicksCount;
     }
 
     [SerializeField] private bool _onValidate;
@@ -213,6 +236,7 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
 
     void IManualUpdate.OnTick(float delta)
     {
+        if (!_autoTick) return;
         Tick();
     }
 

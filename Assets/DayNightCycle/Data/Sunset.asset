@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sunset
   m_EditorClassIdentifier: 
   _frameData:
-    SkyColor: {r: 1, g: 0.5542097, b: 0.3176471, a: 1}
-    HorizonColor: {r: 1, g: 0.71036804, b: 0.3160377, a: 1}
+    SkyColor: {r: 1, g: 0.61831784, b: 0.3176471, a: 1}
+    HorizonColor: {r: 1, g: 0.4115245, b: 0.3176471, a: 1}
     LightColor: {r: 1, g: 0.8050506, b: 0.6839622, a: 1}
     ShadowColor: {r: 0.21502315, g: 0.26858905, b: 0.3018868, a: 1}

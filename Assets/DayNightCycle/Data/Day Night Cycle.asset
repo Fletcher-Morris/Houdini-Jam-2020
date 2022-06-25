@@ -21,13 +21,14 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
+  _autoTick: 1
   _ticksPerCycle: 1000
   _frames:
   - Frame: {fileID: 11400000, guid: 3e2fa71c17ce95541a86142e2b34c804, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 0
-    MiddleTime: 0.022727273
-    EndTime: 0.045454547
+    MiddleTime: 0.022727272
+    EndTime: 0.045454543
     ListIndex: 8
     Bias:
       serializedVersion: 2
@@ -54,10 +55,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 36a8ee16475b98542b2a47c1062e5830, type: 2}
-    Length: 0.4545455
-    StartTime: 0.045454547
-    MiddleTime: 0.2727273
-    EndTime: 0.50000006
+    Length: 0.45454544
+    StartTime: 0.045454543
+    MiddleTime: 0.27272725
+    EndTime: 0.49999997
     ListIndex: 9
     Bias:
       serializedVersion: 2
@@ -84,10 +85,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: b957292ef5c674041ba1e3daf473dbed, type: 2}
-    Length: 0.045454547
-    StartTime: 0.50000006
-    MiddleTime: 0.5227274
-    EndTime: 0.5454546
+    Length: 0.045454543
+    StartTime: 0.49999997
+    MiddleTime: 0.52272725
+    EndTime: 0.5454545
     ListIndex: 10
     Bias:
       serializedVersion: 2
@@ -114,10 +115,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: dd0f83dc4df377840af220a9e371c409, type: 2}
-    Length: 0.4545455
-    StartTime: 0.5454546
-    MiddleTime: 0.7727274
-    EndTime: 1.0000001
+    Length: 0.45454544
+    StartTime: 0.5454545
+    MiddleTime: 0.77272725
+    EndTime: 0.99999994
     ListIndex: 0
     Bias:
       serializedVersion: 2
@@ -145,10 +146,10 @@ MonoBehaviour:
       m_RotationOrder: 4
   _loopedFrames:
   - Frame: {fileID: 11400000, guid: 3e2fa71c17ce95541a86142e2b34c804, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 0
-    MiddleTime: 0.022727273
-    EndTime: 0.045454547
+    MiddleTime: 0.022727272
+    EndTime: 0.045454543
     ListIndex: 0
     Bias:
       serializedVersion: 2
@@ -175,10 +176,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 36a8ee16475b98542b2a47c1062e5830, type: 2}
-    Length: 0.4545455
-    StartTime: 0.045454547
-    MiddleTime: 0.2727273
-    EndTime: 0.50000006
+    Length: 0.45454544
+    StartTime: 0.045454543
+    MiddleTime: 0.27272725
+    EndTime: 0.49999997
     ListIndex: 1
     Bias:
       serializedVersion: 2
@@ -205,10 +206,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: b957292ef5c674041ba1e3daf473dbed, type: 2}
-    Length: 0.045454547
-    StartTime: 0.50000006
-    MiddleTime: 0.5227274
-    EndTime: 0.5454546
+    Length: 0.045454543
+    StartTime: 0.49999997
+    MiddleTime: 0.52272725
+    EndTime: 0.5454545
     ListIndex: 2
     Bias:
       serializedVersion: 2
@@ -235,10 +236,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: dd0f83dc4df377840af220a9e371c409, type: 2}
-    Length: 0.4545455
-    StartTime: 0.5454546
-    MiddleTime: 0.7727274
-    EndTime: 1.0000001
+    Length: 0.45454544
+    StartTime: 0.5454545
+    MiddleTime: 0.77272725
+    EndTime: 0.99999994
     ListIndex: 3
     Bias:
       serializedVersion: 2
@@ -265,7 +266,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 3e2fa71c17ce95541a86142e2b34c804, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 1
     MiddleTime: 1.0227273
     EndTime: 1.0454545
@@ -295,7 +296,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 36a8ee16475b98542b2a47c1062e5830, type: 2}
-    Length: 0.4545455
+    Length: 0.45454544
     StartTime: 1.0454545
     MiddleTime: 1.2727273
     EndTime: 1.5
@@ -325,10 +326,10 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: b957292ef5c674041ba1e3daf473dbed, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 1.5
-    MiddleTime: 1.5227274
-    EndTime: 1.5454546
+    MiddleTime: 1.5227273
+    EndTime: 1.5454545
     ListIndex: 6
     Bias:
       serializedVersion: 2
@@ -355,9 +356,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: dd0f83dc4df377840af220a9e371c409, type: 2}
-    Length: 0.4545455
-    StartTime: 1.5454546
-    MiddleTime: 1.7727274
+    Length: 0.45454544
+    StartTime: 1.5454545
+    MiddleTime: 1.7727273
     EndTime: 2
     ListIndex: 7
     Bias:
@@ -385,7 +386,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 3e2fa71c17ce95541a86142e2b34c804, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 2
     MiddleTime: 2.0227273
     EndTime: 2.0454545
@@ -415,7 +416,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: 36a8ee16475b98542b2a47c1062e5830, type: 2}
-    Length: 0.4545455
+    Length: 0.45454544
     StartTime: 2.0454545
     MiddleTime: 2.2727273
     EndTime: 2.5
@@ -445,9 +446,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: b957292ef5c674041ba1e3daf473dbed, type: 2}
-    Length: 0.045454547
+    Length: 0.045454543
     StartTime: 2.5
-    MiddleTime: 2.5227275
+    MiddleTime: 2.5227273
     EndTime: 2.5454545
     ListIndex: 10
     Bias:
@@ -475,9 +476,9 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   - Frame: {fileID: 11400000, guid: dd0f83dc4df377840af220a9e371c409, type: 2}
-    Length: 0.4545455
+    Length: 0.45454544
     StartTime: 2.5454545
-    MiddleTime: 2.7727275
+    MiddleTime: 2.7727273
     EndTime: 3
     ListIndex: 11
     Bias:
@@ -508,10 +509,10 @@ MonoBehaviour:
   _testLerp: 0
   _useBias: 1
   _lerpedData:
-    SkyColor: {r: 0.7967045, g: 0.35151014, b: 0.36042175, a: 1}
-    HorizonColor: {r: 0.8057799, g: 0.5356571, b: 0.37859967, a: 1}
-    LightColor: {r: 0.81116545, g: 0.69315434, b: 0.6720477, a: 1}
-    ShadowColor: {r: 0.16886802, g: 0.18919292, b: 0.22863688, a: 1}
+    SkyColor: {r: 0.7967046, g: 0.3515102, b: 0.36042178, a: 1}
+    HorizonColor: {r: 0.80578, g: 0.53565717, b: 0.3785997, a: 1}
+    LightColor: {r: 0.8111656, g: 0.6931544, b: 0.67204773, a: 1}
+    ShadowColor: {r: 0.16886804, g: 0.18919295, b: 0.22863689, a: 1}
   _applyTestData: 1
   _lerpedTexture: {fileID: 0}
   _onValidate: 1
