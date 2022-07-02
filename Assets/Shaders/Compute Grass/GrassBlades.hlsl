@@ -102,7 +102,7 @@ half4 Fragment(VertexOutput input) : SV_Target
 
     half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
     col.r -= colRdm;
-    col.g -= colRdm;
+    col.g += colRdm;
     col.b -= colRdm;
 
     float fres = Fresnel(lightingInput.normalWS, lightingInput.viewDirectionWS, 3);
@@ -110,7 +110,7 @@ half4 Fragment(VertexOutput input) : SV_Target
     half3 fresCol = lerp(col, col * fres, 0.1);
 
 
-    float3 lightBlend = HardLight(col, LIGHT_COLOR);
+    float3 lightBlend = HardLight(fresCol, LIGHT_COLOR);
 
     return half4(lightBlend, 1);
 }
