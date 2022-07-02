@@ -73,6 +73,20 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
 
 // Fragment functions
 
+float HardLightFloat( float s, float d )
+{
+	return (s < 0.5) ? 2.0 * s * d : 1.0 - 2.0 * (1.0 - s) * (1.0 - d);
+}
+
+float3 HardLight( float3 s, float3 d )
+{
+	float3 c;
+	c.r = HardLightFloat(s.r,d.r);
+	c.g = HardLightFloat(s.g,d.g);
+	c.b = HardLightFloat(s.b,d.b);
+	return c;
+}
+
 half4 Fragment(VertexOutput input) : SV_Target
 {
     InputData lightingInput = (InputData)0;
@@ -96,7 +110,7 @@ half4 Fragment(VertexOutput input) : SV_Target
     half3 fresCol = lerp(col, col * fres, 0.1);
 
 
-    half3 lightBlend = lerp(fresCol, fresCol * LIGHT_COLOR, 0.9);
+    float3 lightBlend = HardLight(col, LIGHT_COLOR);
 
     return half4(lightBlend, 1);
 }
