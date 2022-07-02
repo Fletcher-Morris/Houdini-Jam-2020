@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -20,9 +21,9 @@ public class GrassComputeController : MonoBehaviour
     private static readonly int m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
     private static readonly int m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
 
-    [SerializeField] private Mesh sourceMesh;
+    [SerializeField] private Mesh m_sourceMesh;
     [SerializeField] private ComputeShader m_compute;
-    [SerializeField] private Material material;
+    [SerializeField] private Material m_material;
     [SerializeField] private Transform m_cameraTransform;
 
     public ComputeGrassSettings grassSettings;
@@ -30,7 +31,6 @@ public class GrassComputeController : MonoBehaviour
     private ComputeBuffer argsBuffer;
     private int dispatchSize;
     private ComputeBuffer drawBuffer;
-    private bool initialized;
     private Bounds localBounds;
     [SerializeField][Range(0, 1)] private float m_grassFill = 1.0f;
     private int m_grassKernelId;
@@ -38,20 +38,25 @@ public class GrassComputeController : MonoBehaviour
     private ComputeBuffer sourceTriBuffer;
     private ComputeBuffer sourceVertBuffer;
 
+    [ReadOnly, SerializeField] private bool m_initialised;
+
+    private void Awake()
+    {
+        m_initialised = false;
+    }
+
     private void LateUpdate()
     {
-        return;
         if (Application.isPlaying == false)
         {
-            OnDisable();
-            OnEnable();
+            if (!m_initialised) Initialise();
         }
 
         drawBuffer.SetCounterValue(0);
         argsBuffer.SetData(argsBufferReset);
 
         if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-        if (m_cameraTransform is null)
+        if (m_cameraTransform == null)
         {
             m_compute.SetVector(m_worldSpaceCameraPosPropertyId, Vector4.zero);
             m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, Vector4.one);
@@ -62,31 +67,32 @@ public class GrassComputeController : MonoBehaviour
             m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
         }
 
-        var bounds = TransformBounds(localBounds);
+        Bounds bounds = TransformBounds(localBounds);
 
         m_compute.SetMatrix(m_localToWorldPropertyId, transform.localToWorldMatrix);
 
         m_compute.Dispatch(m_grassKernelId, dispatchSize, 1, 1);
-        Graphics.DrawProceduralIndirect(material, bounds, MeshTopology.Triangles, argsBuffer, 0,
+        Graphics.DrawProceduralIndirect(m_material, bounds, MeshTopology.Triangles, argsBuffer, 0,
             null, null, ShadowCastingMode.On, true, gameObject.layer);
     }
 
     private void OnEnable()
     {
-        return;
-        Debug.Assert(m_compute is null, "The grass compute shader is null", gameObject);
-        Debug.Assert(material is null, "The material is null", gameObject);
+        m_initialised = false;
 
         DebugHardware();
 
-        if (initialized) OnDisable();
-        initialized = true;
+        Initialise();
+    }
 
-        var positions = sourceMesh.vertices;
-        var tris = sourceMesh.triangles;
+    [Button]
+    private void Initialise()
+    {
+        Vector3[] positions = m_sourceMesh.vertices;
+        int[] tris = m_sourceMesh.triangles;
 
-        var vertices = new SourceVertex[positions.Length];
-        for (var i = 0; i < vertices.Length; i++)
+        SourceVertex[] vertices = new SourceVertex[positions.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i] = new SourceVertex
             {
@@ -94,7 +100,7 @@ public class GrassComputeController : MonoBehaviour
             };
         }
 
-        var numSourceTriangles = tris.Length / 3;
+        int numSourceTriangles = tris.Length / 3;
 
         sourceVertBuffer = new ComputeBuffer(vertices.Length, SOURCE_VERT_STRIDE, ComputeBufferType.Structured,
             ComputeBufferMode.Immutable);
@@ -115,18 +121,20 @@ public class GrassComputeController : MonoBehaviour
         m_compute.SetBuffer(m_grassKernelId, m_indirectArgsBufferPropertyId, argsBuffer);
         m_compute.SetInt(m_numSourceTrianglesPropertyId, numSourceTriangles);
 
-        material.SetBuffer(m_drawTrianglesPropertyId, drawBuffer);
+        m_material.SetBuffer(m_drawTrianglesPropertyId, drawBuffer);
 
         m_compute.GetKernelThreadGroupSizes(m_grassKernelId, out var threadGroupSize, out _, out _);
         dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
 
-        localBounds = sourceMesh.bounds;
+        localBounds = m_sourceMesh.bounds;
         localBounds.Expand(1);
+
+        m_initialised = true;
     }
 
     private void OnDisable()
     {
-        if (initialized)
+        if (m_initialised)
         {
             sourceVertBuffer.Release();
             sourceTriBuffer.Release();
@@ -134,7 +142,7 @@ public class GrassComputeController : MonoBehaviour
             argsBuffer.Release();
         }
 
-        initialized = false;
+        m_initialised = false;
     }
 
     private void DebugHardware()
@@ -144,11 +152,11 @@ public class GrassComputeController : MonoBehaviour
 
     public Bounds TransformBounds(Bounds boundsOS)
     {
-        var center = transform.TransformPoint(boundsOS.center);
-        var extents = boundsOS.extents;
-        var axisX = transform.TransformVector(extents.x, 0, 0);
-        var axisY = transform.TransformVector(0, extents.y, 0);
-        var axisZ = transform.TransformVector(0, 0, extents.z);
+        Vector3 center = transform.TransformPoint(boundsOS.center);
+        Vector3 extents = boundsOS.extents;
+        Vector3 axisX = transform.TransformVector(extents.x, 0, 0);
+        Vector3 axisY = transform.TransformVector(0, extents.y, 0);
+        Vector3 axisZ = transform.TransformVector(0, 0, extents.z);
         extents.x = Mathf.Abs(axisX.x) + Mathf.Abs(axisY.x) + Mathf.Abs(axisZ.x);
         extents.y = Mathf.Abs(axisX.y) + Mathf.Abs(axisY.y) + Mathf.Abs(axisZ.y);
         extents.z = Mathf.Abs(axisX.z) + Mathf.Abs(axisY.z) + Mathf.Abs(axisZ.z);

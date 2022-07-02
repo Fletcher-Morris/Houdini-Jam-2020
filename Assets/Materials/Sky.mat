@@ -78,8 +78,8 @@ Material:
     m_Floats:
     - Vector1_57B8A293: 500
     - Vector1_6130F08D: 0.01
-    - Vector1_6B66D691: 100
-    - Vector1_762C5CEF: 70
+    - Vector1_6B66D691: 110
+    - Vector1_762C5CEF: 90
     - Vector1_84C89431: 0.5
     - _AlphaClip: 0
     - _Blend: 0
@@ -91,6 +91,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _Horizon_Power: 2
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _QueueControl: 0

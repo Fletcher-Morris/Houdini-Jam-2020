@@ -1,0 +1,3 @@
+[submodule "Assets/Shaders/HLSL-Library"]
+	path = Assets/Shaders/HLSL-Library
+	url = https://github.com/youandhubris/HLSL-Library

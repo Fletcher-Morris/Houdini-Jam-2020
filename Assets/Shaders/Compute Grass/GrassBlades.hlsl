@@ -34,10 +34,16 @@ struct VertexOutput
 };
 
 // Properties
-float4 _BaseColor;
-float4 _TipColor;
+half4 _BaseColor;
+half4 _TipColor;
 half _ColorRdm;
 sampler2D _AlphaTex;
+
+// Globals
+half4 LIGHT_COLOR;
+half4 SHADOW_COLOR;
+half4 SKY_COLOR;
+half4 HORIZON_COLOR;
 
 // Vertex functions
 
@@ -81,16 +87,18 @@ half4 Fragment(VertexOutput input) : SV_Target
 	half colRdm = rand(input.normalWS, 0) * _ColorRdm;
 
     half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
+    col.r -= colRdm;
+    col.g -= colRdm;
+    col.b -= colRdm;
 
-    float fres = Fresnel(lightingInput.normalWS, lightingInput.viewDirectionWS, 1.0);
-    half3 fresCol = col;
-    fresCol.r = fres;
-    fresCol.g = fres;
-    fresCol.b = fres;
+    float fres = Fresnel(lightingInput.normalWS, lightingInput.viewDirectionWS, 3);
+    fres = clamp(0.5, 1, fres);
+    half3 fresCol = lerp(col, col * fres, 0.1);
 
-	//col -= colRdm;
 
-    return half4(UniversalFragmentBlinnPhong(lightingInput, col, 0.5, 0.25, 0, 1));
+    half3 lightBlend = lerp(fresCol, fresCol * LIGHT_COLOR, 0.9);
+
+    return half4(lightBlend, 1);
 }
 
 #endif

@@ -21,7 +21,7 @@ MonoBehaviour:
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes: []
-  _autoTick: 1
+  _autoTick: 0
   _ticksPerCycle: 1000
   _frames:
   - Frame: {fileID: 11400000, guid: 3e2fa71c17ce95541a86142e2b34c804, type: 2}
