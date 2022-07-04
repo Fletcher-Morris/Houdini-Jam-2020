@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
 
         Application.targetFrameRate = 60;
 
-        //_grassScatterer.Scatter();
+        _grassScatterer.Scatter();
     }
 
     private void Start()

@@ -238,6 +238,7 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
 
     void IManualUpdate.OnInitialise()
     {
+        Tick();
     }
 
     void IManualUpdate.OnManualUpdate(float delta)

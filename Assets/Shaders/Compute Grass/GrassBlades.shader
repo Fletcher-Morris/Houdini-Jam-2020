@@ -22,7 +22,7 @@ Shader "Grass/GrassBlades" {
             // Signal this shader requires a compute buffer
             #pragma prefer_hlslcc gles
             #pragma exclude_renderers d3d11_9x
-            #pragma target 5.0
+            #pragma target 4.5
             #pragma multi_compile_instancing
 
             // Lighting and shadow keywords

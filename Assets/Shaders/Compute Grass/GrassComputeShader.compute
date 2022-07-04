@@ -13,8 +13,8 @@ StructuredBuffer<int> _SourceTriangles;
 struct DrawVertex
 {
     float3 positionWS;
-    half height;
-    half width;
+    float height;
+    float width;
 };
 
 struct DrawTriangle
@@ -179,7 +179,7 @@ void Main(uint3 id : SV_DispatchThreadID)
         if (heightFactor >= _GrassHeightCuttoff)
         {
             float bladeLod = 1.0f - (bladeCamDist / distToCam);
-            uint bladeSegments = round(lerp(1.0f, (float)_GrassSegments, grassVertexLod));
+            uint bladeSegments = round(lerp(1.0f, (float)_GrassSegments, bladeLod));
             //bladeSegments = 1;
             uint bladeVertexCount = (3 + ((bladeSegments - 1) * 4));
 

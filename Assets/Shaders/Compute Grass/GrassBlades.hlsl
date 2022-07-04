@@ -10,8 +10,8 @@
 struct DrawVertex
 {
     float3 positionWS; // The position in world space
-    half height; // The height of this vertex on the grass blade
-    half width;
+    float height; // The height of this vertex on the grass blade
+    float width;
 };
 
 // A triangle on the generated mesh
@@ -26,23 +26,23 @@ StructuredBuffer<DrawTriangle> _DrawTriangles;
 
 struct VertexOutput
 {
-    half2 uv : TEXCOORD0; // The height of this vertex on the grass blade
+    float2 uv : TEXCOORD0; // The height of this vertex on the grass blade
     float3 positionWS : TEXCOORD1; // Position in world space
     float3 normalWS : TEXCOORD2; // Normal vector in world space
     float4 positionCS : SV_POSITION; // Position in clip space
 };
 
 // Properties
-half4 _BaseColor;
-half4 _TipColor;
-half _ColorRdm;
+float4 _BaseColor;
+float4 _TipColor;
+float _ColorRdm;
 sampler2D _AlphaTex;
 
 // Globals
-half4 LIGHT_COLOR;
-half4 SHADOW_COLOR;
-half4 SKY_COLOR;
-half4 HORIZON_COLOR;
+float4 LIGHT_COLOR;
+float4 SHADOW_COLOR;
+float4 SKY_COLOR;
+float4 HORIZON_COLOR;
 
 // Vertex functions
 
@@ -72,21 +72,21 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
 
 // Fragment functions
 
-half HardLightFloat( float s, float d )
+float HardLightFloat( float s, float d )
 {
 	return (s < 0.5) ? 2.0 * s * d : 1.0 - 2.0 * (1.0 - s) * (1.0 - d);
 }
 
-half3 HardLight( half3 s, half3 d )
+float3 HardLight( float3 s, float3 d )
 {
-	half3 c;
+	float3 c;
 	c.r = HardLightFloat(s.r,d.r);
 	c.g = HardLightFloat(s.g,d.g);
 	c.b = HardLightFloat(s.b,d.b);
 	return c;
 }
 
-half4 Fragment(VertexOutput input) : SV_Target
+float4 Fragment(VertexOutput input) : SV_Target
 {
     InputData lightingInput = (InputData)0;
     lightingInput.positionWS = input.positionWS;
@@ -94,26 +94,21 @@ half4 Fragment(VertexOutput input) : SV_Target
     lightingInput.viewDirectionWS = GetViewDirectionFromPosition(input.positionWS);
     lightingInput.shadowCoord = CalculateShadowCoord(input.positionWS, input.positionCS);
 
-    half clipVal = tex2D(_AlphaTex, input.uv).r;
+    float clipVal = tex2D(_AlphaTex, input.uv).r;
     clip(clipVal - 0.1);
 
-	half colRdm = rand(input.normalWS, 0) * _ColorRdm;
+	float colRdm = rand(input.normalWS, 0) * _ColorRdm;
 
-    half uvY = input.uv.y;
-    half uvYClamped = clamp(0.0, 1.0, uvY);
-    half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, uvY);
+    float uvY = input.uv.y;
+    float uvYClamped = clamp(0.0, 1.0, uvY);
+    float3 col = lerp(_BaseColor.rgb, _TipColor.rgb, uvY);
     col.r -= colRdm;
     col.g += colRdm;
     col.b -= colRdm;
 
-    float fres = Fresnel(lightingInput.normalWS, lightingInput.viewDirectionWS, 3);
-    fres = clamp(0.5, 1, fres);
-    half3 fresCol = lerp(col, col * fres, 0.1);
+    float3 lightBlend = HardLight(col, float3(LIGHT_COLOR.rgb));
 
-
-    half3 lightBlend = HardLight(fresCol, half3(LIGHT_COLOR.rgb));
-
-    return half4(lightBlend, 1);
+    return float4(lightBlend, 1);
 }
 
 #endif
