@@ -29,7 +29,6 @@ struct VertexOutput
     half2 uv : TEXCOORD0; // The height of this vertex on the grass blade
     float3 positionWS : TEXCOORD1; // Position in world space
     float3 normalWS : TEXCOORD2; // Normal vector in world space
-
     float4 positionCS : SV_POSITION; // Position in clip space
 };
 
@@ -73,14 +72,14 @@ VertexOutput Vertex(uint vertexID: SV_VertexID)
 
 // Fragment functions
 
-float HardLightFloat( float s, float d )
+half HardLightFloat( float s, float d )
 {
 	return (s < 0.5) ? 2.0 * s * d : 1.0 - 2.0 * (1.0 - s) * (1.0 - d);
 }
 
-float3 HardLight( float3 s, float3 d )
+half3 HardLight( half3 s, half3 d )
 {
-	float3 c;
+	half3 c;
 	c.r = HardLightFloat(s.r,d.r);
 	c.g = HardLightFloat(s.g,d.g);
 	c.b = HardLightFloat(s.b,d.b);
@@ -100,7 +99,9 @@ half4 Fragment(VertexOutput input) : SV_Target
 
 	half colRdm = rand(input.normalWS, 0) * _ColorRdm;
 
-    half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, input.uv.y);
+    half uvY = input.uv.y;
+    half uvYClamped = clamp(0.0, 1.0, uvY);
+    half3 col = lerp(_BaseColor.rgb, _TipColor.rgb, uvY);
     col.r -= colRdm;
     col.g += colRdm;
     col.b -= colRdm;
@@ -110,7 +111,7 @@ half4 Fragment(VertexOutput input) : SV_Target
     half3 fresCol = lerp(col, col * fres, 0.1);
 
 
-    float3 lightBlend = HardLight(fresCol, LIGHT_COLOR);
+    half3 lightBlend = HardLight(fresCol, half3(LIGHT_COLOR.rgb));
 
     return half4(lightBlend, 1);
 }

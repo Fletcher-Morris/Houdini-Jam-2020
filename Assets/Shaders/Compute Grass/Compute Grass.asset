@@ -17,10 +17,10 @@ MonoBehaviour:
     grassHeightRandom: 0.5
     grassHeightCuttoff: 0.05
     grassWidth: 0.06
-    grassWidthRandom: 0.25
+    grassWidthRandom: 0.2
     grassBendRandom: 0.1
-    grassSegments: 1
-    grassPerVertex: 8
+    grassSegments: 2
+    grassPerVertex: 1
     randomPosition: 0.33
     maxCameraDist: 140
     minAltitude: 48
@@ -29,4 +29,4 @@ MonoBehaviour:
     camDotCuttoff: -1
     minCamDist: 1
     averagePlanetRadius: 50
-    m_checksum: 1596762
+    m_checksum: 1576348

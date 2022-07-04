@@ -39,7 +39,7 @@ int _NumSourceTriangles;
 float4x4 _LocalToWorld;
 float3 _WorldSpaceCameraPos;
 float3 _WorldSpaceCameraForward;
-float4 DistortionbObjects[32];
+float4 DistortionObjects[32];
 
 // GRASS PROPERTIES
 float _GrassHeight;
@@ -74,8 +74,8 @@ float ObjectDistortion(float3 pos)
     float total = 0;
     for (int i = 0; i < 32; i++)
     {
-        float d = distance(pos, DistortionbObjects[i].xyz);
-        total += step(d, DistortionbObjects[i].w);
+        float d = distance(pos, DistortionObjects[i].xyz);
+        total += step(d, DistortionObjects[i].w);
     }
     return 1 - clamp(total, 0.0, 1.0);
 }

@@ -134,6 +134,10 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
     }
 
     [SerializeField] private bool _onValidate;
+
+    public int TicksPerCycle { get => _ticksPerCycle; }
+    public bool AutoTick { get => _autoTick; set => _autoTick = value; }
+
     private void OnValidate()
     {
         if (!_onValidate) return;
@@ -208,6 +212,12 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
         }
 
         return new(firstFrame.Frame.FrameData, secondFrame.Frame.FrameData, lerpVal);
+    }
+
+    public void SetTick(int newTick)
+    {
+        _currentTick = newTick;
+        Tick();
     }
 
     public void Tick()

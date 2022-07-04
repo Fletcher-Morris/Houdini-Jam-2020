@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ public struct ComputeGrassSettingsData
     [Min(0)] public float minCamDist;
     [Min(0.1f)] public float averagePlanetRadius;
 
-    [SerializeField] private int m_checksum;
+    [ReadOnly, SerializeField] private int m_checksum;
 
     public int Checksum
     {

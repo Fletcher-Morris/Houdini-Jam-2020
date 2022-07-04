@@ -1,6 +1,6 @@
 Shader "Grass/GrassBlades" {
     Properties {
-        _BaseColor("Base color", Color) = (0, 0.5, 0, 1) // Color of the lowest layer
+        _BaseColor("Base color", Color) = (0, 0.5, 0, 1)
         _TipColor("Tip color", Color) = (0, 1, 0, 1)
 		_ColorRdm("Color Rdm", Range(0.0, 0.1)) = 0.05
         _AlphaTex("Alpha Texture", 2D) = "white" {}
@@ -16,13 +16,14 @@ Shader "Grass/GrassBlades" {
             Name "ForwardLit"
             Tags{"LightMode" = "UniversalForward"}
             ZWrite True
-            Cull Off // No culling since the grass must be double sided
+            Cull Off
 
             HLSLPROGRAM
             // Signal this shader requires a compute buffer
             #pragma prefer_hlslcc gles
             #pragma exclude_renderers d3d11_9x
             #pragma target 5.0
+            #pragma multi_compile_instancing
 
             // Lighting and shadow keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS

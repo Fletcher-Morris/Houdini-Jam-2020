@@ -12,84 +12,90 @@ public class GrassComputeController : MonoBehaviour
     private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
     private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
 
-    private static readonly int m_sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
-    private static readonly int m_sourceTrianglesPropertyId = Shader.PropertyToID("_SourceTriangles");
-    private static readonly int m_drawTrianglesPropertyId = Shader.PropertyToID("_DrawTriangles");
-    private static readonly int m_indirectArgsBufferPropertyId = Shader.PropertyToID("_IndirectArgsBuffer");
-    private static readonly int m_numSourceTrianglesPropertyId = Shader.PropertyToID("_NumSourceTriangles");
-    private static readonly int m_worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
-    private static readonly int m_worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
-    private static readonly int m_localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
+    private static readonly int _sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
+    private static readonly int _sourceTrianglesPropertyId = Shader.PropertyToID("_SourceTriangles");
+    private static readonly int _drawTrianglesPropertyId = Shader.PropertyToID("_DrawTriangles");
+    private static readonly int _indirectArgsBufferPropertyId = Shader.PropertyToID("_IndirectArgsBuffer");
+    private static readonly int _numSourceTrianglesPropertyId = Shader.PropertyToID("_NumSourceTriangles");
+    private static readonly int _worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
+    private static readonly int _worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
+    private static readonly int _localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
 
-    [SerializeField] private Mesh m_sourceMesh;
-    [SerializeField] private ComputeShader m_compute;
-    [SerializeField] private Material m_material;
-    [SerializeField] private Transform m_cameraTransform;
+    [SerializeField] private Mesh _sourceMesh;
+    [SerializeField] private ComputeShader _compute;
+    [SerializeField] private Material _material;
+    [SerializeField] private Transform _cameraTransform;
 
-    public ComputeGrassSettings grassSettings;
-    private readonly int[] argsBufferReset = { 0, 1, 0, 0 };
-    private ComputeBuffer argsBuffer;
-    private int dispatchSize;
-    private ComputeBuffer drawBuffer;
-    private Bounds localBounds;
-    [SerializeField][Range(0, 1)] private float m_grassFill = 1.0f;
-    private int m_grassKernelId;
-    private ComputeGrassSettingsData m_prevGrassSettings;
-    private ComputeBuffer sourceTriBuffer;
-    private ComputeBuffer sourceVertBuffer;
+    public ComputeGrassSettings _grassSettings;
+    private readonly int[] _argsBufferReset = { 0, 1, 0, 0 };
+    private ComputeBuffer _argsBuffer;
+    private int _dispatchSize;
+    private ComputeBuffer _drawBuffer;
+    private Bounds _localBounds;
+    private int _grassKernelId;
+    private ComputeGrassSettingsData _prevGrassSettings;
+    private ComputeBuffer _sourceTriBuffer;
+    private ComputeBuffer _sourceVertBuffer;
 
-    [ReadOnly, SerializeField] private bool m_initialised;
+    private bool _initialised = false;
 
     private void Awake()
     {
-        m_initialised = false;
+        Cleanup();
+    }
+
+    public void ToggleGrass()
+    {
+        if(_initialised)
+        {
+            Cleanup();
+        }
+        else
+        {
+            Initialise();
+        }
     }
 
     private void LateUpdate()
     {
-        if (Application.isPlaying == false)
-        {
-            if (!m_initialised) Initialise();
-        }
+        if (_initialised == false) return;
 
-        drawBuffer.SetCounterValue(0);
-        argsBuffer.SetData(argsBufferReset);
+        _drawBuffer.SetCounterValue(0);
+        _argsBuffer.SetData(_argsBufferReset);
 
-        if (m_prevGrassSettings.Checksum != grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-        if (m_cameraTransform == null)
+        if (_prevGrassSettings.Checksum != _grassSettings.SettingsData.Checksum) SubmitGrassSettings();
+        if (_cameraTransform == null)
         {
-            m_compute.SetVector(m_worldSpaceCameraPosPropertyId, Vector4.zero);
-            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, Vector4.one);
+            _compute.SetVector(_worldSpaceCameraPosPropertyId, Vector4.zero);
+            _compute.SetVector(_worldSpaceCameraForwardPropertyId, Vector4.one);
         }
         else
         {
-            m_compute.SetVector(m_worldSpaceCameraPosPropertyId, m_cameraTransform.position);
-            m_compute.SetVector(m_worldSpaceCameraForwardPropertyId, m_cameraTransform.forward);
+            _compute.SetVector(_worldSpaceCameraPosPropertyId, _cameraTransform.position);
+            _compute.SetVector(_worldSpaceCameraForwardPropertyId, _cameraTransform.forward);
         }
 
-        Bounds bounds = TransformBounds(localBounds);
+        Bounds bounds = TransformBounds(_localBounds);
 
-        m_compute.SetMatrix(m_localToWorldPropertyId, transform.localToWorldMatrix);
+        _compute.SetMatrix(_localToWorldPropertyId, transform.localToWorldMatrix);
 
-        m_compute.Dispatch(m_grassKernelId, dispatchSize, 1, 1);
-        Graphics.DrawProceduralIndirect(m_material, bounds, MeshTopology.Triangles, argsBuffer, 0,
-            null, null, ShadowCastingMode.On, true, gameObject.layer);
+        _compute.Dispatch(_grassKernelId, _dispatchSize, 1, 1);
+        Graphics.DrawProceduralIndirect(_material, bounds, MeshTopology.Triangles, _argsBuffer, 0,
+            null, null, ShadowCastingMode.Off, true, gameObject.layer);
     }
 
     private void OnEnable()
     {
-        m_initialised = false;
-
+        if(_initialised) Cleanup();
         DebugHardware();
-
         Initialise();
     }
 
     [Button]
     private void Initialise()
     {
-        Vector3[] positions = m_sourceMesh.vertices;
-        int[] tris = m_sourceMesh.triangles;
+        Vector3[] positions = _sourceMesh.vertices;
+        int[] tris = _sourceMesh.triangles;
 
         SourceVertex[] vertices = new SourceVertex[positions.Length];
         for (int i = 0; i < vertices.Length; i++)
@@ -102,51 +108,56 @@ public class GrassComputeController : MonoBehaviour
 
         int numSourceTriangles = tris.Length / 3;
 
-        sourceVertBuffer = new ComputeBuffer(vertices.Length, SOURCE_VERT_STRIDE, ComputeBufferType.Structured,
+        _sourceVertBuffer = new ComputeBuffer(vertices.Length, SOURCE_VERT_STRIDE, ComputeBufferType.Structured,
             ComputeBufferMode.Immutable);
-        sourceVertBuffer.SetData(vertices);
-        sourceTriBuffer = new ComputeBuffer(tris.Length, SOURCE_TRI_STRIDE, ComputeBufferType.Structured,
+        _sourceVertBuffer.SetData(vertices);
+        _sourceTriBuffer = new ComputeBuffer(tris.Length, SOURCE_TRI_STRIDE, ComputeBufferType.Structured,
             ComputeBufferMode.Immutable);
-        sourceTriBuffer.SetData(tris);
-        drawBuffer =
-            new ComputeBuffer(numSourceTriangles * Mathf.CeilToInt(grassSettings.SettingsData.grassPerVertex * 0.25f),
+        _sourceTriBuffer.SetData(tris);
+        _drawBuffer =
+            new ComputeBuffer(numSourceTriangles * Mathf.CeilToInt(_grassSettings.SettingsData.grassPerVertex * 0.25f),
                 DRAW_STRIDE, ComputeBufferType.Append);
-        drawBuffer.SetCounterValue(0);
-        argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
-        m_grassKernelId = m_compute.FindKernel("Main");
+        _drawBuffer.SetCounterValue(0);
+        _argsBuffer = new ComputeBuffer(1, INDIRECT_ARGS_STRIDE, ComputeBufferType.IndirectArguments);
+        _grassKernelId = _compute.FindKernel("Main");
 
-        m_compute.SetBuffer(m_grassKernelId, m_sourceVerticesPropertyId, sourceVertBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_sourceTrianglesPropertyId, sourceTriBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_drawTrianglesPropertyId, drawBuffer);
-        m_compute.SetBuffer(m_grassKernelId, m_indirectArgsBufferPropertyId, argsBuffer);
-        m_compute.SetInt(m_numSourceTrianglesPropertyId, numSourceTriangles);
+        _compute.SetBuffer(_grassKernelId, _sourceVerticesPropertyId, _sourceVertBuffer);
+        _compute.SetBuffer(_grassKernelId, _sourceTrianglesPropertyId, _sourceTriBuffer);
+        _compute.SetBuffer(_grassKernelId, _drawTrianglesPropertyId, _drawBuffer);
+        _compute.SetBuffer(_grassKernelId, _indirectArgsBufferPropertyId, _argsBuffer);
+        _compute.SetInt(_numSourceTrianglesPropertyId, numSourceTriangles);
 
-        m_material.SetBuffer(m_drawTrianglesPropertyId, drawBuffer);
+        _material.SetBuffer(_drawTrianglesPropertyId, _drawBuffer);
 
-        m_compute.GetKernelThreadGroupSizes(m_grassKernelId, out var threadGroupSize, out _, out _);
-        dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
+        _compute.GetKernelThreadGroupSizes(_grassKernelId, out uint threadGroupSize, out _, out _);
+        _dispatchSize = Mathf.CeilToInt((float)numSourceTriangles / threadGroupSize);
 
-        localBounds = m_sourceMesh.bounds;
-        localBounds.Expand(1);
+        _localBounds = _sourceMesh.bounds;
+        _localBounds.Expand(1);
 
-        m_initialised = true;
+        _initialised = true;
     }
 
     private void OnDisable()
     {
-        if (m_initialised)
-        {
-            sourceVertBuffer.Release();
-            sourceTriBuffer.Release();
-            drawBuffer.Release();
-            argsBuffer.Release();
-        }
+        Cleanup();
+    }
 
-        m_initialised = false;
+    [Button]
+    private void Cleanup()
+    {
+        if(_sourceVertBuffer != null) _sourceVertBuffer.Dispose();
+        if(_sourceTriBuffer != null) _sourceTriBuffer.Dispose();
+        if(_drawBuffer != null) _drawBuffer.Dispose();
+        if(_argsBuffer != null) _argsBuffer.Dispose();
+
+        _initialised = false;
     }
 
     private void DebugHardware()
     {
+        Debug.Log($"System Supports Compute Shaders : {SystemInfo.supportsComputeShaders}");
+        Debug.Log($"System Supports Instancing : {SystemInfo.supportsInstancing}");
         Debug.Log($"Max Compute Buffer Workgroup Size : {SystemInfo.maxComputeWorkGroupSize}");
     }
 
@@ -163,32 +174,26 @@ public class GrassComputeController : MonoBehaviour
         return new Bounds { center = center, extents = extents };
     }
 
-    public void SetGrassFill(Slider _slider)
-    {
-        m_grassFill = _slider.value;
-        SubmitGrassSettings();
-    }
-
     private void SubmitGrassSettings()
     {
-        m_prevGrassSettings = grassSettings.SettingsData;
+        _prevGrassSettings = _grassSettings.SettingsData;
 
-        m_compute.SetFloat("_GrassHeight", grassSettings.SettingsData.grassHeight);
-        m_compute.SetFloat("_GrassHeightRandom", grassSettings.SettingsData.grassHeightRandom);
-        m_compute.SetFloat("_GrassHeightCuttoff", grassSettings.SettingsData.grassHeightCuttoff);
-        m_compute.SetFloat("_GrassWidth", grassSettings.SettingsData.grassWidth);
-        m_compute.SetFloat("_GrassWidthRandom", grassSettings.SettingsData.grassWidthRandom);
-        m_compute.SetFloat("_BendRandom", grassSettings.SettingsData.grassBendRandom);
-        m_compute.SetInt("_GrassSegments", grassSettings.SettingsData.grassSegments);
-        m_compute.SetInt("_GrassPerVertex", Mathf.RoundToInt(grassSettings.SettingsData.grassPerVertex * m_grassFill));
-        m_compute.SetFloat("_RandomPosition", grassSettings.SettingsData.randomPosition);
-        m_compute.SetFloat("_MinCamDist", grassSettings.SettingsData.minCamDist);
-        m_compute.SetFloat("_MaxCameraDist", Mathf.Max(grassSettings.SettingsData.maxCameraDist, 0.1f));
-        m_compute.SetFloat("_MinAltitude", grassSettings.SettingsData.minAltitude);
-        m_compute.SetFloat("_MaxAltitude", grassSettings.SettingsData.maxAltitude);
-        m_compute.SetFloat("_AltitudeHeightFade", grassSettings.SettingsData.altitudeFade);
-        m_compute.SetFloat("_CameraDotCuttoff", grassSettings.SettingsData.camDotCuttoff);
-        m_compute.SetFloat("_AvPlanetRadius", grassSettings.SettingsData.averagePlanetRadius);
+        _compute.SetFloat("_GrassHeight", _grassSettings.SettingsData.grassHeight);
+        _compute.SetFloat("_GrassHeightRandom", _grassSettings.SettingsData.grassHeightRandom);
+        _compute.SetFloat("_GrassHeightCuttoff", _grassSettings.SettingsData.grassHeightCuttoff);
+        _compute.SetFloat("_GrassWidth", _grassSettings.SettingsData.grassWidth);
+        _compute.SetFloat("_GrassWidthRandom", _grassSettings.SettingsData.grassWidthRandom);
+        _compute.SetFloat("_BendRandom", _grassSettings.SettingsData.grassBendRandom);
+        _compute.SetInt("_GrassSegments", _grassSettings.SettingsData.grassSegments);
+        _compute.SetInt("_GrassPerVertex", Mathf.RoundToInt(_grassSettings.SettingsData.grassPerVertex));
+        _compute.SetFloat("_RandomPosition", _grassSettings.SettingsData.randomPosition);
+        _compute.SetFloat("_MinCamDist", _grassSettings.SettingsData.minCamDist);
+        _compute.SetFloat("_MaxCameraDist", Mathf.Max(_grassSettings.SettingsData.maxCameraDist, 0.1f));
+        _compute.SetFloat("_MinAltitude", _grassSettings.SettingsData.minAltitude);
+        _compute.SetFloat("_MaxAltitude", _grassSettings.SettingsData.maxAltitude);
+        _compute.SetFloat("_AltitudeHeightFade", _grassSettings.SettingsData.altitudeFade);
+        _compute.SetFloat("_CameraDotCuttoff", _grassSettings.SettingsData.camDotCuttoff);
+        _compute.SetFloat("_AvPlanetRadius", _grassSettings.SettingsData.averagePlanetRadius);
         Debug.Log("Submitting Compute Grass Settings!");
     }
 

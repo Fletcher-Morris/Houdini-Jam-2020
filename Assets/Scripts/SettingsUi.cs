@@ -9,21 +9,25 @@ using UnityEngine.UI;
 public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
 {
     [SerializeField, Required] private UpdateManager _updateManager;
-    [Space]
 
-    [Header("Quality")]
+    [Space, Header("Quality")]
     [SerializeField] private Button _lowQButton;
     [SerializeField] private Button _medQButton;
     [SerializeField] private Button _highQButton;
+    [SerializeField] private Button _grassToggleButton;
+    [SerializeField] private GrassComputeController _grassComputeController;
 
-    [Space]
-    [Header("Performance")]
+    [Space, Header("Time")]
+    [SerializeField] private Slider _timeSlider;
+    [SerializeField] private Toggle _timeToggle;
+    [SerializeField] private DayNightCycle _dayNightCycle;
+
+    [Space, Header("Performance")]
     [SerializeField] private TMP_Text _fpsText;
     private int _frameCounter = 0;
     private float _frameTimer = 0;
 
-    [Space]
-    [Header("Pathing")]
+    [Space, Header("Pathing")]
     [SerializeField] private Button _showPathsButton;
 
     private void Start()
@@ -41,9 +45,19 @@ public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
         Pathing.WaypointManager.Instance.ShowNavigatorPaths = !Pathing.WaypointManager.Instance.ShowNavigatorPaths;
     }
 
-    UpdateManager IManualUpdate.GetUpdateManager()
+    private void ToggleComputeGrass()
     {
-        return _updateManager;
+        _grassComputeController.ToggleGrass();
+    }
+
+    private void ToggleTime(bool val)
+    {
+        _dayNightCycle.AutoTick = val;
+    }
+
+    private void OnTimeSliderChanged(float val)
+    {
+        _dayNightCycle.SetTick(val.RoundToInt());
     }
 
     void IManualUpdate.OnInitialise()
@@ -51,8 +65,19 @@ public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
         _lowQButton.onClick.AddListener(() => SetQuality(0));
         _medQButton.onClick.AddListener(() => SetQuality(1));
         _highQButton.onClick.AddListener(() => SetQuality(2));
+        _grassToggleButton.onClick.AddListener(() => ToggleComputeGrass());
         _showPathsButton.onClick.AddListener(ToggleShowPaths);
+
+        _timeSlider.maxValue = _dayNightCycle.TicksPerCycle;
+        _timeSlider.onValueChanged.AddListener(OnTimeSliderChanged);
+        _timeToggle.onValueChanged.AddListener(ToggleTime);
     }
+
+    UpdateManager IManualUpdate.GetUpdateManager()
+    {
+        return _updateManager;
+    }
+
 
     void IManualUpdate.OnManualUpdate(float delta)
     {
