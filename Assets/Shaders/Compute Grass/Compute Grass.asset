@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: Compute Grass
   m_EditorClassIdentifier: 
   SettingsData:
-    grassHeight: 0.5
-    grassHeightRandom: 0.5
+    grassHeight: 0.4
+    grassHeightRandom: 0.3
     grassHeightCuttoff: 0.05
     grassWidth: 0.05
-    grassWidthRandom: 0.05
-    grassBendRandom: 0.125
-    grassSegments: 4
-    grassPerVertex: 1
-    randomPosition: 0.33
-    maxCameraDist: 140
+    grassWidthRandom: 0.02
+    grassBendRandom: 0.1
+    grassSegments: 2
+    grassPerVertex: 16
+    randomPosition: 0.45
+    maxCameraDist: 34.7
     minAltitude: 48
     maxAltitude: 55
     altitudeFade: 0.5
     camDotCuttoff: -1
-    minCamDist: 1
+    minCamDist: 0.19
     averagePlanetRadius: 50
-    m_checksum: 1576684
+    m_checksum: 1273236

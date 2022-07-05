@@ -44,6 +44,10 @@ namespace Tick
                 _initialisationQueue.Enqueue(queueObject);
                 Debug.Log($"Added '{queueObject}' to initialisation queue.");
             }
+            else
+            {
+                Debug.LogWarning($"'{queueObject}' is already added to the initialisation queue!");
+            }
         }
         public void RemoveFromUpdateList(IManualUpdate _object)
         {

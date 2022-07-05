@@ -1,5 +1,9 @@
 using Sirenix.OdinInspector;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -8,6 +12,7 @@ using UnityEngine.UI;
 public class GrassComputeController : MonoBehaviour
 {
     private const int SOURCE_VERT_STRIDE = sizeof(float) * 3;
+
     private const int SOURCE_TRI_STRIDE = sizeof(int);
     private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
     private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
@@ -24,7 +29,8 @@ public class GrassComputeController : MonoBehaviour
     [SerializeField] private Mesh _sourceMesh;
     [SerializeField] private ComputeShader _compute;
     [SerializeField] private Material _material;
-    [SerializeField] private Transform _cameraTransform;
+    [SerializeField] private Camera[] _cameras;
+    [SerializeField] private bool _editorCamera;
 
     public ComputeGrassSettings _grassSettings;
     private readonly int[] _argsBufferReset = { 0, 1, 0, 0 };
@@ -37,6 +43,14 @@ public class GrassComputeController : MonoBehaviour
     private ComputeBuffer _sourceTriBuffer;
     private ComputeBuffer _sourceVertBuffer;
 
+    private Camera _useCamera;
+
+    private static readonly int _distortionObjectsPropertyId = Shader.PropertyToID("_DistortionObjects");
+    private const int MAX_GRASS_DISTORTERS = 32;
+    public List<GrassObject> _trackedGrassDistorters = new List<GrassObject>();
+    private readonly Vector4[] _grassDistortionValues = new Vector4[MAX_GRASS_DISTORTERS];
+    private List<GrassObject> _sortedGrassDistorters = new List<GrassObject>();
+    
     private bool _initialised = false;
 
     private void Awake()
@@ -60,28 +74,73 @@ public class GrassComputeController : MonoBehaviour
     {
         if (_initialised == false) return;
 
-        _drawBuffer.SetCounterValue(0);
-        _argsBuffer.SetData(_argsBufferReset);
-
         if (_prevGrassSettings.Checksum != _grassSettings.SettingsData.Checksum) SubmitGrassSettings();
-        if (_cameraTransform == null)
+
+        float camIndex = float.NegativeInfinity;
+        for (int i = 0; i < _cameras.Length; i++)
         {
-            _compute.SetVector(_worldSpaceCameraPosPropertyId, Vector4.zero);
-            _compute.SetVector(_worldSpaceCameraForwardPropertyId, Vector4.one);
+            if (_cameras[i].enabled && _cameras[i].gameObject.activeInHierarchy)
+            {
+                if (_cameras[i].depth > camIndex)
+                {
+                    camIndex = _cameras[i].depth;
+                    _useCamera = _cameras[i];
+                }
+            }
         }
-        else
+
+#if UNITY_EDITOR
+        if (_editorCamera)
         {
-            _compute.SetVector(_worldSpaceCameraPosPropertyId, _cameraTransform.position);
-            _compute.SetVector(_worldSpaceCameraForwardPropertyId, _cameraTransform.forward);
+            SceneView sceneView = EditorWindow.GetWindow<SceneView>();
+            if (sceneView != null)
+            {
+                if (sceneView.hasFocus)
+                {
+                    _useCamera = sceneView.camera;
+                }
+            }
         }
+#endif
 
-        Bounds bounds = TransformBounds(_localBounds);
+        if (_useCamera != null)
+        {
+            if (_trackedGrassDistorters.Count > 0)
+            {
+                if (_trackedGrassDistorters.Count > MAX_GRASS_DISTORTERS)
+                {
+                    _sortedGrassDistorters = _trackedGrassDistorters.OrderBy(o => (Vector3.Distance(o.transform.position, _useCamera.transform.position) - o.Radius).Clamp(0, Mathf.Infinity)).ToList();
+                }
+                else
+                {
+                    _sortedGrassDistorters = _trackedGrassDistorters;
+                }
 
-        _compute.SetMatrix(_localToWorldPropertyId, transform.localToWorldMatrix);
+                for (int i = 0; i < MAX_GRASS_DISTORTERS; i++)
+                {
+                    if (_sortedGrassDistorters.Count <= i || _sortedGrassDistorters[i] == null)
+                    {
+                        _grassDistortionValues[i] = Vector4.zero;
+                    }
+                    else
+                    {
+                        _grassDistortionValues[i] = _sortedGrassDistorters[i].enabled.ToInt() * _sortedGrassDistorters[i].gameObject.activeSelf.ToInt() * _sortedGrassDistorters[i].GetVector();
+                    }
+                }
 
-        _compute.Dispatch(_grassKernelId, _dispatchSize, 1, 1);
-        Graphics.DrawProceduralIndirect(_material, bounds, MeshTopology.Triangles, _argsBuffer, 0,
-            null, null, ShadowCastingMode.Off, true, gameObject.layer);
+                Shader.SetGlobalVectorArray(_distortionObjectsPropertyId, _grassDistortionValues);
+            }
+
+            _drawBuffer.SetCounterValue(0);
+            _argsBuffer.SetData(_argsBufferReset);
+            _compute.SetVector(_worldSpaceCameraPosPropertyId, _useCamera.transform.position);
+            _compute.SetVector(_worldSpaceCameraForwardPropertyId, _useCamera.transform.forward);
+            Bounds bounds = TransformBounds(_localBounds);
+            _compute.SetMatrix(_localToWorldPropertyId, transform.localToWorldMatrix);
+            _compute.Dispatch(_grassKernelId, _dispatchSize, 1, 1);
+            Graphics.DrawProceduralIndirect(_material, bounds, MeshTopology.Triangles, _argsBuffer, 0,
+                null, null, ShadowCastingMode.Off, true, gameObject.layer);
+        }
     }
 
     private void OnEnable()
@@ -143,6 +202,22 @@ public class GrassComputeController : MonoBehaviour
         Cleanup();
     }
 
+    public void AddDistortionObject(GrassObject grassObject)
+    {
+        if (!_trackedGrassDistorters.Contains(grassObject))
+        {
+            _trackedGrassDistorters.Add(grassObject);
+        }
+    }
+
+    public void RemoveDistortionObject(GrassObject grassObject)
+    {
+        if (_trackedGrassDistorters.Contains(grassObject))
+        {
+            _trackedGrassDistorters.Remove(grassObject);
+        }
+    }
+
     [Button]
     private void Cleanup()
     {
@@ -152,6 +227,12 @@ public class GrassComputeController : MonoBehaviour
         if(_argsBuffer != null) _argsBuffer.Dispose();
 
         _initialised = false;
+    }
+
+    [Button]
+    private void FindDistortionObjects()
+    {
+        _trackedGrassDistorters = FindObjectsOfType<GrassObject>().ToList();
     }
 
     private void DebugHardware()

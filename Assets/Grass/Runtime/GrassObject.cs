@@ -1,22 +1,26 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class GrassObject : MonoBehaviour
 {
-    public float radius = 1.0f;
+    [SerializeField] private float _radius = 1.0f;
+    [SerializeField, Required] private GrassComputeController _grassComputeController;
+
+    public float Radius { get => _radius; }
 
     private void OnEnable()
     {
-        GrassDistortion.Instance?.AddObject(this);
+        _grassComputeController.AddDistortionObject(this);
     }
 
     private void OnDisable()
     {
-        GrassDistortion.Instance?.RemoveObject(this);
+        _grassComputeController.RemoveDistortionObject(this);
     }
 
     public Vector4 GetVector()
     {
-        return new Vector4(transform.position.x, transform.position.y, transform.position.z, radius);
+        return new Vector4(transform.position.x, transform.position.y, transform.position.z, _radius);
     }
 }

@@ -28,6 +28,6 @@ Material:
     m_Floats:
     - _ColorRdm: 0
     m_Colors:
-    - _BaseColor: {r: 0.102276005, g: 0.135, b: 0.09409501, a: 1}
-    - _TipColor: {r: 0.17689657, g: 0.27, b: 0.1536207, a: 1}
+    - _BaseColor: {r: 0.07982353, g: 0.118, b: 0.06594118, a: 1}
+    - _TipColor: {r: 0.1348305, g: 0.206, b: 0.113918, a: 1}
   m_BuildTextureStacks: []
