@@ -43,6 +43,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     [SerializeField] private Pathing.AiNavigator _navigator = new AiNavigator();
     [SerializeField] private float _updateWaypointInterval = 4.0f;
     [SerializeField] private LineRenderer _pathLineRenderer;
+    [SerializeField] private BasicAiTarget _navTargetOverride;
 
     [Space, Header("Hunger")]
     [SerializeField] private bool _enableHunger = true;
@@ -354,6 +355,11 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     {
         Rotation(delta);
         Hunger(delta);
+
+        if (_navTargetOverride != null)
+        {
+            _navigator.SetTarget(_navTargetOverride);
+        }
 
         _navigator.Update(delta);
     }
