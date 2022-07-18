@@ -31,6 +31,13 @@ namespace MeshSplit
             return CreateChildMeshes();
         }
 
+        public List<(Vector3Int gridPoint, Mesh mesh, Vector3 offset)> SplitAndOffset(Mesh mesh)
+        {
+            CopyMeshData(mesh);
+            CreatePointIndicesMap();
+            return CreateChildMeshesAndOffset();
+        }
+
         private void CopyMeshData(Mesh mesh)
         {
             _vertices = mesh.vertices;
@@ -75,11 +82,11 @@ namespace MeshSplit
             for (var i = 0; i < _indices.Length; i += 3)
             {
                 // middle of the current triangle (average of its 3 verts).
-                var currentPoint = (_vertices[_indices[i]] + _vertices[_indices[i + 1]] + _vertices[_indices[i + 2]]) / 3;
+                Vector3 currentPoint = (_vertices[_indices[i]] + _vertices[_indices[i + 1]] + _vertices[_indices[i + 2]]) / 3;
 
                 // calculate coordinates of the closest grid node.
                 // ignore an axis (set it to 0) if its not enabled
-                var gridPos = new Vector3Int(
+                Vector3Int gridPos = new Vector3Int(
                     _parameters.SplitAxisX ? Mathf.RoundToInt(Mathf.Round(currentPoint.x / _parameters.GridSize) * _parameters.GridSize) : 0,
                     _parameters.SplitAxisY ? Mathf.RoundToInt(Mathf.Round(currentPoint.y / _parameters.GridSize) * _parameters.GridSize) : 0,
                     _parameters.SplitAxisZ ? Mathf.RoundToInt(Mathf.Round(currentPoint.z / _parameters.GridSize) * _parameters.GridSize) : 0
@@ -103,30 +110,36 @@ namespace MeshSplit
             // create a submesh for each list of triangle indices
             return _pointIndicesMap.Select(entry => CreateMeshForGridPoint(entry.Key, entry.Value)).ToList();
         }
-        
+
+        private List<(Vector3Int gridPoint, Mesh mesh, Vector3 offset)> CreateChildMeshesAndOffset()
+        {
+            // create a submesh for each list of triangle indices
+            return _pointIndicesMap.Select(entry => CreateMeshForGridPointAndOffset(entry.Key, entry.Value)).ToList();
+        }
+
         private (Vector3Int gridPoint, Mesh mesh) CreateMeshForGridPoint(Vector3Int gridPoint, List<int> dictionaryTriangles)
         {
-            var meshHasNormals = _normals != null && _normals.Length > 0;
-            var meshHasColors = _colors != null && _colors.Length > 0;
-            
-            // mesh data lists for the new mesh
-            var vertices = new List<Vector3>();
-            var tris = new List<int>();
-            var normals = new List<Vector3>();
-            var colors = new List<Color32>();
+            bool meshHasNormals = _normals != null && _normals.Length > 0;
+            bool meshHasColors = _colors != null && _colors.Length > 0;
 
-            var uvChannels = new List<List<Vector2>>();
-            for (var i = 0; i < _parameters.UvChannels; i++)
+            // mesh data lists for the new mesh
+            List<Vector3> vertices = new List<Vector3>();
+            List<int> tris = new List<int>();
+            List<Vector3> normals = new List<Vector3>();
+            List<Color32> colors = new List<Color32>();
+
+            List<List<Vector2>> uvChannels = new List<List<Vector2>>();
+            for (int i = 0; i < _parameters.UvChannels; i++)
             {
                 uvChannels.Add(new List<Vector2>());
             }
 
             // these lists are filled in this loop
-            for (var i = 0; i < dictionaryTriangles.Count; i += 3)
+            for (int i = 0; i < dictionaryTriangles.Count; i += 3)
             {
-                var a = i;
-                var b = i + 1;
-                var c = i + 2;
+                int a = i;
+                int b = i + 1;
+                int c = i + 2;
                 
                 vertices.Add(_vertices[dictionaryTriangles[a]]);
                 vertices.Add(_vertices[dictionaryTriangles[b]]);
@@ -136,7 +149,7 @@ namespace MeshSplit
                 tris.Add(b);
                 tris.Add(c);
 
-                for (var j = 0; j < _parameters.UvChannels; j++)
+                for (int j = 0; j < _parameters.UvChannels; j++)
                 {
                     uvChannels[j].Add(_uvChannels[j][dictionaryTriangles[a]]);
                     uvChannels[j].Add(_uvChannels[j][dictionaryTriangles[b]]);
@@ -159,7 +172,7 @@ namespace MeshSplit
             }
 
             // Create a new mesh
-            var newMesh = new Mesh
+            Mesh newMesh = new Mesh
             {
                 name = $"Submesh {gridPoint}",
                 vertices = vertices.ToArray(),
@@ -176,7 +189,7 @@ namespace MeshSplit
                 newMesh.colors32 = colors.ToArray();
             }
             
-            for (var i = 0; i < _parameters.UvChannels; i++)
+            for (int i = 0; i < _parameters.UvChannels; i++)
             {
                 newMesh.SetUVs(i, uvChannels[i]);
             }
@@ -187,6 +200,114 @@ namespace MeshSplit
 #endif
 
             return (gridPoint, newMesh);
+        }
+
+        private (Vector3Int gridPoint, Mesh mesh, Vector3 offset) CreateMeshForGridPointAndOffset(Vector3Int gridPoint, List<int> dictionaryTriangles)
+        {
+            bool meshHasNormals = _normals != null && _normals.Length > 0;
+            bool meshHasColors = _colors != null && _colors.Length > 0;
+
+            // mesh data lists for the new mesh
+            List<Vector3> vertices = new List<Vector3>();
+            List<int> tris = new List<int>();
+            List<Vector3> normals = new List<Vector3>();
+            List<Color32> colors = new List<Color32>();
+
+            List<List<Vector2>> uvChannels = new List<List<Vector2>>();
+            for (int i = 0; i < _parameters.UvChannels; i++)
+            {
+                uvChannels.Add(new List<Vector2>());
+            }
+
+            // these lists are filled in this loop
+            for (int i = 0; i < dictionaryTriangles.Count; i += 3)
+            {
+                int a = i;
+                int b = i + 1;
+                int c = i + 2;
+
+                vertices.Add(_vertices[dictionaryTriangles[a]]);
+                vertices.Add(_vertices[dictionaryTriangles[b]]);
+                vertices.Add(_vertices[dictionaryTriangles[c]]);
+
+                tris.Add(a);
+                tris.Add(b);
+                tris.Add(c);
+
+                for (int j = 0; j < _parameters.UvChannels; j++)
+                {
+                    uvChannels[j].Add(_uvChannels[j][dictionaryTriangles[a]]);
+                    uvChannels[j].Add(_uvChannels[j][dictionaryTriangles[b]]);
+                    uvChannels[j].Add(_uvChannels[j][dictionaryTriangles[c]]);
+                }
+
+                if (_parameters.UseVertexNormals && meshHasNormals)
+                {
+                    normals.Add(_normals[dictionaryTriangles[a]]);
+                    normals.Add(_normals[dictionaryTriangles[b]]);
+                    normals.Add(_normals[dictionaryTriangles[c]]);
+                }
+
+                if (_parameters.UseVertexColors && meshHasColors)
+                {
+                    colors.Add(_colors[dictionaryTriangles[a]]);
+                    colors.Add(_colors[dictionaryTriangles[b]]);
+                    colors.Add(_colors[dictionaryTriangles[c]]);
+                }
+            }
+
+            // Calculate offset
+            Vector3 vertsAv = new Vector3();
+            foreach (Vector3 vert in vertices)
+            {
+                vertsAv += vert;
+            }
+            vertsAv /= vertices.Count;
+            Vector3 vertsMax = new Vector3();
+            float dist = 0;
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                Vector3 diff = vertsAv - vertices[i];
+                if(diff.sqrMagnitude >= dist)
+                {
+                    dist = diff.sqrMagnitude;
+                    vertsMax = vertices[i];
+                }
+            }
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                vertices[i] -= vertsMax;
+            }
+
+            // Create a new mesh
+            Mesh newMesh = new Mesh
+            {
+                name = $"Submesh {gridPoint}",
+                vertices = vertices.ToArray(),
+                triangles = tris.ToArray()
+            };
+
+            if (_parameters.UseVertexNormals && normals.Count > 0)
+            {
+                newMesh.normals = normals.ToArray();
+            }
+
+            if (_parameters.UseVertexColors && colors.Count > 0)
+            {
+                newMesh.colors32 = colors.ToArray();
+            }
+
+            for (int i = 0; i < _parameters.UvChannels; i++)
+            {
+                newMesh.SetUVs(i, uvChannels[i]);
+            }
+
+#if  UNITY_EDITOR
+            // optimize mesh
+            UnityEditor.MeshUtility.Optimize(newMesh);
+#endif
+
+            return (gridPoint, newMesh, vertsMax);
         }
     }
 }
