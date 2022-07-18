@@ -210,6 +210,7 @@ namespace Pathing
             _initialised = true;
         }
 
+        [Button]
         public void Initialise()
         {
             _instance = this;

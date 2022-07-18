@@ -11,7 +11,7 @@ public class PlanetLodSplitter : MonoBehaviour
     [SerializeField] private Mesh[] _meshes;
     [SerializeField] private MeshSplitParameters _parameters;
 
-    private LODGroup[] _lodGroups;
+    [SerializeField, HideInInspector] private LODGroup[] _lodGroups;
 
     [Button]
     private void CreateLods()
@@ -25,7 +25,8 @@ public class PlanetLodSplitter : MonoBehaviour
         List<(Vector3Int gridPoint, Mesh mesh, Vector3 offset)>[] splitMeshes = new List<(Vector3Int gridPoint, Mesh mesh, Vector3 offset)>[_meshes.Length];
         Dictionary<Vector3Int, Tuple<Mesh, Vector3>>[] splitMeshDicArray = new Dictionary<Vector3Int, Tuple<Mesh, Vector3>>[_meshes.Length];
 
-        int subMeshCount = int.MaxValue;
+        int minSubmeshCount = int.MaxValue;
+        int maxSubmeshCount = int.MinValue;
 
         for (int lodId = 0; lodId < _meshes.Length; lodId++)
         {
@@ -33,7 +34,8 @@ public class PlanetLodSplitter : MonoBehaviour
             splitMeshes[lodId] = splitter.SplitAndOffset(lodMesh);
             splitMeshDicArray[lodId] = new Dictionary<Vector3Int, Tuple<Mesh, Vector3>>();
 
-            subMeshCount = Mathf.Min(splitMeshes[lodId].Count, subMeshCount);
+            minSubmeshCount = Mathf.Min(splitMeshes[lodId].Count, minSubmeshCount);
+            maxSubmeshCount = Mathf.Max(splitMeshes[lodId].Count, maxSubmeshCount);
 
             for (int splitMeshId = 0; splitMeshId < splitMeshes[lodId].Count; splitMeshId++)
             {
@@ -44,7 +46,7 @@ public class PlanetLodSplitter : MonoBehaviour
             }
         }
 
-        _lodGroups = new LODGroup[subMeshCount];
+        _lodGroups = new LODGroup[maxSubmeshCount];
 
         if (splitMeshDicArray.Length > 0)
         {
@@ -109,6 +111,8 @@ public class PlanetLodSplitter : MonoBehaviour
                 }
             }
         }
+
+        _lodGroups = null;
 
         _copyRenderer.enabled = true;
     }

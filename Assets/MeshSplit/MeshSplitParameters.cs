@@ -11,6 +11,9 @@ namespace MeshSplit
         [Range(0.1f, 64)]
         public float GridSize = 16;
 
+        [Range(0.0f, 1.0f)]
+        public float TriangleOverlap = 1.0f;
+
         [Header("Axes.")]
         public bool SplitAxisX = true;
         public bool SplitAxisY = true;

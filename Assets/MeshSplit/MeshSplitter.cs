@@ -73,35 +73,42 @@ namespace MeshSplit
                 }
             }
         }
-        
+
         private void CreatePointIndicesMap()
         {
             // Create a list of triangle indices from our mesh for every grid node
             _pointIndicesMap = new Dictionary<Vector3Int, List<int>>();
 
-            for (var i = 0; i < _indices.Length; i += 3)
+            for (int i = 0; i < _indices.Length; i += 3)
             {
-                // middle of the current triangle (average of its 3 verts).
-                Vector3 currentPoint = (_vertices[_indices[i]] + _vertices[_indices[i + 1]] + _vertices[_indices[i + 2]]) / 3;
+                Vector3[] overlaps = { Vector3.right, Vector3.left, Vector3.up, Vector3.down, Vector3.forward, Vector3.back };
 
-                // calculate coordinates of the closest grid node.
-                // ignore an axis (set it to 0) if its not enabled
-                Vector3Int gridPos = new Vector3Int(
-                    _parameters.SplitAxisX ? Mathf.RoundToInt(Mathf.Round(currentPoint.x / _parameters.GridSize) * _parameters.GridSize) : 0,
-                    _parameters.SplitAxisY ? Mathf.RoundToInt(Mathf.Round(currentPoint.y / _parameters.GridSize) * _parameters.GridSize) : 0,
-                    _parameters.SplitAxisZ ? Mathf.RoundToInt(Mathf.Round(currentPoint.z / _parameters.GridSize) * _parameters.GridSize) : 0
-                );
-
-                // check if the dictionary has a key (our grid position). Add it / create a list for it if it doesnt.
-                if (!_pointIndicesMap.ContainsKey(gridPos))
+                for (int o = 0; o < overlaps.Length; o++)
                 {
-                    _pointIndicesMap.Add(gridPos, new List<int>());
-                }
+                    Vector3 offset = overlaps[o] * _parameters.TriangleOverlap;
 
-                // add these triangle indices to the list
-                _pointIndicesMap[gridPos].Add(_indices[i]);
-                _pointIndicesMap[gridPos].Add(_indices[i + 1]);
-                _pointIndicesMap[gridPos].Add(_indices[i + 2]);
+                    // middle of the current triangle (average of its 3 verts).
+                    Vector3 currentPoint = ((_vertices[_indices[i]] + _vertices[_indices[i + 1]] + _vertices[_indices[i + 2]]) / 3) + offset;
+
+                    // calculate coordinates of the closest grid node.
+                    // ignore an axis (set it to 0) if its not enabled
+                    Vector3Int gridPos = new Vector3Int(
+                        _parameters.SplitAxisX ? Mathf.RoundToInt(Mathf.Round(currentPoint.x / _parameters.GridSize) * _parameters.GridSize) : 0,
+                        _parameters.SplitAxisY ? Mathf.RoundToInt(Mathf.Round(currentPoint.y / _parameters.GridSize) * _parameters.GridSize) : 0,
+                        _parameters.SplitAxisZ ? Mathf.RoundToInt(Mathf.Round(currentPoint.z / _parameters.GridSize) * _parameters.GridSize) : 0
+                    );
+
+                    // check if the dictionary has a key (our grid position). Add it / create a list for it if it doesnt.
+                    if (!_pointIndicesMap.ContainsKey(gridPos))
+                    {
+                        _pointIndicesMap.Add(gridPos, new List<int>());
+                    }
+
+                    // add these triangle indices to the list
+                    _pointIndicesMap[gridPos].Add(_indices[i]);
+                    _pointIndicesMap[gridPos].Add(_indices[i + 1]);
+                    _pointIndicesMap[gridPos].Add(_indices[i + 2]);
+                }
             }
         }
 
