@@ -11,8 +11,8 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class GrassComputeController : MonoBehaviour
 {
-    private const int SOURCE_VERT_STRIDE = sizeof(float) * 3;
-
+    private const int LOD_VERT_STRIDE = (sizeof(float) * 3) + (sizeof(int));
+    private const int POS_VERT_STRIDE = sizeof(float) * 3;
     private const int SOURCE_TRI_STRIDE = sizeof(int);
     private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
     private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
@@ -156,10 +156,10 @@ public class GrassComputeController : MonoBehaviour
         Vector3[] positions = _sourceMesh.vertices;
         int[] tris = _sourceMesh.triangles;
 
-        SourceVertex[] vertices = new SourceVertex[positions.Length];
+        PosVertex[] vertices = new PosVertex[positions.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i] = new SourceVertex
+            vertices[i] = new PosVertex
             {
                 position = positions[i]
             };
@@ -167,7 +167,7 @@ public class GrassComputeController : MonoBehaviour
 
         int numSourceTriangles = tris.Length / 3;
 
-        _sourceVertBuffer = new ComputeBuffer(vertices.Length, SOURCE_VERT_STRIDE, ComputeBufferType.Structured,
+        _sourceVertBuffer = new ComputeBuffer(vertices.Length, POS_VERT_STRIDE, ComputeBufferType.Structured,
             ComputeBufferMode.Immutable);
         _sourceVertBuffer.SetData(vertices);
         _sourceTriBuffer = new ComputeBuffer(tris.Length, SOURCE_TRI_STRIDE, ComputeBufferType.Structured,
@@ -279,7 +279,14 @@ public class GrassComputeController : MonoBehaviour
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct SourceVertex
+    private struct LodVertex
+    {
+        public Vector3 position;
+        public int lodId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PosVertex
     {
         public Vector3 position;
     }

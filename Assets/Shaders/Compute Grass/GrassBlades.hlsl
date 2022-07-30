@@ -37,6 +37,7 @@ float4 _BaseColor;
 float4 _TipColor;
 float _ColorRdm;
 sampler2D _AlphaTex;
+float _DebugColors;
 
 // Globals
 float4 LIGHT_COLOR;
@@ -101,6 +102,12 @@ float4 Fragment(VertexOutput input) : SV_Target
 
     float uvY = input.uv.y;
     float uvYClamped = clamp(0.0, 1.0, uvY);
+
+    if (_DebugColors > 0)
+    {
+        return lerp(float4(0,0,0,0), float4(1,1,1,1), uvY);
+    }
+
     float3 col = lerp(_BaseColor.rgb, _TipColor.rgb, uvY);
     col.r -= colRdm;
     col.g += colRdm;

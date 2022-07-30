@@ -2,12 +2,18 @@
 
 #include "GrassComputeFunctions.hlsl"
 
-struct SourceVertex
+struct LodVertex
+{
+    float3 positionOS;
+    int lodId;
+};
+
+struct PosVertex
 {
     float3 positionOS;
 };
 
-StructuredBuffer<SourceVertex> _SourceVertices;
+StructuredBuffer<PosVertex> _SourceVertices;
 StructuredBuffer<int> _SourceTriangles;
 
 struct DrawVertex
@@ -59,7 +65,7 @@ float _CameraDotCuttoff;
 float _MinCameraDistance;
 float _AvPlanetRadius;
 
-void GetCenterAndBasis(SourceVertex a, SourceVertex b, SourceVertex c, out float3 positionWS, out float3 normalWS,
+void GetCenterAndBasis(PosVertex a, PosVertex b, PosVertex c, out float3 positionWS, out float3 normalWS,
 out float3x3 tsToWs)
 {
     float3 positionA_WS = mul(_LocalToWorld, float4(a.positionOS, 1)).xyz;
