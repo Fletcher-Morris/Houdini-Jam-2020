@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class PlanetLodSplitter : MonoBehaviour
 {
+    [SerializeField, Required] GrassComputeController _grassComputeController;
+
     [SerializeField, Required] private MeshRenderer _copyRenderer;
     [SerializeField] private Mesh[] _meshes;
     [SerializeField] private MeshSplitParameters _parameters;
@@ -28,6 +30,8 @@ public class PlanetLodSplitter : MonoBehaviour
         int minSubmeshCount = int.MaxValue;
         int maxSubmeshCount = int.MinValue;
 
+        _grassComputeController.LodVertScriptable.Init();
+
         for (int lodId = 0; lodId < _meshes.Length; lodId++)
         {
             Mesh lodMesh = _meshes[lodId];
@@ -47,6 +51,7 @@ public class PlanetLodSplitter : MonoBehaviour
         }
 
         _lodGroups = new LODGroup[maxSubmeshCount];
+        int uniqueLodId = 0;
 
         if (splitMeshDicArray.Length > 0)
         {
@@ -88,6 +93,10 @@ public class PlanetLodSplitter : MonoBehaviour
 
                         filter.mesh = splitMeshInLod.Item1;
                         lods[lodId].renderers[0] = renderer;
+
+                        _grassComputeController.LodVertScriptable.AddLodMesh(splitMeshInLod.Item1, uniqueLodId);
+
+                        uniqueLodId++;
                     }
                 }
 

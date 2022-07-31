@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -50,7 +51,7 @@ public class GrassComputeController : MonoBehaviour
     public List<GrassObject> _trackedGrassDistorters = new List<GrassObject>();
     private readonly Vector4[] _grassDistortionValues = new Vector4[MAX_GRASS_DISTORTERS];
     private List<GrassObject> _sortedGrassDistorters = new List<GrassObject>();
-    
+
     private bool _initialised = false;
 
     private void Awake()
@@ -60,7 +61,7 @@ public class GrassComputeController : MonoBehaviour
 
     public void ToggleGrass()
     {
-        if(_initialised)
+        if (_initialised)
         {
             Cleanup();
         }
@@ -145,7 +146,7 @@ public class GrassComputeController : MonoBehaviour
 
     private void OnEnable()
     {
-        if(_initialised) Cleanup();
+        if (_initialised) Cleanup();
         DebugHardware();
         Initialise();
     }
@@ -221,10 +222,10 @@ public class GrassComputeController : MonoBehaviour
     [Button]
     private void Cleanup()
     {
-        if(_sourceVertBuffer != null) _sourceVertBuffer.Dispose();
-        if(_sourceTriBuffer != null) _sourceTriBuffer.Dispose();
-        if(_drawBuffer != null) _drawBuffer.Dispose();
-        if(_argsBuffer != null) _argsBuffer.Dispose();
+        if (_sourceVertBuffer != null) _sourceVertBuffer.Dispose();
+        if (_sourceTriBuffer != null) _sourceTriBuffer.Dispose();
+        if (_drawBuffer != null) _drawBuffer.Dispose();
+        if (_argsBuffer != null) _argsBuffer.Dispose();
 
         _initialised = false;
     }
@@ -279,15 +280,11 @@ public class GrassComputeController : MonoBehaviour
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct LodVertex
-    {
-        public Vector3 position;
-        public int lodId;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     private struct PosVertex
     {
         public Vector3 position;
     }
+
+    [Required, SerializeField] private LodVertScriptable _lodVertScriptable;
+    public LodVertScriptable LodVertScriptable { get => _lodVertScriptable; }
 }
