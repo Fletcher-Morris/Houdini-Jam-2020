@@ -27,8 +27,10 @@ namespace Tick
         }
 
         [SerializeField] private UpdateManagerSettings _managerSettings;
-        [SerializeField] private List<IManualUpdate> _updateList = new List<IManualUpdate>();
-        [SerializeField] private Queue<IManualUpdate> _initialisationQueue = new Queue<IManualUpdate>();
+        [SerializeField] private IManualUpdate[] _criticalOrder = new IManualUpdate[0];
+        private int _criticalIndex = 0;
+        [SerializeField, ReadOnly] private List<IManualUpdate> _updateList = new List<IManualUpdate>();
+        [SerializeField, ReadOnly] private Queue<IManualUpdate> _initialisationQueue = new Queue<IManualUpdate>();
 
         private float _tickTimer;
 
@@ -40,8 +42,8 @@ namespace Tick
             }
             _updateList.ForEach(o => o.OnApplicationQuit());
 
-            _updateList = new List<IManualUpdate>();
-            _initialisationQueue = new Queue<IManualUpdate>();
+            _updateList.Clear();
+            _initialisationQueue.Clear();
         }
 
         public void AddToUpdateList(IManualUpdate queueObject)
@@ -61,10 +63,29 @@ namespace Tick
             if (_updateList.Contains(_object)) _updateList.Remove(_object);
         }
 
+        public void Start()
+        {
+            _criticalIndex = 0;
+        }
+
         public void OnUpdate(float delta)
         {
             IManualUpdate queuedObject = null;
-            if(_initialisationQueue.Count > 0)
+
+            if (_criticalIndex < _criticalOrder.Length)
+            {
+                queuedObject = _criticalOrder[_criticalIndex];
+                if (queuedObject.OnInitialise())
+                {
+                    _updateList.Add(queuedObject);
+                    _criticalIndex++;
+                    Debug.Log($"Initialised '{queuedObject}'.");
+                }
+
+                return;
+            }
+
+            if (_initialisationQueue.Count > 0)
             {
                 queuedObject = _initialisationQueue.Peek();
             }
@@ -82,15 +103,16 @@ namespace Tick
             {
                 _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualUpdate(delta); });
             }
-        }
 
-        public void OnFixedUpdate(float delta)
-        {
             if ((_tickTimer -= delta) <= 0)
             {
                 OnTickUpdate(_tickTimer + _managerSettings.TickLength);
                 _tickTimer = _managerSettings.TickLength;
             }
+        }
+
+        public void OnFixedUpdate(float delta)
+        {
 
             _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualFixedUpdate(delta); });
         }

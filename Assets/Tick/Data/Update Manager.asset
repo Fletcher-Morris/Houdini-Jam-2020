@@ -15,15 +15,35 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 11400000, guid: d45643ecae6e24a49a6961aa872637af, type: 2}
+    - {fileID: 11400000, guid: 7806f13b5ecbc104b9042ea8cc280483, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
     SerializationNodes:
+    - Name: _criticalOrder
+      Entry: 7
+      Data: 0|Tick.IManualUpdate[], Assembly-CSharp
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 10
+      Data: 0
+    - Name: 
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: _updateList
       Entry: 7
-      Data: 0|System.Collections.Generic.List`1[[Tick.IManualUpdate, Assembly-CSharp]],
+      Data: 1|System.Collections.Generic.List`1[[Tick.IManualUpdate, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -36,7 +56,7 @@ MonoBehaviour:
       Data: 
     - Name: _initialisationQueue
       Entry: 7
-      Data: 1|System.Collections.Generic.Queue`1[[Tick.IManualUpdate, Assembly-CSharp]],
+      Data: 2|System.Collections.Generic.Queue`1[[Tick.IManualUpdate, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12

@@ -287,6 +287,10 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     }
 
     private List<Vector3> _navPoints = new List<Vector3>();
+
+    public HungerState CurrentHungerState { get => _hungerState; }
+    public float CurrentHungerValue { get => _currentHungerValue; }
+
     private void OnReachedWaypoint(Vector3 vec, int id)
     {
         int positionCount = Mathf.Max(0, (_navPoints.Count - id));

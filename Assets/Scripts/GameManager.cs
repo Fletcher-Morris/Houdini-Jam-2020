@@ -43,9 +43,6 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
 
-        _updateManager.AddToUpdateList(_waypointManager);
-        _updateManager.AddToUpdateList(_dayNightCycle);
-
         //Application.targetFrameRate = 60;
 
         //_grassScatterer.Scatter();
@@ -54,6 +51,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         remainingTime = gameLength;
+
+        _updateManager.Start();
     }
 
     private void Update()

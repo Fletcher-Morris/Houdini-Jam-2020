@@ -23,6 +23,7 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
     [SerializeField] private float _defaultZoom = 100.0f;
     [SerializeField] private float _zoomValue = 100.0f;
     [SerializeField] private Sheep _focusSheep;
+    [SerializeField] private SheepUi _sheepUi;
     [SerializeField] private bool _followFocusTarget;
     [SerializeField] private float _followRotationLerpSpeed = 15.0f;
     [SerializeField] private float _rotationDragLerp = 2.0f;
@@ -64,8 +65,17 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
     public void SetFocusTarget(Sheep targ)
     {
         _focusSheep = targ;
-        _followFocusTarget = false;
-        if (_focusSheep != null) _followFocusTarget = true;
+
+        if (_focusSheep != null)
+        {
+            _followFocusTarget = true;
+        }
+        else
+        {
+            _followFocusTarget = false;
+        }
+
+        _sheepUi.SetSheep(_focusSheep);
     }
 
     public void SetZoomFromSlider(Slider _slider)
@@ -118,7 +128,7 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
             if (jDir != Vector2.zero) inDir = jDir;
         }
 
-        if (inDir.magnitude >= 0.05f) _followFocusTarget = false;
+        if (inDir.magnitude >= 0.05f) SetFocusTarget(null);
 
         _rotSpeed = Mathf.Lerp(_minRotateSpeed, _maxRotateSpeed, Mathf.InverseLerp(_minZoom, _maxZoom, _zoomValue));
 
