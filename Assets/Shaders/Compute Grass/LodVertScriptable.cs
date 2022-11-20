@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Lod Verts", menuName = "Scriptables/Grass/ Lod Verts")]
+[CreateAssetMenu(fileName = "Lod Verts", menuName = "Scriptables/Grass/Lod Verts")]
 public class LodVertScriptable : SerializedScriptableObject
 {
     public void Init()

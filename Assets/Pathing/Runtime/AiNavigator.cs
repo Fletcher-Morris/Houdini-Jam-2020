@@ -46,7 +46,7 @@ namespace Pathing
         {
             if (_updateMode == NavPathUpdateMode.TargetChanged)
             {
-                if(newTarget != _aiTarget)
+                if (newTarget != _aiTarget)
                 {
                     _aiTarget = newTarget;
                     RecalculatePath();
@@ -109,9 +109,9 @@ namespace Pathing
 
             _navPosition = Vector3.MoveTowards(_navPosition, _moveTarget, moveDelta);
 
-            if(_hasReachedTarget == false)
+            if (_hasReachedTarget == false)
             {
-                if(HasReachedTarget())
+                if (HasReachedTarget())
                 {
                     OnReachedTarget.Invoke(_targetPosition);
                 }
@@ -123,7 +123,7 @@ namespace Pathing
         private Vector3 GetNextNavPosition(int currentIndex)
         {
             int findPos = currentIndex + 1;
-            if(findPos >= _pathFound.Count)
+            if (findPos >= _pathFound.Count)
             {
                 return _targetPosition;
             }

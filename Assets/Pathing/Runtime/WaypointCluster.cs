@@ -58,21 +58,21 @@ namespace Pathing
                 }
             }
 
-            foreach(ushort wp in Waypoints)
+            foreach (ushort wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
-                foreach(byte c in waypoint.Connections)
+                foreach (byte c in waypoint.Connections)
                 {
                     AiWaypoint connection = WaypointManager.Instance.GetWaypoint(c);
                     byte cl = connection.Cluster;
                     if (cl != Id)
                     {
                         WaypointCluster otherCluster = WaypointManager.Instance.GetCluster(cl);
-                        if(!ConnectedClusters.Contains(cl))
+                        if (!ConnectedClusters.Contains(cl))
                         {
                             ConnectedClusters.Add(cl);
                         }
-                        if(!otherCluster.ConnectedClusters.Contains(Id))
+                        if (!otherCluster.ConnectedClusters.Contains(Id))
                         {
                             otherCluster.ConnectedClusters.Add(Id);
                         }
