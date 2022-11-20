@@ -312,7 +312,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         }
     }
 
-    private void OnRecalculatedPath(List<ushort> path)
+    private void OnRecalculatedPath(List<int> path)
     {
         _navPoints = new List<Vector3>();
         for (int i = 0; i < path.Count; i++)

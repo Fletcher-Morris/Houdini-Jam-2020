@@ -32,7 +32,7 @@ namespace Pathing
         [SerializeField, HideInInspector] private WaypointManagerSettings _prevSettings;
         [Space]
 
-        [OdinSerialize] private Dictionary<System.Tuple<ushort, ushort>, WaypointPath> _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+        [OdinSerialize] private Dictionary<System.Tuple<int, int>, WaypointPath> _knownPaths = new Dictionary<System.Tuple<int, int>, WaypointPath>();
         [OdinSerialize] private List<WaypointPath> _knownPathsList = new List<WaypointPath>();
         [SerializeField] private bool _storeKnownPaths = true;
         [SerializeField, Range(1, 10)] private int _pathingAttempts = 5;
@@ -69,18 +69,18 @@ namespace Pathing
             }
         }
 
-        public AiWaypoint GetWaypoint(ushort id)
+        public AiWaypoint GetWaypoint(int id)
         {
-            if (id == ushort.MaxValue || id > _waypoints.Count)
+            if (id == int.MaxValue || id > _waypoints.Count)
             {
                 return null;
             }
             return _waypoints[id];
         }
 
-        public AiWaypoint GetWaypointInstance(ushort id)
+        public AiWaypoint GetWaypointInstance(int id)
         {
-            if (id == ushort.MaxValue || id > _waypoints.Count)
+            if (id == int.MaxValue || id > _waypoints.Count)
             {
                 return null;
             }
@@ -101,10 +101,10 @@ namespace Pathing
 
         public void GetKnownPaths()
         {
-            _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+            _knownPaths = new Dictionary<System.Tuple<int, int>, WaypointPath>();
             _knownPathsList.ForEach(p =>
             {
-                _knownPaths.Add(new System.Tuple<ushort, ushort>(p.Start, p.End), p);
+                _knownPaths.Add(new System.Tuple<int, int>(p.Start, p.End), p);
             });
         }
 
@@ -197,7 +197,7 @@ namespace Pathing
             _deleteAll = false;
             _waypoints = new List<AiWaypoint>();
             _clusters = new List<WaypointCluster>();
-            _knownPaths = new Dictionary<System.Tuple<ushort, ushort>, WaypointPath>();
+            _knownPaths = new Dictionary<System.Tuple<int, int>, WaypointPath>();
             _knownPathsList = new List<WaypointPath>();
             _initialised = false;
             _pathingStats = new WaypointPathingStats();
@@ -244,7 +244,7 @@ namespace Pathing
                 _clusters.Add(new WaypointCluster(i));
             }
 
-            ushort id = 0;
+            int id = 0;
             _waypoints.ForEach(w =>
             {
                 w.Id = id;
@@ -328,7 +328,7 @@ namespace Pathing
                         AiWaypoint end = GetWaypoint(cluster.ClusterCore);
                         if (start != end)
                         {
-                            List<ushort> path = Breadthwise(start, end, cluster.Id, 0);
+                            List<int> path = Breadthwise(start, end, cluster.Id, 0);
                             if (path == null || path.Count == 0)
                             {
                                 start.Cluster = byte.MaxValue;
@@ -340,7 +340,7 @@ namespace Pathing
 
             _clusters.ForEach(cluster =>
             {
-                cluster.Waypoints = new List<ushort>();
+                cluster.Waypoints = new List<int>();
                 _waypoints.ForEach(wp =>
                 {
                     if (wp.Cluster == cluster.Id)
@@ -461,7 +461,7 @@ namespace Pathing
             return node;
         }
 
-        public List<ushort> GetPath(Vector3 start, Vector3 end)
+        public List<int> GetPath(Vector3 start, Vector3 end)
         {
             AiWaypoint startNode = Closest(start);
             AiWaypoint endNode = Closest(end);
@@ -481,19 +481,19 @@ namespace Pathing
             return GetBakedPath(startNode, endNode);
         }
 
-        public List<ushort> GetBakedPath(AiWaypoint start, AiWaypoint end)
+        public List<int> GetBakedPath(AiWaypoint start, AiWaypoint end)
         {
-            WaypointPath foundBakedPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
+            WaypointPath foundBakedPath = new WaypointPath(start.Id, end.Id, new List<int>());
 
             if (_storeKnownPaths)
             {
-                if (_knownPaths.TryGetValue(new System.Tuple<ushort, ushort>(start.Id, end.Id), out foundBakedPath))
+                if (_knownPaths.TryGetValue(new System.Tuple<int, int>(start.Id, end.Id), out foundBakedPath))
                 {
                     _pathingStats.KnownPathsUsed++;
                     return foundBakedPath.Path;
                 }
 
-                if (_knownPaths.TryGetValue(new System.Tuple<ushort, ushort>(end.Id, start.Id), out foundBakedPath))
+                if (_knownPaths.TryGetValue(new System.Tuple<int, int>(end.Id, start.Id), out foundBakedPath))
                 {
                     _pathingStats.KnownPathsUsed++;
                     return foundBakedPath.Path.Reversed();
@@ -503,14 +503,14 @@ namespace Pathing
             //  Path is not yet baked.
 
             WaypointPath chosenPath = null;
-            List<ushort> chosenPathList = null;
+            List<int> chosenPathList = null;
             float shortestPathDistance = Mathf.Infinity;
             float longestPathDistance = Mathf.NegativeInfinity;
 
             for (int attempt = 0; attempt < _pathingAttempts; attempt++)
             {
-                WaypointPath forwardWaypointPath = new WaypointPath(start.Id, end.Id, new List<ushort>());
-                List<ushort> forwardPath = Breadthwise(start, end, attempt);
+                WaypointPath forwardWaypointPath = new WaypointPath(start.Id, end.Id, new List<int>());
+                List<int> forwardPath = Breadthwise(start, end, attempt);
                 if (forwardPath != null)
                 {
                     forwardWaypointPath.Path = forwardPath;
@@ -532,15 +532,15 @@ namespace Pathing
 
             if (_storeKnownPaths)
             {
-                _knownPaths.Add(new System.Tuple<ushort, ushort>(start.Id, end.Id), chosenPath);
+                _knownPaths.Add(new System.Tuple<int, int>(start.Id, end.Id), chosenPath);
                 _knownPathsList.Add(chosenPath);
             }
             return chosenPathList;
         }
 
-        private List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, int attempt)
+        private List<int> Breadthwise(AiWaypoint start, AiWaypoint end, int attempt)
         {
-            List<ushort> result = null;
+            List<int> result = null;
 
             if (start.Cluster == end.Cluster)
             {
@@ -609,7 +609,7 @@ namespace Pathing
             return result;
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId, int attempt)
+        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId, int attempt)
         {
             if (GetCluster(clusterId) != null)
             {
@@ -623,13 +623,13 @@ namespace Pathing
             }
         }
 
-        public List<ushort> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters, int attempt)
+        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters, int attempt)
         {
-            List<ushort> result = new List<ushort>();
-            List<ushort> visited = new List<ushort>();
-            Queue<ushort> work = new Queue<ushort>();
+            List<int> result = new List<int>();
+            List<int> visited = new List<int>();
+            Queue<int> work = new Queue<int>();
 
-            start.History = new List<ushort>();
+            start.History = new List<int>();
             visited.Add(start.Id);
             work.Enqueue(start.Id);
             int tries = 0;
@@ -637,7 +637,7 @@ namespace Pathing
             while (work.Count > 0 && tries < _waypoints.Count)
             {
                 tries++;
-                ushort current = work.Dequeue();
+                int current = work.Dequeue();
                 AiWaypoint currentWp = GetWaypoint(current);
                 if (current == end.Id)
                 {
@@ -651,13 +651,13 @@ namespace Pathing
                 for (int i = 0; i < (currentWp.Connections.Count); i++)
                 {
                     int j = (i + attempt) % currentWp.Connections.Count;
-                    ushort currentNeighbour = currentWp.Connections[j];
+                    int currentNeighbour = currentWp.Connections[j];
                     AiWaypoint currentNeighbourWp = GetWaypoint(currentNeighbour);
                     if (validClusters == null || validClusters.Count == 0 || validClusters.Contains(currentNeighbourWp.Cluster))
                     {
                         if (!visited.Contains(currentNeighbour))
                         {
-                            currentNeighbourWp.History = new List<ushort>(currentWp.History);
+                            currentNeighbourWp.History = new List<int>(currentWp.History);
                             currentNeighbourWp.History.Add(current);
                             visited.Add(currentNeighbour);
                             work.Enqueue(currentNeighbour);

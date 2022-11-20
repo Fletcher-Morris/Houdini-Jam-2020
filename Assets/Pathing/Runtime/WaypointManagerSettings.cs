@@ -8,7 +8,7 @@ namespace Pathing
     public struct WaypointManagerSettings
     {
         public bool UseRecommendedValues;
-        [Range(100, 10000)] public ushort MaxWaypoints;
+        [Range(100, 10000)] public int MaxWaypoints;
         [Min(1)] public float MaxConnectionRange;
         [Range(1, byte.MaxValue - 1)] public byte DesiredClusters;
         [Min(7)] public int MinimumClusterSize;
@@ -17,7 +17,7 @@ namespace Pathing
         public LayerMask RaycastMask;
 
         public WaypointManagerSettings(
-            ushort maxWaypoints,
+            int maxWaypoints,
             int maxConnectionRange,
             byte desiredClusters,
             int raycastHeight)

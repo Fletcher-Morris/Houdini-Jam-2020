@@ -23,7 +23,7 @@ namespace Pathing
 
         public UnityEvent<Vector3, int> OnReachedWaypoint = new UnityEvent<Vector3, int>();
         public UnityEvent<Vector3> OnReachedTarget = new UnityEvent<Vector3>();
-        public UnityEvent<List<ushort>> OnRecalculatedPath = new UnityEvent<List<ushort>>();
+        public UnityEvent<List<int>> OnRecalculatedPath = new UnityEvent<List<int>>();
 
         [SerializeField] private bool _debugLines = true;
         private bool initialized;
@@ -31,7 +31,7 @@ namespace Pathing
         private float _pathRefreshTimer;
         private IAiTarget _prevTarget;
         private Vector3 _prevTargetPosition;
-        [SerializeField] private List<ushort> _pathFound = new List<ushort>();
+        [SerializeField] private List<int> _pathFound = new List<int>();
         private Vector3 _targetPosition;
 
         public void Initialize(float offset, Transform setSelf)
@@ -282,7 +282,7 @@ namespace Pathing
             return _navPosition;
         }
 
-        public ushort GetWaypointFromIndex(int index)
+        public int GetWaypointFromIndex(int index)
         {
             if (index == -1 || index >= _pathFound.Count || _pathFound.Count == 0) return 0;
             return _pathFound[index];

@@ -8,8 +8,8 @@ namespace Pathing
     public class WaypointCluster
     {
         public byte Id;
-        public List<ushort> Waypoints = new List<ushort>();
-        public ushort ClusterCore;
+        public List<int> Waypoints = new List<int>();
+        public int ClusterCore;
         public List<byte> ConnectedClusters = new List<byte>();
 
         private List<byte> _clusterSearcHistory = new List<byte>();
@@ -23,7 +23,7 @@ namespace Pathing
         public void FindNewCore()
         {
             Vector3 averagePos = new Vector3();
-            foreach (ushort wp in Waypoints)
+            foreach (int wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
                 averagePos += waypoint.Position;
@@ -32,8 +32,8 @@ namespace Pathing
             averagePos.y = averagePos.y / Waypoints.Count;
             averagePos.z = averagePos.z / Waypoints.Count;
             float closestDist = Mathf.Infinity;
-            ushort closest = ushort.MaxValue;
-            foreach (ushort wp in Waypoints)
+            int closest = int.MaxValue;
+            foreach (int wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
                 float dist = Vector3.Distance(waypoint.Position, averagePos);
@@ -48,7 +48,7 @@ namespace Pathing
 
         public void FindConnectedClusters()
         {
-            Waypoints = new List<ushort>();
+            Waypoints = new List<int>();
             ConnectedClusters = new List<byte>();
             foreach (AiWaypoint wp in WaypointManager.Instance.Waypoints)
             {
@@ -58,7 +58,7 @@ namespace Pathing
                 }
             }
 
-            foreach (ushort wp in Waypoints)
+            foreach (int wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
                 foreach (byte c in waypoint.Connections)
