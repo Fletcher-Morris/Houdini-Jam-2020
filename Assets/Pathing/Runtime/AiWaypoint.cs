@@ -9,14 +9,14 @@ namespace Pathing
     public class AiWaypoint : IAiTarget
     {
         [SerializeField] private int _id;
-        [SerializeField] private byte _cluster;
+        [SerializeField] private int _cluster = -1;
         [SerializeField] private Vector3 _position;
         [SerializeField, HideInInspector] private List<int> _connections = new List<int>();
         [SerializeField, HideInInspector] private List<int> _history = new List<int>();
 
         public List<int> History { get => _history; set => _history = value; }
         public List<int> Connections { get => _connections; set => _connections = value; }
-        public byte Cluster { get => _cluster; set => _cluster = value; }
+        public int Cluster { get => _cluster; set => _cluster = value; }
         public int Id { get => _id; set => _id = value; }
         public Vector3 Position { get => _position; set => _position = value; }
 
@@ -26,7 +26,7 @@ namespace Pathing
             _connections = new List<int>();
             _history = new List<int>();
             _id = 0;
-            _cluster = 0;
+            _cluster = -1;
         }
 
         void IAiTarget.SetPosition(Vector3 pos)

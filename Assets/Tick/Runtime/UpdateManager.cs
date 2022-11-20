@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 namespace Tick
 {
@@ -33,6 +34,12 @@ namespace Tick
 
         public void OnApplicationQuit()
         {
+            while(_initialisationQueue.Count > 0)
+            {
+                _initialisationQueue.Dequeue().OnApplicationQuit();
+            }
+            _updateList.ForEach(o => o.OnApplicationQuit());
+
             _updateList = new List<IManualUpdate>();
             _initialisationQueue = new Queue<IManualUpdate>();
         }
@@ -56,14 +63,25 @@ namespace Tick
 
         public void OnUpdate(float delta)
         {
-            if (_initialisationQueue.TryDequeue(out IManualUpdate queuedObject))
+            IManualUpdate queuedObject = null;
+            if(_initialisationQueue.Count > 0)
             {
-                queuedObject.OnInitialise();
-                _updateList.Add(queuedObject);
-                Debug.Log($"Initialised '{queuedObject}'.");
+                queuedObject = _initialisationQueue.Peek();
             }
 
-            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualUpdate(delta);});
+            if (queuedObject != null)
+            {
+                if (queuedObject.OnInitialise())
+                {
+                    _initialisationQueue.Dequeue();
+                    _updateList.Add(queuedObject);
+                    Debug.Log($"Initialised '{queuedObject}'.");
+                }
+            }
+            else
+            {
+                _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualUpdate(delta); });
+            }
         }
 
         public void OnFixedUpdate(float delta)

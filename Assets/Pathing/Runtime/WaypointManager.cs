@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
+using Tick;
 using UnityEngine;
 
 namespace Pathing
 {
     [CreateAssetMenu(fileName = "Waypoint Manager", menuName = "Scriptables/Waypoints/Waypoint Manager")]
-    public class WaypointManager : SerializedScriptableObject
+    public class WaypointManager : SerializedScriptableObject, IManualUpdate
     {
+        [System.Serializable]
+        private enum WaypointManagerState {Empty, PlacingNodes, Clustering, ClusterNormalise, Complete}
+        [SerializeField, ReadOnly] WaypointManagerState _state;
+
         private static WaypointManager _instance;
         public static WaypointManager Instance
         {
@@ -23,9 +28,7 @@ namespace Pathing
             }
         }
 
-        private bool _initialised = false;
         [SerializeField] private bool _deleteAll;
-        public bool RefreshOnChange;
 
         [Space]
         public WaypointManagerSettings Settings = new WaypointManagerSettings(2000, 5, 10, 100);
@@ -37,7 +40,7 @@ namespace Pathing
         [SerializeField] private bool _storeKnownPaths = true;
         [SerializeField, Range(1, 10)] private int _pathingAttempts = 5;
         [SerializeField, Range(0.0f, 1.0f)] private float _lineDebugOpacity = 0;
-        [SerializeField, Range(0, 50)] private byte _showCluster;
+        [SerializeField, Range(0, 50)] private int _showCluster;
         [SerializeField] private bool _showClusters = true;
         [SerializeField] private bool _cullLines = true;
         public bool ShowNavigatorPaths = true;
@@ -46,9 +49,11 @@ namespace Pathing
 
         [SerializeField] private WaypointPathingStats _pathingStats = new WaypointPathingStats();
 
-        public WaypointCluster GetCluster(byte id)
+        public WaypointCluster GetCluster(int id)
         {
-            if (id == byte.MaxValue || id > _clusters.Count)
+            if (_clusters.Count == 0) return null;
+
+            if (id > _clusters.Count || id < 0)
             {
                 return null;
             }
@@ -65,7 +70,7 @@ namespace Pathing
             {
                 if (GameManager.Instance == null) return false;
                 if (Instance == null) return false;
-                return Instance._initialised;
+                return Instance._state == WaypointManagerState.Complete;
             }
         }
 
@@ -96,7 +101,6 @@ namespace Pathing
         {
             if (_deleteAll) DeleteWaypoints();
             if (Settings.UseRecommendedValues) Settings.SetRecommendedValues();
-            if (Settings.Equals(_prevSettings) == false && RefreshOnChange) Initialise();
         }
 
         public void GetKnownPaths()
@@ -144,10 +148,10 @@ namespace Pathing
                                     {
                                         if (w1.Cluster == conWp.Cluster)
                                         {
-                                            lineCol = ((int)conWp.Cluster).NumberToColor(_clusters.Count);
+                                            lineCol = conWp.Cluster.NumberToColor(_clusters.Count);
                                         }
 
-                                        if (conWp.Cluster == byte.MaxValue) lineCol = Color.black;
+                                        if (conWp.Cluster < 0) lineCol = Color.black;
 
                                         lineCol.a = _lineDebugOpacity;
 
@@ -199,27 +203,26 @@ namespace Pathing
             _clusters = new List<WaypointCluster>();
             _knownPaths = new Dictionary<System.Tuple<int, int>, WaypointPath>();
             _knownPathsList = new List<WaypointPath>();
-            _initialised = false;
             _pathingStats = new WaypointPathingStats();
-        }
-
-        public void Start()
-        {
-            GetKnownPaths();
-            if (_waypoints.Count == 0) Initialise();
-            _initialised = true;
+            _state = WaypointManagerState.Empty;
         }
 
         [Button]
-        public void Initialise()
+        private void Initialise()
         {
-            _instance = this;
-
-            _initialised = false;
-
             _prevSettings = Settings;
 
             DeleteWaypoints();
+            PlaceWaypoints();
+            UpdateWaypointConnections();
+            GenerateClusters();
+
+            _state = WaypointManagerState.Clustering;
+        }
+
+        private void PlaceWaypoints()
+        {
+            _state = WaypointManagerState.PlacingNodes;
 
             List<Vector3> points = Extensions.FibonacciPoints(Settings.MaxWaypoints);
             foreach (var (pos, ray) in from Vector3 p in points
@@ -232,38 +235,17 @@ namespace Pathing
                 {
                     if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
                     {
-                        _waypoints.Add(new AiWaypoint(hit.point + pos.normalized));
+                        AiWaypoint wp = new AiWaypoint(hit.point + pos.normalized);
+                        wp.Id = _waypoints.Count;
+                        _waypoints.Add(wp);
                     }
                 }
             }
-
-            points = Extensions.FibonacciPoints(Settings.DesiredClusters);
-            _clusters = new List<WaypointCluster>();
-            for (int i = 0; i < Settings.DesiredClusters; i++)
-            {
-                _clusters.Add(new WaypointCluster(i));
-            }
-
-            int id = 0;
-            _waypoints.ForEach(w =>
-            {
-                w.Id = id;
-                id++;
-                w.Cluster = (byte)points.ClosestPoint(w.Position);
-                _clusters[w.Cluster].Waypoints.Add(w.Id);
-            });
-
-            _clusters.ForEach(cluster =>
-            {
-                cluster.FindNewCore();
-            });
-
             Debug.Log($"Created {_waypoints.Count} waypoints!");
 
-            UpdateConnections();
         }
 
-        public void UpdateConnections()
+        public void UpdateWaypointConnections()
         {
             _waypoints.ForEach(w1 =>
             {
@@ -292,152 +274,174 @@ namespace Pathing
                     }
                 });
             });
-
-            FixClusters(Settings.FixClusterIterations, true);
         }
 
-        public void FixClusters(int passes, bool first)
+        private void GenerateClusters()
         {
-            passes = passes - 1;
+            List<Vector3> points = points = Extensions.FibonacciPoints(Settings.DesiredClusters);
+            _clusters = new List<WaypointCluster>();
 
-            _waypoints.ForEach(wp =>
+            for (int point = 0; point < points.Count; point++)
             {
-                float closestDist = Mathf.Infinity;
-                WaypointCluster closestCluster = null;
-                _clusters.ForEach(cluster =>
-                {
-                    AiWaypoint core = GetWaypoint(cluster.ClusterCore);
-                    float dist = Vector2.Distance(core.Position, wp.Position);
-                    if (dist < closestDist)
-                    {
-                        closestDist = dist;
-                        closestCluster = cluster;
-                    }
-                });
-                wp.Cluster = closestCluster.Id;
-                if (!closestCluster.Waypoints.Contains(wp.Id)) closestCluster.Waypoints.Add(wp.Id);
-            });
+                Vector3 origin = points[point];
+                WaypointCluster cluster = new WaypointCluster(point);
 
-            _clusters.ForEach(cluster =>
-            {
-                if (cluster.Waypoints.Count != 0)
+                AiWaypoint closest = Closest(origin);
+
+                bool claimed = false;
+                foreach (WaypointCluster c in _clusters)
                 {
-                    cluster.Waypoints.ForEach(w =>
+                    if (c.Id != cluster.Id)
                     {
-                        AiWaypoint start = GetWaypoint(w);
-                        AiWaypoint end = GetWaypoint(cluster.ClusterCore);
-                        if (start != end)
+                        if (c.HasClaimedWaypoint(closest.Id))
                         {
-                            List<int> path = Breadthwise(start, end, cluster.Id, 0);
-                            if (path == null || path.Count == 0)
-                            {
-                                start.Cluster = byte.MaxValue;
-                            }
+                            claimed = true;
                         }
-                    });
-                }
-            });
-
-            _clusters.ForEach(cluster =>
-            {
-                cluster.Waypoints = new List<int>();
-                _waypoints.ForEach(wp =>
-                {
-                    if (wp.Cluster == cluster.Id)
-                    {
-                        cluster.Waypoints.Add(wp.Id);
                     }
-                });
-                if (cluster.Waypoints.Count < Settings.MinimumClusterSize)
-                {
-                    cluster.Waypoints.ForEach(wp =>
-                    {
-                        GetWaypoint(wp).Cluster = byte.MaxValue;
-                    });
-                    cluster.Id = byte.MaxValue;
                 }
-            });
-            _clusters.RemoveAll(c => c.Id == byte.MaxValue);
 
-
-            int maxTries = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue).Count();
-            int tries = 0;
-            int fixedCount = 0;
-
-            while (tries <= maxTries && fixedCount <= maxTries)
-            {
-                _waypoints.ForEach(wp =>
+                if (claimed == false)
                 {
-                    if (wp.Cluster != byte.MaxValue)
-                    {
-                        wp.Connections.ForEach(c =>
-                        {
-                            AiWaypoint cwp = GetWaypoint(c);
-                            if (cwp.Cluster == byte.MaxValue)
-                            {
-                                cwp.Cluster = wp.Cluster;
-                                fixedCount++;
-                            }
-                        });
-                    }
-                });
-                tries++;
+                    _clusters.Add(cluster);
+                    cluster.ClaimWaypoint(closest.Id);
+                    _clusteriseWaypointQueue.Enqueue(closest.Id);
+                }
             }
 
-            List<AiWaypoint> nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue);
-            maxTries = nonClusteredWaypoints.Count();
-            tries = 0;
+            _clusterSteps = 0;
+            Debug.Log($"Generated {_clusters.Count} Clusters!");
+        }
 
-            while (tries <= maxTries)
-            {
-                nonClusteredWaypoints = _waypoints.FindAll(wp => wp.Cluster == byte.MaxValue);
-                if (nonClusteredWaypoints.Count >= 1)
-                {
-                    int tries2 = nonClusteredWaypoints.Count();
-                    byte newCluster = (byte)_clusters.Count;
-                    _clusters.Add(new WaypointCluster(newCluster));
-                    _clusters[newCluster].ClusterCore = nonClusteredWaypoints[0].Id;
-                    nonClusteredWaypoints[0].Cluster = newCluster;
-                    while (tries2 <= maxTries)
-                    {
-                        nonClusteredWaypoints.ForEach(wp =>
-                        {
-                            if (wp.Cluster != byte.MaxValue)
-                            {
-                                wp.Connections.ForEach(c =>
-                                {
-                                    AiWaypoint cwp = GetWaypoint(c);
-                                    if (cwp.Cluster == byte.MaxValue)
-                                    {
-                                        cwp.Cluster = wp.Cluster;
-                                        fixedCount++;
-                                    }
-                                });
-                            }
-                        });
-                        tries2++;
-                    }
-                }
-                tries++;
-            }
+        private bool ResolveClusterConflict(WaypointCluster a, WaypointCluster b)
+        {
+            //  Returns true if A wins the claim.
 
-            _clusters.ForEach(cluster =>
-            {
-                cluster.FindConnectedClusters();
-            });
+            int aWaypoints = a.Waypoints.Count;
+            //aWaypoints += a.ClaimedWaypoints.Count;
 
-            _clusters.ForEach(cluster =>
-            {
-                cluster.FindNewCore();
-            });
+            int bWaypoints = b.Waypoints.Count;
+            //bWaypoints += b.ClaimedWaypoints.Count;
 
-            if (passes > 0)
+            if (aWaypoints == bWaypoints)
             {
-                FixClusters(passes, false);
+                return a.Id < b.Id;
             }
             else
             {
-                _initialised = true;
+                return aWaypoints < bWaypoints;
+            }
+        }
+
+        private Queue<int> _clusteriseWaypointQueue = new Queue<int>();
+        [SerializeField, Min(1)] private int _maxPerStep = 10;
+        private bool _stepA = false;
+        private int _clusterSteps = 0;
+
+        private void Clusterise()
+        {
+            _clusterSteps++;
+
+            if (_stepA) ClusteriseStepA();
+            else ClusteriseStepB();
+        }
+
+        private void ClusteriseStepA()
+        {
+            for (int i = 0; i < Mathf.Min(_maxPerStep, _clusteriseWaypointQueue.Count + 1); i++)
+            {
+                AiWaypoint wp = GetWaypoint(_clusteriseWaypointQueue.Dequeue());
+                foreach (int connectedId in wp.Connections)
+                {
+                    AiWaypoint connectedWp = GetWaypoint(connectedId);
+                    if (connectedWp.Cluster == wp.Cluster)
+                    {
+                    }
+                    else
+                    {
+                        if (connectedWp.Cluster == -1)
+                        {
+                            GetCluster(wp.Cluster).ClaimWaypoint(connectedId);
+                        }
+                    }
+                }
+            }
+
+            _stepA= false;
+        }
+
+        private int solveClaimTries = 0;
+        private void ClusteriseStepB()
+        {
+            List<WaypointCluster> randomClusters = _clusters.Randomise(Random.Range(int.MinValue, int.MaxValue));
+
+            foreach (WaypointCluster cluster in randomClusters)
+            {
+                while (cluster.ClaimedWaypoints.Count > 0 && solveClaimTries <= 100)
+                {
+                    if (solveClaimTries >= 100)
+                    {
+                        Debug.LogWarning("Claim Tries Exceeding 100!");
+                    }
+                    solveClaimTries++;
+
+                    int claimId = cluster.ClaimedWaypoints[0];
+                    List<WaypointCluster> competingClaims = _clusters.FindAll(c => c.Id != cluster.Id && c.HasClaimedWaypoint(claimId));
+
+                    if (competingClaims.Count == 0)
+                    {
+                        cluster.UnclaimWaypoint(claimId);
+                        GetWaypoint(claimId).Cluster = cluster.Id;
+                        cluster.Waypoints.Add(claimId);
+                        _clusteriseWaypointQueue.Enqueue(claimId);
+                    }
+                    else
+                    {
+                        if (ResolveClusterConflict(competingClaims[0], cluster))
+                        {
+                            cluster.UnclaimWaypoint(claimId);
+                        }
+                        else
+                        {
+                            competingClaims[0].UnclaimWaypoint(claimId);
+                        }
+                    }
+                }
+
+                solveClaimTries = 0;
+            }
+
+            _stepA = true;
+
+            if (_clusteriseWaypointQueue.Count == 0)
+            {
+                List<AiWaypoint> unClustered = _waypoints.FindAll(w => w.Cluster == -1);
+                if (unClustered.Count > 0)
+                {
+                    WaypointCluster newCluster = new WaypointCluster(_clusters.Count);
+                    newCluster.ClaimWaypoint(unClustered[0].Id);
+                    _clusters.Add(newCluster);
+                    _clusteriseWaypointQueue.Enqueue(unClustered[0].Id);
+                }
+                else
+                {
+                    Debug.Log($"Clusterised waypoints in {_clusterSteps} steps!");
+                    _clusterNormaliseStep = 0;
+                    _state = WaypointManagerState.ClusterNormalise;
+                }
+            }
+        }
+
+        private int _clusterNormaliseStep = 0;
+        private void ClusterNormalise()
+        {
+            if(_clusterNormaliseStep >= _clusters.Count)
+            {
+                _state = WaypointManagerState.Complete;
+            }
+            else
+            {
+                _clusters[_clusterNormaliseStep].FindNewCore();
+                _clusterNormaliseStep++;
             }
         }
 
@@ -540,6 +544,12 @@ namespace Pathing
 
         private List<int> Breadthwise(AiWaypoint start, AiWaypoint end, int attempt)
         {
+            if(_clusters.Count == 0)
+            {
+                Debug.LogWarning("No Clusters!");
+                return null;
+            }
+
             List<int> result = null;
 
             if (start.Cluster == end.Cluster)
@@ -562,7 +572,7 @@ namespace Pathing
 
             if (startCluster.ConnectedClusters.Contains(end.Cluster))
             {
-                List<byte> dualClusterIds = new List<byte>();
+                List<int> dualClusterIds = new List<int>();
                 dualClusterIds.Add(start.Cluster);
                 dualClusterIds.Add(end.Cluster);
                 result = Breadthwise(start, end, dualClusterIds, attempt);
@@ -577,7 +587,7 @@ namespace Pathing
                 }
             }
 
-            List<byte> commonClusterIds = startCluster.ConnectedClusters.Intersect(endCluster.ConnectedClusters).ToList();
+            List<int> commonClusterIds = startCluster.ConnectedClusters.Intersect(endCluster.ConnectedClusters).ToList();
             if (commonClusterIds.Count >= 1)
             {
                 commonClusterIds.Add(start.Cluster);
@@ -590,7 +600,7 @@ namespace Pathing
                 }
             }
 
-            List<byte> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster, attempt);
+            List<int> clusterBreathwiseSearch = ClusterBreadthwise(startCluster, endCluster, attempt);
             if (clusterBreathwiseSearch != null)
             {
                 if (clusterBreathwiseSearch.Count >= 1)
@@ -609,11 +619,11 @@ namespace Pathing
             return result;
         }
 
-        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, byte clusterId, int attempt)
+        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, int clusterId, int attempt)
         {
             if (GetCluster(clusterId) != null)
             {
-                List<byte> list = new List<byte>();
+                List<int> list = new List<int>();
                 list.Add(clusterId);
                 return Breadthwise(start, end, list, attempt);
             }
@@ -623,7 +633,7 @@ namespace Pathing
             }
         }
 
-        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, List<byte> validClusters, int attempt)
+        public List<int> Breadthwise(AiWaypoint start, AiWaypoint end, List<int> validClusters, int attempt)
         {
             List<int> result = new List<int>();
             List<int> visited = new List<int>();
@@ -672,13 +682,13 @@ namespace Pathing
             return null;
         }
 
-        private List<byte> ClusterBreadthwise(WaypointCluster start, WaypointCluster end, int attempt)
+        private List<int> ClusterBreadthwise(WaypointCluster start, WaypointCluster end, int attempt)
         {
-            List<byte> result = new List<byte>();
-            List<byte> visited = new List<byte>();
-            Queue<byte> work = new Queue<byte>();
+            List<int> result = new List<int>();
+            List<int> visited = new List<int>();
+            Queue<int> work = new Queue<int>();
 
-            start.History = new List<byte>();
+            start.History = new List<int>();
             visited.Add(start.Id);
             work.Enqueue(start.Id);
             int tries = 0;
@@ -686,7 +696,7 @@ namespace Pathing
             while (work.Count > 0 && tries < _waypoints.Count)
             {
                 tries++;
-                byte current = work.Dequeue();
+                int current = work.Dequeue();
                 WaypointCluster currentCluster = GetCluster(current);
                 if (current == end.Id)
                 {
@@ -699,11 +709,11 @@ namespace Pathing
                 //Didn't find Cluster
                 for (int i = 0; i < (currentCluster.ConnectedClusters.Count); i++)
                 {
-                    byte currentNeighbour = currentCluster.ConnectedClusters[i];
+                    int currentNeighbour = currentCluster.ConnectedClusters[i];
                     WaypointCluster currentNeighbourCl = GetCluster(currentNeighbour);
                     if (!visited.Contains(currentNeighbour))
                     {
-                        currentNeighbourCl.History = new List<byte>(currentCluster.History);
+                        currentNeighbourCl.History = new List<int>(currentCluster.History);
                         currentNeighbourCl.History.Add(current);
                         visited.Add(currentNeighbour);
                         work.Enqueue(currentNeighbour);
@@ -712,6 +722,69 @@ namespace Pathing
             }
 
             return null;
+        }
+
+        UpdateManager IManualUpdate.GetUpdateManager()
+        {
+            return GameManager.Instance.UpdateManager;
+        }
+
+        bool IManualUpdate.OnInitialise()
+        {
+            _instance = this;
+
+            switch (_state)
+            {
+                case WaypointManagerState.Empty:
+                    Initialise();
+                    DrawLines(GameManager.Instance.CullingCam);
+                    break;
+
+                case WaypointManagerState.PlacingNodes:
+                    break;
+
+                case WaypointManagerState.Clustering:
+                    Clusterise();
+                    break;
+
+                case WaypointManagerState.ClusterNormalise:
+                    ClusterNormalise();
+                    break;
+
+                case WaypointManagerState.Complete:
+                    return true;
+            }
+
+            return false;
+        }
+
+        void IManualUpdate.OnManualUpdate(float delta)
+        {
+        }
+
+        void IManualUpdate.OnTick(float delta)
+        {
+        }
+
+        void IManualUpdate.OnManualFixedUpdate(float delta)
+        {
+        }
+
+        bool IManualUpdate.IsEnabled()
+        {
+            return true;
+        }
+
+        void IManualUpdate.OnApplicationQuit()
+        {
+            switch (_state)
+            {
+                case WaypointManagerState.Complete:
+                    break;
+                default:
+                    _state = WaypointManagerState.Empty;
+                    break;
+            }
         }
     }
 }

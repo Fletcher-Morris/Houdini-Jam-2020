@@ -84,7 +84,7 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
         return _updateManager;
     }
 
-    void IManualUpdate.OnInitialise()
+    bool IManualUpdate.OnInitialise()
     {
         if (_yAxis == null)
         {
@@ -100,6 +100,8 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
             transform.parent = _xAxis;
             transform.position = -_xAxis.forward * _defaultZoom;
         }
+
+        return true;
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
@@ -170,5 +172,9 @@ public class GlobeCam : MonoBehaviour, IManualUpdate
     bool IManualUpdate.IsEnabled()
     {
         return enabled;
+    }
+
+    void IManualUpdate.OnApplicationQuit()
+    {
     }
 }

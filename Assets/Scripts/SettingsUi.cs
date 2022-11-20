@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
+public class SettingsUi : MonoBehaviour, IManualUpdate
 {
     [SerializeField, Required] private UpdateManager _updateManager;
 
@@ -60,7 +60,7 @@ public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
         _dayNightCycle.SetTick(val.RoundToInt());
     }
 
-    void IManualUpdate.OnInitialise()
+    bool IManualUpdate.OnInitialise()
     {
         _lowQButton.onClick.AddListener(() => SetQuality(0));
         _medQButton.onClick.AddListener(() => SetQuality(1));
@@ -71,6 +71,8 @@ public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
         _timeSlider.maxValue = _dayNightCycle.TicksPerCycle;
         _timeSlider.onValueChanged.AddListener(OnTimeSliderChanged);
         _timeToggle.onValueChanged.AddListener(ToggleTime);
+
+        return true;
     }
 
     UpdateManager IManualUpdate.GetUpdateManager()
@@ -105,5 +107,9 @@ public class SettingsUi : MonoBehaviour, Tick.IManualUpdate
     bool IManualUpdate.IsEnabled()
     {
         return true;
+    }
+
+    void IManualUpdate.OnApplicationQuit()
+    {
     }
 }

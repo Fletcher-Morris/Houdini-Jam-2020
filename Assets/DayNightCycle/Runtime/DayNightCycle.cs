@@ -236,9 +236,11 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
         return GameManager.Instance.UpdateManager;
     }
 
-    void IManualUpdate.OnInitialise()
+    bool IManualUpdate.OnInitialise()
     {
         Tick();
+
+        return true;
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
@@ -258,5 +260,9 @@ public class DayNightCycle : SerializedScriptableObject, IManualUpdate
     bool IManualUpdate.IsEnabled()
     {
         return true;
+    }
+
+    void IManualUpdate.OnApplicationQuit()
+    {
     }
 }

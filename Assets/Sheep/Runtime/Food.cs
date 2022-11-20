@@ -17,7 +17,7 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
 
     private float _growthDelayTimer = 0;
     private float _currentGrowth;
-    private byte _clusterId;
+    private int _clusterId;
 
     private List<IFoodEater> _eaters = new List<IFoodEater>();
     public void AddEater(IFoodEater foodEater)
@@ -33,8 +33,6 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
         return _eaters;
     }
 
-    public byte ClusterId { get => _clusterId; }
-
     private void Awake()
     {
         GetUpdateManager().AddToUpdateList(this);
@@ -45,13 +43,13 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
         return _updateManager;
     }
 
-    public void OnInitialise()
+    public bool OnInitialise()
     {
         _maxFood = Random.Range(_maxFood / 2, _maxFood);
         _currentGrowth = _currentFood;
-        Pathing.AiWaypoint closestWaypoint = Pathing.WaypointManager.Instance.Closest(transform.position);
-        _clusterId = closestWaypoint.Cluster;
         _growthDelayTimer = _growthDelay;
+
+        return true;
     }
 
     public void OnManualFixedUpdate(float delta)
@@ -103,5 +101,9 @@ public class Food : MonoBehaviour, IManualUpdate, IAiTarget
     bool IManualUpdate.IsEnabled()
     {
         return gameObject.activeInHierarchy;
+    }
+
+    void IManualUpdate.OnApplicationQuit()
+    {
     }
 }

@@ -11,8 +11,6 @@ namespace Pathing
         [Range(100, 10000)] public int MaxWaypoints;
         [Min(1)] public float MaxConnectionRange;
         [Range(1, byte.MaxValue - 1)] public byte DesiredClusters;
-        [Min(7)] public int MinimumClusterSize;
-        [Range(1, 3)] public int FixClusterIterations;
         [Min(50)] public int RaycastHeight;
         public LayerMask RaycastMask;
 
@@ -26,8 +24,6 @@ namespace Pathing
             MaxWaypoints = maxWaypoints;
             MaxConnectionRange = maxConnectionRange;
             DesiredClusters = desiredClusters;
-            MinimumClusterSize = 7;
-            FixClusterIterations = 2;
             RaycastHeight = raycastHeight;
             RaycastMask = new LayerMask();
         }

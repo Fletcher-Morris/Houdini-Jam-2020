@@ -7,19 +7,42 @@ namespace Pathing
     [System.Serializable]
     public class WaypointCluster
     {
-        public byte Id;
+        public int Id;
         public List<int> Waypoints = new List<int>();
         public int ClusterCore;
-        public List<byte> ConnectedClusters = new List<byte>();
+        public List<int> ConnectedClusters = new List<int>();
 
-        private List<byte> _clusterSearcHistory = new List<byte>();
-        public List<byte> History { get => _clusterSearcHistory; set => _clusterSearcHistory = value; }
+        private List<int> _claimedWaypoints = new List<int>();
+        private List<int> _clusterSearcHistory = new List<int>();
+
+        public List<int> History { get => _clusterSearcHistory; set => _clusterSearcHistory = value; }
+        public List<int> ClaimedWaypoints { get => _claimedWaypoints; }
 
         public WaypointCluster(int id)
         {
-            Id = (byte)id;
+            Id = id;
         }
 
+        public bool HasClaimedWaypoint(int wp)
+        {
+            return _claimedWaypoints.Contains(wp);
+        }
+
+        public void ClaimWaypoint(int wp)
+        {
+            if (!HasClaimedWaypoint(wp))
+            {
+                _claimedWaypoints.Add(wp);
+            }
+        }
+
+        public void UnclaimWaypoint(int wp)
+        {
+            if (HasClaimedWaypoint(wp))
+            {
+                _claimedWaypoints.Remove(wp);
+            }
+        }
         public void FindNewCore()
         {
             Vector3 averagePos = new Vector3();
@@ -49,7 +72,7 @@ namespace Pathing
         public void FindConnectedClusters()
         {
             Waypoints = new List<int>();
-            ConnectedClusters = new List<byte>();
+            ConnectedClusters = new List<int>();
             foreach (AiWaypoint wp in WaypointManager.Instance.Waypoints)
             {
                 if (wp.Cluster == Id)
@@ -61,10 +84,10 @@ namespace Pathing
             foreach (int wp in Waypoints)
             {
                 AiWaypoint waypoint = WaypointManager.Instance.GetWaypoint(wp);
-                foreach (byte c in waypoint.Connections)
+                foreach (int c in waypoint.Connections)
                 {
                     AiWaypoint connection = WaypointManager.Instance.GetWaypoint(c);
-                    byte cl = connection.Cluster;
+                    int cl = connection.Cluster;
                     if (cl != Id)
                     {
                         WaypointCluster otherCluster = WaypointManager.Instance.GetCluster(cl);

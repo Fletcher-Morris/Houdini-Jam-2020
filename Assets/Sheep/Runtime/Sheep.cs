@@ -323,7 +323,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         OnReachedWaypoint(_navigator.GetNavPosition(), 0);
     }
 
-    void IManualUpdate.OnInitialise()
+    bool IManualUpdate.OnInitialise()
     {
         _audioSource = GetComponent<AudioSource>();
         _bleatPitch = Random.Range(0.8f, 1.2f);
@@ -336,6 +336,8 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
         _navigator.SetTarget(null);
         _navigator.SetCurrentNavPosition(WaypointManager.Instance.Closest(transform.position).Position);
         _currentHungerValue = 0;
+
+        return true;
     }
 
     void IManualUpdate.OnManualUpdate(float delta)
@@ -378,5 +380,9 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
     public bool IsEnabled()
     {
         return gameObject.activeInHierarchy;
+    }
+
+    void IManualUpdate.OnApplicationQuit()
+    {
     }
 }

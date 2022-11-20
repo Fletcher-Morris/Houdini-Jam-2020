@@ -123,7 +123,7 @@ namespace Pathing
         private Vector3 GetNextNavPosition(int currentIndex)
         {
             int findPos = currentIndex + 1;
-            if (findPos >= _pathFound.Count)
+            if (_pathFound == null || findPos >= _pathFound.Count)
             {
                 return _targetPosition;
             }
@@ -207,7 +207,6 @@ namespace Pathing
         {
             if (_aiTarget == null)
             {
-                Debug.LogWarning("TARGET IS NULL!");
             }
             else
             {

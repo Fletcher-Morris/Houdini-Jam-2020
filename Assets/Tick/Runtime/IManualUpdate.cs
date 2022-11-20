@@ -8,7 +8,7 @@ namespace Tick
     {
         public UpdateManager GetUpdateManager();
 
-        public void OnInitialise();
+        public bool OnInitialise();
 
         public void OnManualUpdate(float delta);
 
@@ -17,5 +17,7 @@ namespace Tick
         public void OnManualFixedUpdate(float delta);
 
         public bool IsEnabled();
+
+        public void OnApplicationQuit();
     }
 }

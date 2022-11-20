@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private DayNightCycle _dayNightCycle;
     public DayNightCycle DayNightCycle { get => _dayNightCycle; }
+    public Camera CullingCam { get => _cullingCam; }
 
     private void OnApplicationQuit()
     {
@@ -42,6 +43,9 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
 
+        _updateManager.AddToUpdateList(_waypointManager);
+        _updateManager.AddToUpdateList(_dayNightCycle);
+
         //Application.targetFrameRate = 60;
 
         //_grassScatterer.Scatter();
@@ -49,11 +53,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        _waypointManager.Start();
-
         remainingTime = gameLength;
-
-        _updateManager.AddToUpdateList(_dayNightCycle);
     }
 
     private void Update()

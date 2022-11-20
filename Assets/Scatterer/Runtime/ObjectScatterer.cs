@@ -21,9 +21,20 @@ namespace Scatter
             if (_scatter) Scatter();
         }
 
+        private void GetObjectParent()
+        {
+            string parentName = (name + "_parent").ToUpper().Replace(' ', '_');
+            GameObject found = GameObject.Find(parentName);
+            if (found != null) _objectParent = found;
+            else _objectParent = new GameObject(parentName);
+        }
+
         private void DeleteObjects()
         {
             _delete = false;
+
+            GetObjectParent();
+
             if (_objectParent != null) DestroyImmediate(_objectParent);
             _createdObjects = new List<GameObject>();
         }
@@ -34,10 +45,7 @@ namespace Scatter
 
             DeleteObjects();
 
-            string parentName = (name + "_parent").ToUpper().Replace(' ', '_');
-            GameObject found = GameObject.Find(parentName);
-            if (found != null) _objectParent = found;
-            else _objectParent = new GameObject(parentName);
+            GetObjectParent();
 
             _spawnableObjects.ForEach(o =>
             {
