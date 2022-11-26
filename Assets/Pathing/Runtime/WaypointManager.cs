@@ -44,6 +44,8 @@ namespace Pathing
         [SerializeField] private bool _showClusters = true;
         [SerializeField] private bool _cullLines = true;
         public bool ShowNavigatorPaths = true;
+        [SerializeField, ReadOnly] private int _averageClusterSize;
+        [SerializeField, ReadOnly] private int _clusterSizeDiff;
         [SerializeField] private List<WaypointCluster> _clusters = new List<WaypointCluster>();
         [SerializeField] private List<AiWaypoint> _waypoints = new List<AiWaypoint>();
 
@@ -284,7 +286,7 @@ namespace Pathing
             for (int point = 0; point < points.Count; point++)
             {
                 Vector3 origin = points[point];
-                WaypointCluster cluster = new WaypointCluster(point);
+                WaypointCluster cluster = new WaypointCluster(_clusters.Count);
 
                 AiWaypoint closest = Closest(origin);
 
@@ -436,11 +438,23 @@ namespace Pathing
         {
             if(_clusterNormaliseStep >= _clusters.Count)
             {
+                _averageClusterSize = WaypointCount / Clusters.Count;
+                int smallest = int.MaxValue;
+                int biggest = int.MinValue;
+                foreach (WaypointCluster c in Clusters)
+                {
+                    int s = c.Waypoints.Count;
+                    smallest = Mathf.Min(s, smallest);
+                    biggest = Mathf.Max(s, biggest);
+                    _clusterSizeDiff = biggest- smallest;
+                }
+
                 _state = WaypointManagerState.Complete;
             }
             else
             {
                 _clusters[_clusterNormaliseStep].FindNewCore();
+                _clusters[_clusterNormaliseStep].FindConnectedClusters();
                 _clusterNormaliseStep++;
             }
         }
@@ -759,11 +773,14 @@ namespace Pathing
                     return true;
             }
 
+            DrawLines(GameManager.Instance.CullingCam);
+
             return false;
         }
 
         void IManualUpdate.OnManualUpdate(float delta)
         {
+            DrawLines(GameManager.Instance.CullingCam);
         }
 
         void IManualUpdate.OnTick(float delta)

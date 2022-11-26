@@ -71,15 +71,7 @@ namespace Pathing
 
         public void FindConnectedClusters()
         {
-            Waypoints = new List<int>();
-            ConnectedClusters = new List<int>();
-            foreach (AiWaypoint wp in WaypointManager.Instance.Waypoints)
-            {
-                if (wp.Cluster == Id)
-                {
-                    Waypoints.Add(wp.Id);
-                }
-            }
+            ConnectedClusters.Clear();
 
             foreach (int wp in Waypoints)
             {
