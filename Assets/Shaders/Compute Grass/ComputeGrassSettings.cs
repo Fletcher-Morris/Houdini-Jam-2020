@@ -1,16 +1,30 @@
+using Quality;
 using Sirenix.OdinInspector;
 using System;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Compute Grass", menuName = "Scriptables/Grass/Compute Grass Settings")]
-public class ComputeGrassSettings : ScriptableObject
+public class ComputeGrassSettings : ScriptableObject, IUpdateQuality
 {
     public ComputeGrassSettingsData SettingsData;
 
     private void OnValidate()
     {
         SettingsData.maxCameraDist = SettingsData.maxCameraDist.Clamp(SettingsData.minCamDist, float.MaxValue);
+        UpdateChecksum();
+    }
+
+    public void UpdateChecksum()
+    {
         SettingsData.SetChecksum(SettingsData.Checksum);
+    }
+
+    void IUpdateQuality.UpdateQualitySettings(UserQualitySettings settings)
+    {
+        SettingsData.grassPerVertex = settings.QualitySettings.GrassPerVert;
+
+        UpdateChecksum();
     }
 }
 

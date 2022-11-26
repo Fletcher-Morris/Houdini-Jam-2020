@@ -225,6 +225,10 @@ public static class Extensions
     /// </summary>
     public static float Abs(this float _value) => Mathf.Abs(_value);
     /// <summary>
+    /// Return the Squared value of this float
+    /// </summary>
+    public static float Squared(this float _value) => _value * _value;
+    /// <summary>
     /// Return the distance between this Transform and another
     /// </summary>
     public static float Distance(this Transform _a, Transform _b) => Vector3.Distance(_a.position, _b.position);

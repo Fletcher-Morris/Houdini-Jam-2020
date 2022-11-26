@@ -1,3 +1,4 @@
+using Quality;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using UnityEngine.UI;
 public class SettingsUi : MonoBehaviour, IManualUpdate
 {
     [SerializeField, Required] private UpdateManager _updateManager;
+    [SerializeField, Required] private QualitySettingsManager _qualityManager;
 
     [Space, Header("Quality")]
     [SerializeField] private Button _lowQButton;
@@ -37,7 +39,7 @@ public class SettingsUi : MonoBehaviour, IManualUpdate
 
     private void SetQuality(int level)
     {
-        QualitySettings.SetQualityLevel(level, true);
+        _qualityManager.ApplySettings(level);
     }
 
     private void ToggleShowPaths()

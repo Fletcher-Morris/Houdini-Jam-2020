@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -101,12 +102,6 @@ public class EyePosition : MonoBehaviour
         ConfigMaterial();
     }
 
-    private void Update()
-    {
-        if (Application.isPlaying) return;
-        UpdateEyes(Time.deltaTime);
-    }
-
     public void ApplyAyePreset(EyePreset preset)
     {
         if (preset == null) return;
@@ -148,6 +143,12 @@ public class EyePosition : MonoBehaviour
 
     public void UpdateEyes(float delta)
     {
+        float distanceToCam = (transform.position - GameManager.Instance.CullingCam.transform.position).magnitude;
+        if (distanceToCam > Quality.QualitySettingsManager.Current.SheepDetailDistance)
+        {
+            return;
+        }
+
         if (refreshMaterial) ConfigMaterial();
 
         CheckValues(false);

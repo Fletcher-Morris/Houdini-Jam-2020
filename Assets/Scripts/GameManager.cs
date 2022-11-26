@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Sirenix.OdinInspector;
+using Quality;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
 
     public List<Sheep> SheepList = new List<Sheep>();
 
-    [SerializeField] private Camera _cullingCam;
+    [SerializeField, Required] private Camera _cullingCam;
 
     [SerializeField, Required] private Tick.UpdateManager _updateManager;
     public Tick.UpdateManager UpdateManager { get => _updateManager; }
@@ -27,12 +28,15 @@ public class GameManager : MonoBehaviour
     [SerializeField, Required] private Pathing.WaypointManager _waypointManager;
     public Pathing.WaypointManager WaypointManager { get => _waypointManager; }
 
-    [SerializeField] private Scatter.ObjectScatterer _grassScatterer;
+    [SerializeField, Required] private Scatter.ObjectScatterer _grassScatterer;
     public Scatter.ObjectScatterer GrassScatterer { get => _grassScatterer; }
 
-    [SerializeField] private DayNightCycle _dayNightCycle;
+    [SerializeField, Required] private DayNightCycle _dayNightCycle;
     public DayNightCycle DayNightCycle { get => _dayNightCycle; }
     public Camera CullingCam { get => _cullingCam; }
+
+    [SerializeField, Required] private Quality.QualitySettingsManager _qualityManager;
+    public QualitySettingsManager QualityManager { get => _qualityManager;}
 
     private void OnApplicationQuit()
     {
@@ -45,7 +49,7 @@ public class GameManager : MonoBehaviour
 
         if (SystemInfo.deviceType == DeviceType.Handheld)
         {
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 120;
         }
 
         _grassScatterer.Scatter();
