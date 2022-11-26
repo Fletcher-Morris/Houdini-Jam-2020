@@ -68,18 +68,19 @@ namespace Tick
             _criticalIndex = 0;
         }
 
+        private IManualUpdate _queuedObject = null;
         public void OnUpdate(float delta)
         {
-            IManualUpdate queuedObject = null;
+            _queuedObject = null;
 
             if (_criticalIndex < _criticalOrder.Length)
             {
-                queuedObject = _criticalOrder[_criticalIndex];
-                if (queuedObject.OnInitialise())
+                _queuedObject = _criticalOrder[_criticalIndex];
+                if (_queuedObject.OnInitialise())
                 {
-                    _updateList.Add(queuedObject);
+                    _updateList.Add(_queuedObject);
                     _criticalIndex++;
-                    Debug.Log($"Initialised '{queuedObject}'.");
+                    //Debug.Log($"Initialised '{_queuedObject}'.");
                 }
 
                 return;
@@ -87,21 +88,27 @@ namespace Tick
 
             if (_initialisationQueue.Count > 0)
             {
-                queuedObject = _initialisationQueue.Peek();
+                _queuedObject = _initialisationQueue.Peek();
             }
 
-            if (queuedObject != null)
+            if (_queuedObject != null)
             {
-                if (queuedObject.OnInitialise())
+                if (_queuedObject.OnInitialise())
                 {
                     _initialisationQueue.Dequeue();
-                    _updateList.Add(queuedObject);
-                    Debug.Log($"Initialised '{queuedObject}'.");
+                    _updateList.Add(_queuedObject);
+                    //Debug.Log($"Initialised '{_queuedObject}'.");
                 }
             }
             else
             {
-                _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualUpdate(delta); });
+                foreach (IManualUpdate o in _updateList)
+                {
+                    if (o.IsEnabled())
+                    {
+                        o.OnManualUpdate(delta);
+                    }
+                }
             }
 
             if ((_tickTimer -= delta) <= 0)
@@ -113,13 +120,24 @@ namespace Tick
 
         public void OnFixedUpdate(float delta)
         {
-
-            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnManualFixedUpdate(delta); });
+            foreach (IManualUpdate o in _updateList)
+            {
+                if(o.IsEnabled())
+                {
+                    o.OnManualFixedUpdate(delta);
+                }
+            }
         }
 
         private void OnTickUpdate(float delta)
         {
-            _updateList.ForEach(o => { if (o.IsEnabled()) o.OnTick(delta); });
+            foreach (IManualUpdate o in _updateList)
+            {
+                if (o.IsEnabled())
+                {
+                    o.OnTick(delta);
+                }
+            }
         }
     }
 

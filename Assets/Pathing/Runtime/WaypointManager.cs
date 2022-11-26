@@ -369,20 +369,20 @@ namespace Pathing
             _stepA= false;
         }
 
-        private int solveClaimTries = 0;
+        private int _solveClaimTries = 0;
         private void ClusteriseStepB()
         {
             List<WaypointCluster> randomClusters = _clusters.Randomise(Random.Range(int.MinValue, int.MaxValue));
 
             foreach (WaypointCluster cluster in randomClusters)
             {
-                while (cluster.ClaimedWaypoints.Count > 0 && solveClaimTries <= 100)
+                while (cluster.ClaimedWaypoints.Count > 0 && _solveClaimTries <= 100)
                 {
-                    if (solveClaimTries >= 100)
+                    if (_solveClaimTries >= 100)
                     {
                         Debug.LogWarning("Claim Tries Exceeding 100!");
                     }
-                    solveClaimTries++;
+                    _solveClaimTries++;
 
                     int claimId = cluster.ClaimedWaypoints[0];
                     List<WaypointCluster> competingClaims = _clusters.FindAll(c => c.Id != cluster.Id && c.HasClaimedWaypoint(claimId));
@@ -407,7 +407,7 @@ namespace Pathing
                     }
                 }
 
-                solveClaimTries = 0;
+                _solveClaimTries = 0;
             }
 
             _stepA = true;
@@ -445,24 +445,28 @@ namespace Pathing
             }
         }
 
+        private AiWaypoint _closestNode = null;
         public AiWaypoint Closest(Vector3 pos)
         {
             if (Instance == null) return null;
             if (_waypoints == null) return null;
             if (_waypoints.Count == 0) return null;
-            AiWaypoint node = null;
+
+            _closestNode = null;
             float dist = Mathf.Infinity;
-            _waypoints.ForEach(w =>
+
+            foreach (AiWaypoint w in _waypoints)
             {
-                var d = Vector3.Distance(pos, w.Position);
+                float d  = (pos - w.Position).sqrMagnitude;
                 if (d < dist)
                 {
-                    node = w;
+                    _closestNode = w;
                     dist = d;
                 }
-            });
-            if (node == null) Debug.LogWarning("Cannot Find Closest Waypoint To Target!");
-            return node;
+            }
+
+            if (_closestNode == null) Debug.LogWarning("Cannot Find Closest Waypoint To Target!");
+            return _closestNode;
         }
 
         public List<int> GetPath(Vector3 start, Vector3 end)

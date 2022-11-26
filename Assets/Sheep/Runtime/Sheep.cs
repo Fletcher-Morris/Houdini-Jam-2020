@@ -67,7 +67,7 @@ public class Sheep : MonoBehaviour, IManualUpdate, IFoodEater
 
     private void Bouncing(float delta)
     {
-        if (_movementVector.magnitude > 0 && _enableMovement)
+        if (_movementVector.sqrMagnitude > 0 && _enableMovement)
         {
             _bounceTimer += delta * _bounceSpeed;
         }

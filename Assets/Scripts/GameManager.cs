@@ -60,28 +60,32 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        float delta = Time.deltaTime;
-        _updateManager.OnUpdate(delta);
+        _updateManager.OnUpdate(Time.deltaTime);
 
         if (Input.GetKeyDown(KeyCode.Home))
+        {
             SceneManager.LoadScene(0);
-        else if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
 
         if (runClock)
         {
             remainingTime -= Time.deltaTime;
             remainingTime = remainingTime.Clamp(0, gameLength);
             remainingTimeText.text = remainingTime.CeilToInt().ToString();
-            if (remainingTime <= 0.0f) TimeUp();
+            if (remainingTime <= 0.0f)
+            {
+                TimeUp();
+            }
         }
-
-        _waypointManager?.DrawLines(_cullingCam);
     }
 
     private void FixedUpdate()
     {
-        float delta = Time.fixedDeltaTime;
-        _updateManager.OnFixedUpdate(delta);
+        _updateManager.OnFixedUpdate(Time.fixedDeltaTime);
     }
 
     private void OnGUI()
