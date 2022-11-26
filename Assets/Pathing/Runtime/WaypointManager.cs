@@ -249,7 +249,14 @@ namespace Pathing
 
         public void UpdateWaypointConnections()
         {
-            _waypoints.ForEach(w1 =>
+            int seed = Random.Range(int.MinValue, 0);
+            _waypoints.ForEach(w =>
+            {
+                w.RandomiseConnections(seed);
+                seed++;
+            });
+
+                _waypoints.ForEach(w1 =>
             {
                 _waypoints.ForEach(w2 =>
                 {
@@ -285,7 +292,7 @@ namespace Pathing
 
             for (int point = 0; point < points.Count; point++)
             {
-                Vector3 origin = points[point];
+                Vector3 origin = (points[point].normalized) * Settings.RaycastHeight;
                 WaypointCluster cluster = new WaypointCluster(_clusters.Count);
 
                 AiWaypoint closest = Closest(origin);
@@ -319,10 +326,10 @@ namespace Pathing
             //  Returns true if A wins the claim.
 
             int aWaypoints = a.Waypoints.Count;
-            //aWaypoints += a.ClaimedWaypoints.Count;
+            aWaypoints += a.ClaimedWaypoints.Count;
 
             int bWaypoints = b.Waypoints.Count;
-            //bWaypoints += b.ClaimedWaypoints.Count;
+            bWaypoints += b.ClaimedWaypoints.Count;
 
             if (aWaypoints == bWaypoints)
             {
@@ -374,9 +381,7 @@ namespace Pathing
         private int _solveClaimTries = 0;
         private void ClusteriseStepB()
         {
-            List<WaypointCluster> randomClusters = _clusters.Randomise(Random.Range(int.MinValue, int.MaxValue));
-
-            foreach (WaypointCluster cluster in randomClusters)
+            foreach (WaypointCluster cluster in _clusters)
             {
                 while (cluster.ClaimedWaypoints.Count > 0 && _solveClaimTries <= 100)
                 {

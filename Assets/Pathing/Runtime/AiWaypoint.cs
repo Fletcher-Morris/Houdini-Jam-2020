@@ -16,6 +16,7 @@ namespace Pathing
 
         public List<int> History { get => _history; set => _history = value; }
         public List<int> Connections { get => _connections; set => _connections = value; }
+        public void RandomiseConnections(int seed) => _connections = _connections.Randomise(seed);
         public int Cluster { get => _cluster; set => _cluster = value; }
         public int Id { get => _id; set => _id = value; }
         public Vector3 Position { get => _position; set => _position = value; }
