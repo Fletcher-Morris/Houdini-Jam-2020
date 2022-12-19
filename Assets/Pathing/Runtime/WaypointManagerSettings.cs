@@ -13,12 +13,14 @@ namespace Pathing
         [Range(1, byte.MaxValue - 1)] public byte DesiredClusters;
         [Min(50)] public int RaycastHeight;
         public LayerMask RaycastMask;
+        [Range(0, 1)] public float WaypointHeightOffset;
 
         public WaypointManagerSettings(
             int maxWaypoints,
             int maxConnectionRange,
             byte desiredClusters,
-            int raycastHeight)
+            int raycastHeight,
+            float waypointHeightOffset)
         {
             UseRecommendedValues = true;
             MaxWaypoints = maxWaypoints;
@@ -26,6 +28,7 @@ namespace Pathing
             DesiredClusters = desiredClusters;
             RaycastHeight = raycastHeight;
             RaycastMask = new LayerMask();
+            WaypointHeightOffset = waypointHeightOffset;
         }
 
         public void SetRecommendedValues()

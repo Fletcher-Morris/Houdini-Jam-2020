@@ -4,7 +4,9 @@ using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using Tick;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace Pathing
 {
@@ -12,7 +14,7 @@ namespace Pathing
     public class WaypointManager : SerializedScriptableObject, IManualUpdate
     {
         [System.Serializable]
-        private enum WaypointManagerState {Empty, PlacingNodes, Clustering, ClusterNormalise, Complete}
+        private enum WaypointManagerState { Empty, PlacingNodes, Clustering, ClusterNormalise, Complete }
         [SerializeField, ReadOnly] WaypointManagerState _state;
 
         private static WaypointManager _instance;
@@ -31,7 +33,7 @@ namespace Pathing
         [SerializeField] private bool _deleteAll;
 
         [Space]
-        public WaypointManagerSettings Settings = new WaypointManagerSettings(2000, 5, 10, 100);
+        public WaypointManagerSettings Settings = new WaypointManagerSettings(2000, 5, 10, 100, 0.1f);
         [SerializeField, HideInInspector] private WaypointManagerSettings _prevSettings;
         [Space]
 
@@ -227,6 +229,26 @@ namespace Pathing
             _state = WaypointManagerState.PlacingNodes;
 
             List<Vector3> points = Extensions.FibonacciPoints(Settings.MaxWaypoints);
+
+            List<WaypointModifierVolume> modVolumes = GameObject.FindObjectsOfType<WaypointModifierVolume>().ToList();
+
+            modVolumes.FindAll(v => v.isActiveAndEnabled && v.ModifierType == WaypointModifierVolume.Modifier.Add).ForEach(v =>
+            {
+                if (v.PreRaycast)
+                {
+                    foreach (Vector3 p in v.Points)
+                    {
+                        AiWaypoint wp = new AiWaypoint(p);
+                        wp.Id = _waypoints.Count;
+                        _waypoints.Add(wp);
+                    }
+                }
+                else
+                {
+                    points.AddRange(v.Points);
+                }
+            });
+
             foreach (var (pos, ray) in from Vector3 p in points
                                        let pos = p.normalized * Settings.RaycastHeight
                                        let ray = new Ray(pos, -pos)
@@ -237,15 +259,27 @@ namespace Pathing
                 {
                     if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
                     {
-                        AiWaypoint wp = new AiWaypoint(hit.point + pos.normalized);
-                        wp.Id = _waypoints.Count;
-                        _waypoints.Add(wp);
+                        Vector3 wpPosition = hit.point + (pos.normalized * Settings.WaypointHeightOffset);
+
+                        bool badPos = false;
+                        modVolumes.FindAll(v => v.isActiveAndEnabled && v.ModifierType == WaypointModifierVolume.Modifier.Remove).ForEach(v =>
+                        {
+                            if (v.PointIsInVolume(wpPosition)) badPos = true;
+                        });
+
+                        if (!badPos)
+                        {
+                            AiWaypoint wp = new AiWaypoint(wpPosition);
+                            wp.Id = _waypoints.Count;
+                            _waypoints.Add(wp);
+                        }
                     }
                 }
             }
-            Debug.Log($"Created {_waypoints.Count} waypoints!");
 
+            Debug.Log($"Created {_waypoints.Count} new waypoints!");
         }
+
 
         public void UpdateWaypointConnections()
         {

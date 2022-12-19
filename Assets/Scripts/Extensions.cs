@@ -564,11 +564,18 @@ public static class Extensions
     /// </summary>
     public static Bounds TransformBounds(this MonoBehaviour _mb, Bounds _localBounds)
     {
-        var center = _mb.transform.TransformPoint(_localBounds.center);
+        return _mb.TransformBounds(_localBounds);
+    }
+    /// <summary>
+    /// Transform the bounds of this Transform
+    /// </summary>
+    public static Bounds TransformBounds(this Transform transform, Bounds _localBounds)
+    {
+        var center = transform.TransformPoint(_localBounds.center);
         var extents = _localBounds.extents;
-        var axisX = _mb.transform.TransformVector(extents.x, 0, 0);
-        var axisY = _mb.transform.TransformVector(0, extents.y, 0);
-        var axisZ = _mb.transform.TransformVector(0, 0, extents.z);
+        var axisX = transform.TransformVector(extents.x, 0, 0);
+        var axisY = transform.TransformVector(0, extents.y, 0);
+        var axisZ = transform.TransformVector(0, 0, extents.z);
         extents.x = Mathf.Abs(axisX.x) + Mathf.Abs(axisY.x) + Mathf.Abs(axisZ.x);
         extents.y = Mathf.Abs(axisX.y) + Mathf.Abs(axisY.y) + Mathf.Abs(axisZ.y);
         extents.z = Mathf.Abs(axisX.z) + Mathf.Abs(axisY.z) + Mathf.Abs(axisZ.z);
