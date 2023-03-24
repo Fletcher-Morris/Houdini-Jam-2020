@@ -249,15 +249,17 @@ namespace Pathing
                 }
             });
 
-            foreach (var (pos, ray) in from Vector3 p in points
-                                       let pos = p.normalized * Settings.RaycastHeight
-                                       let ray = new Ray(pos, -pos)
-                                       select (pos, ray))
+            int groundLayer = LayerMask.NameToLayer("Ground");
+
+            foreach ((Vector3 pos, Ray ray) in from Vector3 p in points
+                                               let pos = p.normalized * Settings.RaycastHeight
+                                               let ray = new Ray(pos, -pos)
+                                               select (pos, ray))
             {
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, Settings.RaycastMask))
                 {
-                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                    if (hit.collider.gameObject.layer == groundLayer)
                     {
                         Vector3 wpPosition = hit.point + (pos.normalized * Settings.WaypointHeightOffset);
 
