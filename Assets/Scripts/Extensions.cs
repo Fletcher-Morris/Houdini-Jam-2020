@@ -86,10 +86,10 @@ public static class Extensions
     /// Rotate this Vector2 by a specified number of degrees
     /// </summary>
     public static Vector2 Rotate(this Vector2 _value, float _degrees) => new Vector2(
-        _value.x * Mathf.Cos(_degrees * Mathf.Deg2Rad) -
-        _value.y * Mathf.Sin(_degrees * Mathf.Deg2Rad),
-        _value.x * Mathf.Sin(_degrees * Mathf.Deg2Rad) +
-        _value.y * Mathf.Cos(_degrees * Mathf.Deg2Rad)
+        (_value.x * Mathf.Cos(_degrees * Mathf.Deg2Rad)) -
+        (_value.y * Mathf.Sin(_degrees * Mathf.Deg2Rad)),
+        (_value.x * Mathf.Sin(_degrees * Mathf.Deg2Rad)) +
+        (_value.y * Mathf.Cos(_degrees * Mathf.Deg2Rad))
     );
     /// <summary>
     /// Round this Vector2 to a Vector2Int
@@ -110,7 +110,7 @@ public static class Extensions
     /// <summary>
     /// Return true if this Vector2 is within the bounds of two other values
     /// </summary>
-    public static bool IsInRange(this Vector2Int _value, Vector2Int _min, Vector2Int _max) => (_value.x.IsInRange(_min.x, _max.x) && _value.y.IsInRange(_min.y, _max.y));
+    public static bool IsInRange(this Vector2Int _value, Vector2Int _min, Vector2Int _max) => _value.x.IsInRange(_min.x, _max.x) && _value.y.IsInRange(_min.y, _max.y);
     /// <summary>
     /// Return the Absolute value of this integer
     /// </summary>
@@ -175,8 +175,8 @@ public static class Extensions
     /// </summary>
     public static int Loop(this int _value, int _min, int _max)
     {
-        if (_value < _min) return ((_max + 1) - (_min - _value)).Loop(_min, _max);
-        else if (_value > _max) return ((_min - 1) + (_value - _max)).Loop(_min, _max);
+        if (_value < _min) return (_max + 1 - (_min - _value)).Loop(_min, _max);
+        else if (_value > _max) return (_min - 1 + (_value - _max)).Loop(_min, _max);
         return _value;
     }
     /// <summary>
@@ -216,8 +216,8 @@ public static class Extensions
     /// </summary>
     public static float Loop(this float _value, float _min, float _max)
     {
-        if (_value < _min) return ((_max + 1.0f) - (_min - _value)).Loop(_min, _max);
-        else if (_value > _max) return ((_min - 1.0f) + (_value - _max)).Loop(_min, _max);
+        if (_value < _min) return (_max + 1.0f - (_min - _value)).Loop(_min, _max);
+        else if (_value > _max) return (_min - 1.0f + (_value - _max)).Loop(_min, _max);
         return _value;
     }
     /// <summary>
@@ -293,7 +293,7 @@ public static class Extensions
     /// </summary>
     public static float ClampAngleBetween(this float _value, float _min, float _max)
     {
-        float start = (_min + _max) * 0.5f - 180;
+        float start = ((_min + _max) * 0.5f) - 180;
         float floor = Mathf.FloorToInt((_value - start) / 360) * 360;
         _min += floor;
         _max += floor;
@@ -332,7 +332,7 @@ public static class Extensions
     /// <summary>
     /// Return a boolean with equal chance of true or false
     /// </summary>
-    public static bool CoinFlip() => (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f);
+    public static bool CoinFlip() => UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f;
     /// <summary>
     /// Remove non-letters from this string, swap them for '_'
     /// </summary>
@@ -423,7 +423,7 @@ public static class Extensions
         replaceStroing = replaceStroing.Replace('#', _remove);
         string removeString = "##";
         removeString = removeString.Replace('#', _remove);
-        while(_string.Contains(removeString))
+        while (_string.Contains(removeString))
         {
             _string = _string.Replace(removeString, replaceStroing);
         }
@@ -432,7 +432,7 @@ public static class Extensions
     /// <summary>
     /// Convert this string to title case (This is title case)
     /// </summary>
-    public static string ToTitleCase(this string _string) => string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string[0]) + (_string.Substring(1).ToLower());
+    public static string ToTitleCase(this string _string) => string.IsNullOrEmpty(_string) ? string.Empty : char.ToUpper(_string[0]) + _string.Substring(1).ToLower();
     /// <summary>
     /// Return a string of random letters and numbers of specified length
     /// </summary>
@@ -571,11 +571,11 @@ public static class Extensions
     /// </summary>
     public static Bounds TransformBounds(this Transform transform, Bounds _localBounds)
     {
-        var center = transform.TransformPoint(_localBounds.center);
-        var extents = _localBounds.extents;
-        var axisX = transform.TransformVector(extents.x, 0, 0);
-        var axisY = transform.TransformVector(0, extents.y, 0);
-        var axisZ = transform.TransformVector(0, 0, extents.z);
+        Vector3 center = transform.TransformPoint(_localBounds.center);
+        Vector3 extents = _localBounds.extents;
+        Vector3 axisX = transform.TransformVector(extents.x, 0, 0);
+        Vector3 axisY = transform.TransformVector(0, extents.y, 0);
+        Vector3 axisZ = transform.TransformVector(0, 0, extents.z);
         extents.x = Mathf.Abs(axisX.x) + Mathf.Abs(axisY.x) + Mathf.Abs(axisZ.x);
         extents.y = Mathf.Abs(axisX.y) + Mathf.Abs(axisY.y) + Mathf.Abs(axisZ.y);
         extents.z = Mathf.Abs(axisX.z) + Mathf.Abs(axisY.z) + Mathf.Abs(axisZ.z);
@@ -587,7 +587,7 @@ public static class Extensions
     public static void Log(string _log = " ", Object _obj = null)
     {
         string caller = new StackTrace().GetFrame(1).GetMethod().Name;
-        UnityEngine.Debug.Log($"<b>F{Time.frameCount} {(_obj != null ? _obj.name + ":" : "")} <color={Color.HSVToRGB(caller.GetHashCode() / (float)int.MaxValue * 0.5f + 0.5f, 0.6f, 0.8f, false).ToHex()}>{caller}()</color></b> {_log}", _obj);
+        UnityEngine.Debug.Log($"<b>F{Time.frameCount} {(_obj != null ? _obj.name + ":" : "")} <color={Color.HSVToRGB((caller.GetHashCode() / (float)int.MaxValue * 0.5f) + 0.5f, 0.6f, 0.8f, false).ToHex()}>{caller}()</color></b> {_log}", _obj);
     }
     /// <summary>
     /// Log a debug warning with an auto-generated color
@@ -595,7 +595,7 @@ public static class Extensions
     public static void LogWarning(string _log = " ", Object _obj = null)
     {
         string caller = new StackTrace().GetFrame(1).GetMethod().Name;
-        UnityEngine.Debug.LogWarning($"<b>F{Time.frameCount} {(_obj != null ? _obj.name + ":" : "")} <color={Color.HSVToRGB(caller.GetHashCode() / (float)int.MaxValue * 0.5f + 0.5f, 0.6f, 0.8f, false).ToHex()}>{caller}()</color></b> {_log}", _obj);
+        UnityEngine.Debug.LogWarning($"<b>F{Time.frameCount} {(_obj != null ? _obj.name + ":" : "")} <color={Color.HSVToRGB((caller.GetHashCode() / (float)int.MaxValue * 0.5f) + 0.5f, 0.6f, 0.8f, false).ToHex()}>{caller}()</color></b> {_log}", _obj);
     }
     /// <summary>
     /// Check if a GUID is NULL or empty

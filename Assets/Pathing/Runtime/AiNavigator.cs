@@ -1,7 +1,5 @@
 using Sirenix.Serialization;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -177,7 +175,7 @@ namespace Pathing
                             float distToTarget = self.Distance(_aiTarget.GetPosition());
                             if (distToTarget > _alwaysUpdateTollerance)
                             {
-                                var newWaypoint = WaypointManager.Instance.Closest(_aiTarget.GetPosition());
+                                AiWaypoint newWaypoint = WaypointManager.Instance.Closest(_aiTarget.GetPosition());
                                 if (newWaypoint != null)
                                 {
                                     if (_closestWaypointToTarget == null)

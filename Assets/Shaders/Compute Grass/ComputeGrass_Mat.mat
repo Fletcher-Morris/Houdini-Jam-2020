@@ -9,6 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: ComputeGrass_Mat
   m_Shader: {fileID: 4800000, guid: 734c89ebd5fd57a47a3648ae973f2aef, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +19,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -26,9 +29,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorRdm: 0
+    - _ColorRdm: 0.1
+    - _ColorRdmInfluence: 1
+    - _ColorRdmScale: 10
     - _DebugColors: 0
     m_Colors:
     - _BaseColor: {r: 0.11116666, g: 0.184, b: 0.10733333, a: 1}
     - _TipColor: {r: 0.13940425, g: 0.234, b: 0.13442552, a: 1}
+    - _TipColorMax: {r: 0.21477394, g: 0.34, b: 0.1632, a: 1}
+    - _TipColorMin: {r: 0.13760735, g: 0.249, b: 0.132966, a: 1}
   m_BuildTextureStacks: []

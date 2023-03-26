@@ -1,5 +1,4 @@
 using Sirenix.OdinInspector;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +21,7 @@ namespace Pathing
         [SerializeField] private BoxCollider[] _volumes;
         [SerializeField, Required] private WaypointManager _waypointManager;
 
-        [SerializeField, Range(0.1f, 4)] float _density = 2.0f;
+        [SerializeField, Range(0.1f, 4)] private float _density = 2.0f;
         private float _prevDensity = -1f;
 
         [SerializeField] private bool _preRaycast = true;
@@ -31,7 +30,7 @@ namespace Pathing
         public float PointDensity { get => _density; }
         public List<Vector3> Points { get => _points; }
         public Modifier ModifierType { get => _modifier; }
-        public bool PreRaycast { get => _preRaycast;  }
+        public bool PreRaycast { get => _preRaycast; }
 
         private void Update()
         {

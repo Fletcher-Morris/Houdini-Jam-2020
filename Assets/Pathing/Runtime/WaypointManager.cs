@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 using Tick;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace Pathing
 {

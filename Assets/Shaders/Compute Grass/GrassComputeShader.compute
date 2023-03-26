@@ -168,9 +168,10 @@ void Main(uint3 id : SV_DispatchThreadID)
 
         float bladeHeight = ((rand(float4(randomPosWS.x, randomPosWS.y, randomPosWS.z, grassBlade)) - 0.5f) *
         _GrassHeightRandom) + _GrassHeight;
+        bladeHeight *= clamp(0.5, 1.0, GrassNoise(randomPosWS));
+
         float bladeWidth = ((rand(float4(randomPosWS.z, randomPosWS.y, randomPosWS.x, grassBlade)) - 0.5f) *
         _GrassWidthRandom) + _GrassWidth;
-
 
         float bladeAltitude = distance(positionWS, float3(0, 0, 0));
         float bladeCamDist = distance(_WorldSpaceCameraPos, randomPosWS);

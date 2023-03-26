@@ -34,8 +34,9 @@ struct VertexOutput
 
 // Properties
 float4 _BaseColor;
-float4 _TipColor;
-float _ColorRdm;
+float4 _TipColorMin;
+float4 _TipColorMax;
+float _ColorRdmInfluence;
 sampler2D _AlphaTex;
 float _DebugColors;
 
@@ -98,20 +99,20 @@ float4 Fragment(VertexOutput input) : SV_Target
     float clipVal = tex2D(_AlphaTex, input.uv).r;
     clip(clipVal - 0.1);
 
-	float colRdm = rand(input.normalWS, 0) * _ColorRdm;
-
     float uvY = input.uv.y;
     float uvYClamped = clamp(0.0, 1.0, uvY);
 
+    float noiseRdm = smoothstep(0.5, 1.0, GrassNoise(input.positionWS));
+
     if (_DebugColors > 0)
     {
-        return lerp(float4(0,0,0,0), float4(1,1,1,1), uvY);
+        return float4(noiseRdm, noiseRdm, noiseRdm, 1);
+        //return lerp(float4(0,0,0,0), float4(1,1,1,1), uvY);
     }
 
-    float3 col = lerp(_BaseColor.rgb, _TipColor.rgb, uvY);
-    col.r -= colRdm;
-    col.g += colRdm;
-    col.b -= colRdm;
+    float3 tipCol = lerp(_TipColorMin, _TipColorMax, noiseRdm * _ColorRdmInfluence);
+
+    float3 col = lerp(_BaseColor.rgb, tipCol, uvY);
 
     float3 lightBlend = HardLight(col, float3(LIGHT_COLOR.rgb));
 

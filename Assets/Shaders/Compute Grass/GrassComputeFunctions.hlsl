@@ -1,3 +1,5 @@
+#include "../noiseSimplex.cginc"
+
 #ifndef GRASS_COMPUTE_FUNCTIONS_INCLUDED
 #define GRASS_COMPUTE_FUNCTIONS_INCLUDED
 
@@ -58,6 +60,11 @@ float3x3 AngleAxis3x3(float angle, float3 axis)
         t * x * y + s * z, t * y * y + c, t * y * z - s * x,
         t * x * z - s * y, t * y * z + s * x, t * z * z + c
     );
+}
+
+float GrassNoise(float3 pos)
+{
+    return  ((snoise(normalize(pos) * 10.0) + 1.0) * 0.5);
 }
 
 #endif

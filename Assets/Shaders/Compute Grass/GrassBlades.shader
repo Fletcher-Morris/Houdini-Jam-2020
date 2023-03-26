@@ -1,8 +1,9 @@
 Shader "Grass/GrassBlades" {
     Properties {
         _BaseColor("Base color", Color) = (0, 0.5, 0, 1)
-        _TipColor("Tip color", Color) = (0, 1, 0, 1)
-		_ColorRdm("Color Rdm", Range(0.0, 0.1)) = 0.05
+        _TipColorMin("Tip color min", Color) = (0, 1, 0, 1)
+        _TipColorMax("Tip color max", Color) = (0, 1, 0, 1)
+		_ColorRdmInfluence("Color rdm influence",  Range(0.0, 1.0)) = 0.5
         _AlphaTex("Alpha Texture", 2D) = "white" {}
         [MaterialToggle] _DebugColors("Debug Colors", Float) = 0
     }
