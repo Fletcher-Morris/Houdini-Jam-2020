@@ -112,7 +112,7 @@ MonoBehaviour:
   _cullLines: 0
   ShowNavigatorPaths: 1
   _averageClusterSize: 122
-  _clusterSizeDiff: 115
+  _clusterSizeDiff: 112
   _clusters: []
   _waypoints: []
   _maxPerStep: 4
