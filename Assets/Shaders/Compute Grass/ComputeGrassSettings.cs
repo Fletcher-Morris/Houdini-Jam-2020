@@ -1,7 +1,6 @@
 using Quality;
 using Sirenix.OdinInspector;
 using System;
-using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Compute Grass", menuName = "Scriptables/Grass/Compute Grass Settings")]
@@ -47,6 +46,8 @@ public struct ComputeGrassSettingsData
     [Range(-1, 1)] public float camDotCuttoff;
     [Min(0)] public float minCamDist;
     [Min(0.1f)] public float averagePlanetRadius;
+    [Min(0)] public float windSpeed;
+    [Min(0)] public float windScale;
 
     [ReadOnly, SerializeField] private int m_checksum;
 
@@ -54,7 +55,7 @@ public struct ComputeGrassSettingsData
     {
         get
         {
-            var result = 0;
+            int result = 0;
             result += (grassHeight * 7550).RoundToInt();
             result += (grassHeightCuttoff * 1044).RoundToInt();
             result += (grassWidth * 3589).RoundToInt();
@@ -71,6 +72,8 @@ public struct ComputeGrassSettingsData
             result += (camDotCuttoff * 2723).RoundToInt();
             result += (minCamDist * 3951).RoundToInt();
             result += (averagePlanetRadius * 8354).RoundToInt();
+            result += (windSpeed * 723).RoundToInt();
+            result += (windScale * 542).RoundToInt();
             return result;
         }
     }

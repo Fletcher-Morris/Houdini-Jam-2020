@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SettingsData:
     grassHeight: 1
-    grassHeightRandom: 0.5
+    grassHeightRandom: 0
     grassHeightCuttoff: 0.1
     grassWidth: 0.1
-    grassWidthRandom: 0
-    grassBendRandom: 0.05
+    grassWidthRandom: 0.1
+    grassBendRandom: 0.2
     grassSegments: 2
     grassPerVertex: 6
     randomPosition: 0.45
@@ -29,4 +29,6 @@ MonoBehaviour:
     camDotCuttoff: -1
     minCamDist: 0.2
     averagePlanetRadius: 50
-    m_checksum: 1504058
+    windSpeed: 1
+    windScale: 0.2
+    m_checksum: 1503962

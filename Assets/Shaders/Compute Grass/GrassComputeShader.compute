@@ -46,6 +46,8 @@ float4x4 _LocalToWorld;
 float3 _WorldSpaceCameraPos;
 float3 _WorldSpaceCameraForward;
 float4 _DistortionObjects[32];
+float _WindTime;
+float _WindScale;
 
 // GRASS PROPERTIES
 float _GrassHeight;
@@ -88,12 +90,18 @@ float ObjectDistortion(float3 pos)
 
 DrawVertex SetupBladePoint(float3 anchorWS, float3x3 tsToWs, float2 uv, float bladeHeight, float bladeWidth)
 {
+    float3 windPos = float3(0.333, 1, 0.75) * _WindTime;
+    float windBend = (snoise(((anchorWS * _WindScale) + windPos)) + 1) * 0.5;
+    windBend *= (uv.y * bladeHeight);
+    windBend = clamp(0, 0.5, windBend);
 
-    float bendAmount = max(_BendRandom, 1 - ObjectDistortion(anchorWS));
+    float bendAmount = max(_BendRandom, windBend);
+    bendAmount = max(bendAmount, 1 - ObjectDistortion(anchorWS));
+
     float bendRand = rand(float4(anchorWS.x + 0.52, anchorWS.y - 0.25, anchorWS.z + 0.76, anchorWS.x + 172.362));
     float hBendVal = pow(uv.y * bendAmount, bendRand);
-    float vBendVal = (1 - (bendRand * uv.y)) * bendAmount;
-    
+    float vBendVal = (1 - (bendRand * uv.y)) * bendAmount;    
+
     float3 offsetTS = float3(((uv.x - 0.5f) * bladeWidth), hBendVal * bladeHeight, bladeHeight * (1 - vBendVal));
 
     float3 offsetWS = mul(tsToWs, offsetTS);

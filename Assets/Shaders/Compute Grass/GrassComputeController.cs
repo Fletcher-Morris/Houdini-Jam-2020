@@ -1,6 +1,4 @@
 using Sirenix.OdinInspector;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,10 +10,10 @@ using UnityEngine.UI;
 [ExecuteInEditMode]
 public class GrassComputeController : MonoBehaviour
 {
-    private const int LOD_VERT_STRIDE = (sizeof(float) * 3) + (sizeof(int));
+    private const int LOD_VERT_STRIDE = (sizeof(float) * 3) + sizeof(int);
     private const int POS_VERT_STRIDE = sizeof(float) * 3;
     private const int SOURCE_TRI_STRIDE = sizeof(int);
-    private const int DRAW_STRIDE = sizeof(float) * (3 + (3 + 1) * 3);
+    private const int DRAW_STRIDE = sizeof(float) * (3 + ((3 + 1) * 3));
     private const int INDIRECT_ARGS_STRIDE = sizeof(int) * 4;
 
     private static readonly int _sourceVerticesPropertyId = Shader.PropertyToID("_SourceVertices");
@@ -26,6 +24,8 @@ public class GrassComputeController : MonoBehaviour
     private static readonly int _worldSpaceCameraPosPropertyId = Shader.PropertyToID("_WorldSpaceCameraPos");
     private static readonly int _worldSpaceCameraForwardPropertyId = Shader.PropertyToID("_WorldSpaceCameraForward");
     private static readonly int _localToWorldPropertyId = Shader.PropertyToID("_LocalToWorld");
+    private static readonly int _windTimePropertyId = Shader.PropertyToID("_WindTime");
+    private static readonly int _windScalePropertyId = Shader.PropertyToID("_WindScale");
 
     [SerializeField] private Mesh _sourceMesh;
     [SerializeField] private ComputeShader _compute;
@@ -136,6 +136,8 @@ public class GrassComputeController : MonoBehaviour
             _argsBuffer.SetData(_argsBufferReset);
             _compute.SetVector(_worldSpaceCameraPosPropertyId, _useCamera.transform.position);
             _compute.SetVector(_worldSpaceCameraForwardPropertyId, _useCamera.transform.forward);
+            _compute.SetFloat(_windTimePropertyId, Time.time * _grassSettings.SettingsData.windSpeed);
+            _compute.SetFloat(_windScalePropertyId, _grassSettings.SettingsData.windScale);
             Bounds bounds = TransformBounds(_localBounds);
             _compute.SetMatrix(_localToWorldPropertyId, transform.localToWorldMatrix);
             _compute.Dispatch(_grassKernelId, _dispatchSize, 1, 1);
