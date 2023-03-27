@@ -67,4 +67,19 @@ float GrassNoise(float3 pos)
     return  ((snoise(normalize(pos) * 10.0) + 1.0) * 0.5);
 }
 
+void GrassNoise_float(float3 pos, out float output)
+{
+    output = GrassNoise(pos);
+}
+
+void CustomNoise(float3 position, float scale, out float output)
+{
+    output = snoise(position * scale);
+}
+
+void CustomNoise_float(float3 position, float scale, out float output)
+{
+    output = snoise(position * scale);
+}
+
 #endif

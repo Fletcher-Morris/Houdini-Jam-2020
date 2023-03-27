@@ -76,13 +76,13 @@ Material:
     m_Ints: []
     m_Floats:
     - Vector1_36A055C7: 25
-    - Vector1_3DD632CE: 0.33333334
+    - Vector1_3DD632CE: 0.5
     - Vector1_3F8F140D: 0
     - Vector1_5F76E7F1: 180
     - Vector1_7C3BB857: 0
     - Vector1_96BE3FB9: 0.4
     - Vector1_9833C916: 47.7
-    - Vector1_BC071ECE: 2
+    - Vector1_BC071ECE: 2.5
     - Vector1_C6B979F6: 0.5
     - _AlphaClip: 0
     - _Blend: 0
@@ -91,6 +91,7 @@ Material:
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _GlossinessSource: 0
+    - _Noise_Scale_2: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -98,6 +99,8 @@ Material:
     - _ShadowLerp: 0.5
     - _ShadowMultiplier: 0.1
     - _Shininess: 0
+    - _Simplex_Noise_Power: 0.15
+    - _Simplex_Noise_Scale: 0.2
     - _Smoothness: 0.5
     - _SmoothnessSource: 0
     - _SpecSource: 0
