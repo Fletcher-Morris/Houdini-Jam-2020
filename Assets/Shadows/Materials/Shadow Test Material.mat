@@ -37,6 +37,30 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _SampleTexture2D_155cd5ef2bd34d2ba508add15e17bd1d_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: d8faac732a0ffd744934a633cf1131f2, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_47220d3f8e884d0f82e8a426fe21651e_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: ca50b71ba9cb03943af65752e3adab6c, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_524b3bd65b634c73850368ebceb76874_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 22fde76f46154a645aaa3af8b04224f4, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_764f1bb8a4a34cdf836d939b07af913b_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: e5c5706b8e32452499b0526c8b16af22, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_8eb440e906ca41f7880453289ea25216_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 9b384627682eec84099acd9584e3f108, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_cf0ac9ca0dd9413f8bc2987ccf182630_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 4ba812265fc32684a8bfdd1acf2cf53f, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Shadow_RT_0:
         m_Texture: {fileID: 8400000, guid: e5c5706b8e32452499b0526c8b16af22, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -77,8 +101,11 @@ Material:
     m_Floats:
     - _Clip: 1
     - _Float: 1
+    - _Force_Side: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Side: 3.17
+    - _Spherize: 25
     m_Colors:
     - _Lit_Color: {r: 0.30196077, g: 0.572549, b: 0.24313727, a: 1}
     - _Unlit_Color: {r: 0.042202868, g: 0.07799999, b: 0.03428986, a: 1}

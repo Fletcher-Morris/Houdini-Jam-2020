@@ -14,6 +14,7 @@ namespace Shadows
     public class ShadowCameraController : MonoBehaviour
     {
         [SerializeField] private ShadowCamSettings _camSettings;
+        [SerializeField] private bool _drawGizmos;
 
         private List<Camera> _cameras = new List<Camera>();
 
@@ -41,12 +42,15 @@ namespace Shadows
 
         private void OnDrawGizmos()
         {
-            for (int camIndex = 0; camIndex < _cameras.Count; camIndex++)
+            if (_drawGizmos)
             {
-                Gizmos.color = Color.HSVToRGB((float)camIndex / (float)_cameras.Count, 1, 1);
-                Camera cam = _cameras[camIndex];
-                Gizmos.matrix = cam.transform.localToWorldMatrix;
-                Gizmos.DrawFrustum(transform.position, 90, _camSettings.FarClip, _camSettings.NearClip, 1);
+                for (int camIndex = 0; camIndex < _cameras.Count; camIndex++)
+                {
+                    Gizmos.color = Color.HSVToRGB(camIndex / (float)_cameras.Count, 1, 1);
+                    Camera cam = _cameras[camIndex];
+                    Gizmos.matrix = cam.transform.localToWorldMatrix;
+                    Gizmos.DrawFrustum(transform.position, 90, _camSettings.FarClip, _camSettings.NearClip, 1);
+                }
             }
         }
     }
