@@ -12,7 +12,7 @@ namespace Pathing
     {
         [System.Serializable]
         private enum WaypointManagerState { Empty, PlacingNodes, Clustering, ClusterNormalise, Complete }
-        [SerializeField, ReadOnly] WaypointManagerState _state;
+        [SerializeField, ReadOnly] private WaypointManagerState _state;
 
         private static WaypointManager _instance;
         public static WaypointManager Instance
@@ -140,7 +140,7 @@ namespace Pathing
 
                             int showCluster = _showCluster;
                             if (_showCluster <= 0) showCluster = -1;
-                            if ((showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster) || !_showClusters)
+                            if (showCluster == -1 || w1.Cluster == showCluster || conWp.Cluster == showCluster || !_showClusters)
                             {
                                 if (cullLine == false)
                                 {
@@ -289,33 +289,33 @@ namespace Pathing
                 seed++;
             });
 
-                _waypoints.ForEach(w1 =>
+            _waypoints.ForEach(w1 =>
+        {
+            _waypoints.ForEach(w2 =>
             {
-                _waypoints.ForEach(w2 =>
+                if (w1 != w2)
                 {
-                    if (w1 != w2)
+                    if (!w1.Connections.Contains(w2.Id))
                     {
-                        if (!w1.Connections.Contains(w2.Id))
+                        Vector3 p1 = w1.Position;
+                        Vector3 p2 = w2.Position;
+
+                        float dist = Vector3.Distance(p1, p2);
+                        if (dist <= Settings.MaxConnectionRange)
                         {
-                            Vector3 p1 = w1.Position;
-                            Vector3 p2 = w2.Position;
+                            RaycastHit hit;
+                            Physics.Raycast(p1, p2 - p1, out hit);
 
-                            float dist = Vector3.Distance(p1, p2);
-                            if (dist <= Settings.MaxConnectionRange)
+                            if (hit.collider == null)
                             {
-                                RaycastHit hit;
-                                Physics.Raycast(p1, p2 - p1, out hit);
-
-                                if (hit.collider == null)
-                                {
-                                    w1.Connections.Add(w2.Id);
-                                    w2.Connections.Add(w1.Id);
-                                }
+                                w1.Connections.Add(w2.Id);
+                                w2.Connections.Add(w1.Id);
                             }
                         }
                     }
-                });
+                }
             });
+        });
         }
 
         private void GenerateClusters()
@@ -325,7 +325,7 @@ namespace Pathing
 
             for (int point = 0; point < points.Count; point++)
             {
-                Vector3 origin = (points[point].normalized) * Settings.RaycastHeight;
+                Vector3 origin = points[point].normalized * Settings.RaycastHeight;
                 WaypointCluster cluster = new WaypointCluster(_clusters.Count);
 
                 AiWaypoint closest = Closest(origin);
@@ -408,7 +408,7 @@ namespace Pathing
                 }
             }
 
-            _stepA= false;
+            _stepA = false;
         }
 
         private int _solveClaimTries = 0;
@@ -474,7 +474,7 @@ namespace Pathing
         private int _clusterNormaliseStep = 0;
         private void ClusterNormalise()
         {
-            if(_clusterNormaliseStep >= _clusters.Count)
+            if (_clusterNormaliseStep >= _clusters.Count)
             {
                 _averageClusterSize = WaypointCount / Clusters.Count;
                 int smallest = int.MaxValue;
@@ -484,7 +484,7 @@ namespace Pathing
                     int s = c.Waypoints.Count;
                     smallest = Mathf.Min(s, smallest);
                     biggest = Mathf.Max(s, biggest);
-                    _clusterSizeDiff = biggest- smallest;
+                    _clusterSizeDiff = biggest - smallest;
                 }
 
                 _state = WaypointManagerState.Complete;
@@ -509,7 +509,7 @@ namespace Pathing
 
             foreach (AiWaypoint w in _waypoints)
             {
-                float d  = (pos - w.Position).sqrMagnitude;
+                float d = (pos - w.Position).sqrMagnitude;
                 if (d < dist)
                 {
                     _closestNode = w;
@@ -600,7 +600,7 @@ namespace Pathing
 
         private List<int> Breadthwise(AiWaypoint start, AiWaypoint end, int attempt)
         {
-            if(_clusters.Count == 0)
+            if (_clusters.Count == 0)
             {
                 Debug.LogWarning("No Clusters!");
                 return null;
@@ -714,7 +714,7 @@ namespace Pathing
                 }
 
                 //Didn't find Node
-                for (int i = 0; i < (currentWp.Connections.Count); i++)
+                for (int i = 0; i < currentWp.Connections.Count; i++)
                 {
                     int j = (i + attempt) % currentWp.Connections.Count;
                     int currentNeighbour = currentWp.Connections[j];
@@ -763,7 +763,7 @@ namespace Pathing
                 }
 
                 //Didn't find Cluster
-                for (int i = 0; i < (currentCluster.ConnectedClusters.Count); i++)
+                for (int i = 0; i < currentCluster.ConnectedClusters.Count; i++)
                 {
                     int currentNeighbour = currentCluster.ConnectedClusters[i];
                     WaypointCluster currentNeighbourCl = GetCluster(currentNeighbour);

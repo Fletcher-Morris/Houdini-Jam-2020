@@ -1,20 +1,12 @@
-using System.Collections;
+using Quality;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using Sirenix.OdinInspector;
-using Quality;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-
-    public int gameLength = 180;
-    public float remainingTime = 180.0f;
-    public bool runClock;
-    public Text remainingTimeText;
 
     public int remainingSheep;
 
@@ -36,7 +28,7 @@ public class GameManager : MonoBehaviour
     public Camera CullingCam { get => _cullingCam; }
 
     [SerializeField, Required] private Quality.QualitySettingsManager _qualityManager;
-    public QualitySettingsManager QualityManager { get => _qualityManager;}
+    public QualitySettingsManager QualityManager { get => _qualityManager; }
 
     private void OnApplicationQuit()
     {
@@ -57,8 +49,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        remainingTime = gameLength;
-
         _updateManager.Start();
     }
 
@@ -73,17 +63,6 @@ public class GameManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
-        }
-
-        if (runClock)
-        {
-            remainingTime -= Time.deltaTime;
-            remainingTime = remainingTime.Clamp(0, gameLength);
-            remainingTimeText.text = remainingTime.CeilToInt().ToString();
-            if (remainingTime <= 0.0f)
-            {
-                TimeUp();
-            }
         }
     }
 
@@ -101,11 +80,6 @@ public class GameManager : MonoBehaviour
     {
         Instance.SheepList.Remove(sheep);
         Instance.remainingSheep = Instance.SheepList.Count;
-    }
-
-    private void TimeUp()
-    {
-        runClock = false;
     }
 
     public static void AddSheep(Sheep sheep)

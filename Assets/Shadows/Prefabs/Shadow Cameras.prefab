@@ -64,7 +64,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0
@@ -192,7 +192,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0
@@ -320,7 +320,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0
@@ -438,7 +438,7 @@ MonoBehaviour:
     ShadowCastLayers:
       serializedVersion: 2
       m_Bits: 1
-    NearClip: 20
+    NearClip: 25
     FarClip: 100
   _drawGizmos: 0
 --- !u!1 &7910190557675999145
@@ -505,7 +505,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0
@@ -633,7 +633,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0
@@ -761,7 +761,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 20
+  near clip plane: 25
   far clip plane: 100
   field of view: 90
   orthographic: 0

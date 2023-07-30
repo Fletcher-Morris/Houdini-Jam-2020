@@ -21,7 +21,8 @@ MonoBehaviour:
       LayerMask:
         serializedVersion: 2
         m_Bits: 1
-      PassNames: []
+      PassNames:
+      - ShadowCaster
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0
     overrideShader: {fileID: 0}
