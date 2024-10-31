@@ -15,5 +15,5 @@ MonoBehaviour:
   _frameData:
     SkyColor: {r: 1, g: 0.61831784, b: 0.3176471, a: 1}
     HorizonColor: {r: 1, g: 0.4115245, b: 0.3176471, a: 1}
-    LightColor: {r: 1, g: 0.8050506, b: 0.6839622, a: 1}
+    LightColor: {r: 0.8113208, g: 0.5443768, b: 0.37887147, a: 1}
     ShadowColor: {r: 0.21502315, g: 0.26858905, b: 0.3018868, a: 1}

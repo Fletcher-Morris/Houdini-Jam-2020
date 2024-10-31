@@ -123,9 +123,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Bias: 0
     - _Clip: 1
     - _Float: 1
     - _Force_Side: 0
+    - _Inward_Shadow: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Side: 3.17
