@@ -509,10 +509,10 @@ MonoBehaviour:
   _testLerp: 0
   _useBias: 1
   _lerpedData:
-    SkyColor: {r: 0.7967046, g: 0.3515102, b: 0.36042178, a: 1}
-    HorizonColor: {r: 0.80578, g: 0.53565717, b: 0.3785997, a: 1}
-    LightColor: {r: 0.8111656, g: 0.6931544, b: 0.67204773, a: 1}
-    ShadowColor: {r: 0.16886804, g: 0.18919295, b: 0.22863689, a: 1}
+    SkyColor: {r: 0.77736974, g: 0.34321982, b: 0.35297894, a: 1}
+    HorizonColor: {r: 0.7873083, g: 0.52374786, b: 0.3728347, a: 1}
+    LightColor: {r: 0.72044474, g: 0.54596263, b: 0.50329906, a: 1}
+    ShadowColor: {r: 0.1736603, g: 0.19223565, b: 0.23918486, a: 1}
   _applyTestData: 1
   _lerpedTexture: {fileID: 0}
   _onValidate: 1

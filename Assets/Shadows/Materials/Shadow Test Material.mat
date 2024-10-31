@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 9
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -32,7 +32,8 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -123,9 +124,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Bias: 0
     - _Clip: 1
     - _Float: 1
     - _Force_Side: 0
+    - _Inward_Shadow: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Side: 3.17
@@ -134,3 +137,4 @@ Material:
     - _Lit_Color: {r: 0.30196077, g: 0.572549, b: 0.24313727, a: 1}
     - _Unlit_Color: {r: 0.042202868, g: 0.07799999, b: 0.03428986, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

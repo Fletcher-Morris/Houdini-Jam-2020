@@ -19,7 +19,8 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -66,6 +67,30 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_1c7b5ffd91e64c94b66e7cbe950e63bf_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 4ba812265fc32684a8bfdd1acf2cf53f, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_84e8945d24b740a99ea610c7538b726e_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 9b384627682eec84099acd9584e3f108, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_8cfdaf4d3ef34ad5928ac7f34db688bb_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: ca50b71ba9cb03943af65752e3adab6c, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_aeefa1c33a354a05bfe94ed81baedc52_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: 22fde76f46154a645aaa3af8b04224f4, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_b7cf30fb0fd14c359357c6003517d075_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: e5c5706b8e32452499b0526c8b16af22, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_f931ba4f7ca84a40934db242e4644a02_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: d8faac732a0ffd744934a633cf1131f2, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -129,6 +154,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &3351603767535382186
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -141,4 +167,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 9

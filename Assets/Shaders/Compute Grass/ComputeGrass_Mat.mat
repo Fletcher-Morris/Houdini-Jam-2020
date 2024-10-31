@@ -39,3 +39,4 @@ Material:
     - _TipColorMax: {r: 0.21477394, g: 0.34, b: 0.1632, a: 1}
     - _TipColorMin: {r: 0.13760735, g: 0.249, b: 0.132966, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
